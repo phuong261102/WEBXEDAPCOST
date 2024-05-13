@@ -1,0 +1,21 @@
+@using App.Models
+@using System.Data
+@{
+    ViewData["Title"] = "Xoá Database";
+}
+
+<h1>@ViewData["Title"]</h1>
+<p class="alert alert-danger">
+    Có chắc muốn xoá?
+
+</p>
+
+<form method="post" >
+    <button type="submit" class="btn btn-danger">
+        Xoá DB
+    </button>
+
+    <hr />
+
+    <a asp-action="Index"> Quản lý Db </a>
+</form>

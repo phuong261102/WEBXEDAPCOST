@@ -1,0 +1,20 @@
+.register-screen{
+    background-color: #ff0000;
+  padding: 20px;
+  border-radius: 10px;
+}
+.btn-register{
+    padding: 0.8em 1.8em;
+  border-radius: 8px;
+  background-color: transparent;
+  color: #17c3b2;
+  border: 2px solid #17c3b2;
+  font-size: 16px;
+  cursor: pointer;
+  z-index: 1;
+  transition: 0.3s;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  margin-top: 10px;
+}
