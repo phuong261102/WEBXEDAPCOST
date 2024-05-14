@@ -86,6 +86,9 @@ namespace XEDAPVIP.Areas.Admin.Controllers
             var categories = await _context.Categories.ToListAsync();
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Title");
 
+            var brands = await _context.Categories.ToListAsync();
+            ViewBag.brands = new SelectList(_context.Brands, "Id", "Name");
+
             // Initialize an empty list of product details
             var productDetails = new List<ProductDetailEntry>();
             // Add a default product detail entry
@@ -167,7 +170,8 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                         }
                     }
                 }
-
+                var brands = await _context.Categories.ToListAsync();
+                ViewBag.brands = new SelectList(_context.Brands, "Id", "Name");
                 var categories = await _context.Categories.ToListAsync();
                 ViewData["categories"] = new MultiSelectList(categories, "Id", "Title", product.CategoryId);
                 return View(product);
@@ -186,7 +190,8 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                     DateCreated = DateTime.Now,
                     DateUpdated = DateTime.Now,
                     ProductCategories = product.CategoryId.Select(catId => new ProductCategory { CategoryId = catId }).ToList(),
-                    Variants = product.Variants.Select(v => new ProductVariant { Color = v.Color, Size = v.Size, Quantity = v.Quantity }).ToList()
+                    Variants = product.Variants.Select(v => new ProductVariant { Color = v.Color, Size = v.Size, Quantity = v.Quantity }).ToList(),
+                    BrandId = product.BrandId
                 };
                 var productSlug = newProduct.Slug;
 
