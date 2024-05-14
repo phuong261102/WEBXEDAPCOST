@@ -22,7 +22,7 @@ namespace App.Areas.Identity.Controllers
 
     [Authorize(Roles = RoleName.Administrator)]
     [Area("Identity")]
-    [Route("Admin/Identity/Role/[action]")]
+    [Route("/Role/[action]")]
     public class RoleController : Controller
     {
 
