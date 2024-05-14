@@ -1,8 +1,7 @@
-@{
-    var message = TempData["StatusMessage"] as string;
-}
-@if (!string.IsNullOrEmpty(message)){
-<div class="alert alert-warning d-flex align-items-center" role="alert">
-  @TempData["StatusMessage"]
-</div>
+@* _StatusMessagePartial.cshtml *@
+@if (TempData["StatusMessage"] != null)
+{
+  <div class="alert alert-warning d-flex align-items-center" role="alert">
+    @TempData["StatusMessage"]
+  </div>
 }

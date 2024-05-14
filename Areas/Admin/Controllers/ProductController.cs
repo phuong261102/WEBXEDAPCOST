@@ -13,7 +13,7 @@ using App.Utilities;
 using XEDAPVIP.Areas.Admin.Models;
 using Newtonsoft.Json;
 
-namespace XEDAPVIP.Areas_Admin_Controllers
+namespace XEDAPVIP.Areas.Admin.Controllers
 {
     [Authorize(Roles = RoleName.Administrator)]
     [Area("Admin")]
@@ -30,8 +30,7 @@ namespace XEDAPVIP.Areas_Admin_Controllers
         // GET: Product
         public async Task<IActionResult> Index([FromQuery(Name = "p")] int currentPage, int pagesize)
         {
-            var products = _context.Products
-                            .OrderByDescending(p => p.DateCreated);
+            var products = _context.Products.OrderByDescending(p => p.DateCreated);
             int totalProduc = await products.CountAsync();
             if (pagesize <= 0) pagesize = 10;
             int countPages = (int)Math.Ceiling((double)totalProduc / pagesize);
@@ -53,14 +52,13 @@ namespace XEDAPVIP.Areas_Admin_Controllers
             ViewBag.totalProduc = totalProduc;
 
             var productinPage = await products.Skip((currentPage - 1) * pagesize)
-                            .Take(pagesize)
-                            .Include(p => p.ProductCategories)
-                            .ThenInclude(pc => pc.Category)
-                            .ToListAsync(); // Await the asynchronous operation here
+                                              .Take(pagesize)
+                                              .Include(p => p.ProductCategories)
+                                              .ThenInclude(pc => pc.Category)
+                                              .ToListAsync();
 
             return View(productinPage);
         }
-
 
         // GET: Product/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -101,12 +99,7 @@ namespace XEDAPVIP.Areas_Admin_Controllers
             return View(model);
         }
 
-
-
-
         // POST: Product/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateProductModel product, IFormFile mainImage, List<IFormFile> subImages)
@@ -115,36 +108,52 @@ namespace XEDAPVIP.Areas_Admin_Controllers
 
             if (product.CategoryId == null || product.CategoryId.Length == 0)
             {
-                ModelState.AddModelError(string.Empty, "Phải chọn ít nhất một danh mục");
+                TempData["StatusMessage"] = "Phải chọn ít nhất một danh mục";
             }
-            if (product.ProductDetails == null || !product.ProductDetails.Any())
+
+            if (product.Variants == null || !product.Variants.Any())
             {
-                ModelState.AddModelError(string.Empty, "Phải nhập ít nhất một chi tiết sản phẩm");
+                TempData["StatusMessage"] = "Phải nhập ít nhất một biến thể";
+            }
+            if (mainImage == null || mainImage.Length == 0)
+            {
+                TempData["StatusMessage"] = "Phải tải lên ảnh chính cho sản phẩm";
             }
             product.Slug = Utils.GenerateSlug(product.Name);
             ModelState.SetModelValue("Slug", new ValueProviderResult(product.Slug));
+
             // Thiết lập và kiểm tra lại Model
             ModelState.Clear();
             TryValidateModel(product);
+
             // Kiểm tra slug đã tồn tại hay chưa
             bool SlugExisted = await _context.Products.AnyAsync(p => p.Slug == product.Slug);
             if (SlugExisted)
             {
-                ModelState.AddModelError(nameof(product.Slug), "Slug đã tồn tại trong cơ sở dữ liệu");
+                TempData["StatusMessage"] = "Slug đã tồn tại trong cơ sở dữ liệu";
             }
-            var productDetails = new Dictionary<string, string>();
 
+
+            var productDetails = new Dictionary<string, string>();
             foreach (var detail in product.ProductDetails)
             {
+                if (string.IsNullOrEmpty(detail.DetailsName) || string.IsNullOrEmpty(detail.DetailsValue))
+                {
+                    TempData["StatusMessage"] = "Chi tiết sản phẩm không được để trống.";
+                    var categories = await _context.Categories.ToListAsync();
+                    ViewData["categories"] = new MultiSelectList(categories, "Id", "Title", product.CategoryId);
+                    return View(product);
+                }
                 productDetails.Add(detail.DetailsName, detail.DetailsValue);
             }
-            var detailsJson = Newtonsoft.Json.JsonConvert.SerializeObject(productDetails);
+            var detailsJson = JsonConvert.SerializeObject(productDetails);
+
             if (!ModelState.IsValid)
             {
                 var errors = ModelState
-                   .Where(x => x.Value.Errors.Count > 0)
-                   .Select(x => new { x.Key, x.Value.Errors })
-                   .ToArray();
+                    .Where(x => x.Value.Errors.Count > 0)
+                    .Select(x => new { x.Key, x.Value.Errors })
+                    .ToArray();
 
                 foreach (var error in errors)
                 {
@@ -154,79 +163,83 @@ namespace XEDAPVIP.Areas_Admin_Controllers
                         System.Diagnostics.Debug.WriteLine("Error Message: " + err.ErrorMessage);
                         if (err.Exception != null)
                         {
-                            // Lỗi do ngoại lệ tạo ra
                             System.Diagnostics.Debug.WriteLine("Exception Message: " + err.Exception.Message);
                         }
                     }
                 }
+
+                var categories = await _context.Categories.ToListAsync();
+                ViewData["categories"] = new MultiSelectList(categories, "Id", "Title", product.CategoryId);
+                return View(product);
             }
-            if (ModelState.IsValid)
+            try
             {
-                // Xử lý mainImage
+                // Tạo mới sản phẩm
+                var newProduct = new Product
+                {
+                    Name = product.Name,
+                    Description = product.Description,
+                    Price = product.Price,
+                    DiscountPrice = product.DiscountPrice,
+                    Slug = product.Slug,
+                    DetailsJson = detailsJson,
+                    DateCreated = DateTime.Now,
+                    DateUpdated = DateTime.Now,
+                    ProductCategories = product.CategoryId.Select(catId => new ProductCategory { CategoryId = catId }).ToList(),
+                    Variants = product.Variants.Select(v => new ProductVariant { Color = v.Color, Size = v.Size, Quantity = v.Quantity }).ToList()
+                };
+                var productSlug = newProduct.Slug;
+
                 if (mainImage != null && mainImage.Length > 0)
                 {
-                    var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images", mainImage.FileName);
+                    var directoryPath = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/images/products/{productSlug}");
+                    Directory.CreateDirectory(directoryPath);  // create the directory if it doesn't exist
+
+                    var path = Path.Combine(directoryPath, mainImage.FileName);
                     using (var stream = new FileStream(path, FileMode.Create))
                     {
                         await mainImage.CopyToAsync(stream);
                     }
-                    product.MainImage = mainImage.FileName;
+                    newProduct.MainImage = mainImage.FileName;
                 }
 
-                // Xử lý subImages
+                // Same goes for SubImages:
                 if (subImages != null && subImages.Count > 0)
                 {
-                    product.SubImages = new List<string>();
+                    newProduct.SubImages = new List<string>();
                     foreach (var image in subImages)
                     {
                         if (image.Length > 0)
                         {
+                            var fileDirectoryName = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/images/products/{productSlug}/subImg");
+                            Directory.CreateDirectory(fileDirectoryName);
+
                             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                            var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/products", fileName);
-                            using (var stream = new FileStream(path, FileMode.Create))
+                            var filePath = Path.Combine(fileDirectoryName, fileName);
+                            using (var stream = new FileStream(filePath, FileMode.Create))
                             {
                                 await image.CopyToAsync(stream);
                             }
-                            product.SubImages.Add(fileName);
+                            newProduct.SubImages.Add(fileName);
                         }
                     }
                 }
-                try
-                {
-                    // Tạo mới sản phẩm
-                    var newProduct = new Product
-                    {
-                        Name = product.Name,
-                        Description = product.Description,
-                        Price = product.Price,
-                        DiscountPrice = product.DiscountPrice,
-                        Slug = product.Slug,
-                        DetailsJson = detailsJson,
-                        DateCreated = DateTime.Now,
-                        DateUpdated = DateTime.Now,
-                        ProductCategories = product.CategoryId.Select(catId => new ProductCategory { CategoryId = catId }).ToList(),
-                        Variants = product.Variants.Select(v => new ProductVariant { Color = v.Color, Size = v.Size, Quantity = v.Quantity }).ToList()
-                    };
+                _context.Products.Add(newProduct);
+                await _context.SaveChangesAsync();
 
-                    // Tạo và lưu thông tin chi tiết sản phẩm
-                    // Thêm sản phẩm vào cơ sở dữ liệu
-                    _context.Products.Add(newProduct);
-                    await _context.SaveChangesAsync();
-
-                    return RedirectToAction(nameof(Index)); // Chuyển hướng về danh sách sản phẩm
-                }
-                catch (Exception e)
-                {
-                    ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi khi tạo sản phẩm. Vui lòng thử lại.");
-                }
+                TempData["StatusMessage"] = "Sản phẩm đã được tạo thành công.";
+                return RedirectToAction(nameof(Index)); // Chuyển hướng về danh sách sản phẩm
             }
+            catch (Exception e)
+            {
+                ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi khi tạo sản phẩm. Vui lòng thử lại.");
+            }
+
             // Nếu ModelState không hợp lệ, trả về view với thông tin sản phẩm và danh sách lựa chọn danh mục
-            var categories = await _context.Categories.ToListAsync();
-            ViewData["categories"] = new MultiSelectList(categories, "Id", "Title", product.CategoryId);
+            var categoriesList = await _context.Categories.ToListAsync();
+            ViewData["categories"] = new MultiSelectList(categoriesList, "Id", "Title", product.CategoryId);
             return View(product);
         }
-
-
 
         // GET: Product/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -245,8 +258,6 @@ namespace XEDAPVIP.Areas_Admin_Controllers
         }
 
         // POST: Product/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Price,DiscountPrice,Slug,DateCreated,DateUpdated")] Product product)

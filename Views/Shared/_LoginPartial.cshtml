@@ -6,13 +6,16 @@
 
 @if (SignInManager.IsSignedIn(User))
 {
-    <form asp-area="Identity" asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm" class="navbar-right">
+    <form asp-area="Identity" asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm"
+        class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
             <li class="nav-item">
-                <a class="nav-link" asp-area="Identity"  asp-controller="Manage" asp-action="Index" title="Manage">Xin chào @UserManager.GetUserName(User)!</a>
+                <a class="nav-link text-white" asp-area="Identity" asp-controller="Manage" asp-action="Index"
+                    title="Manage">Xin chào
+                    @UserManager.GetUserName(User)!</a>
             </li>
             <li class="nav-item">
-                <button type="submit" class="btn btn-link navbar-btn navbar-link">Đăng xuất</button>
+                <button type="submit" class="btn btn-link text-white navbar-btn navbar-link">Đăng xuất</button>
             </li>
         </ul>
     </form>

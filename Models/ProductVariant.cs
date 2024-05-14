@@ -28,6 +28,8 @@ namespace App.Models
         [StringLength(50, ErrorMessage = "Kích thước không được quá 50 ký tự")]
         public string Size { get; set; }
 
+        [Required(ErrorMessage = "Số lượng ít nhất là 1")]
+
         [Display(Name = "Số lượng")]
         public int Quantity { get; set; }
     }

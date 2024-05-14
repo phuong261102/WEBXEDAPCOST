@@ -17,6 +17,8 @@ namespace XEDAPVIP.Areas.Admin.Models
     public class ProductDetailEntry
     {
         public string DetailsName { get; set; }
+
+
         public string DetailsValue { get; set; }
     }
 }
