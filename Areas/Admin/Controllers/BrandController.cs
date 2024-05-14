@@ -227,6 +227,16 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var brand = await _context.Brands.FindAsync(id);
+
+            // Kiểm tra sản phẩm có tham chiếu đến brand này không
+            var isBrandInUse = _context.Products.Any(p => p.BrandId == id);
+            if (isBrandInUse)
+            {
+                TempData["FailureMessage"] = "Brand đang được sử dụng bởi một số sản phẩm và không thể xóa!";
+                return RedirectToAction(nameof(Details), new { id = id });
+            }
+
+            // Nếu không có sản phẩm thì xóa brand
             if (brand != null)
             {
                 _context.Brands.Remove(brand);
@@ -234,7 +244,6 @@ namespace XEDAPVIP.Areas.Admin.Controllers
             }
             return RedirectToAction(nameof(Index));
         }
-
         private bool BrandExists(int id)
         {
             return _context.Brands.Any(e => e.Id == id);

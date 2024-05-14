@@ -107,7 +107,8 @@ namespace App.Areas_Admin_Controllers
         public async Task<IActionResult> Create([Bind("Id,ParentId,Title,Content,Slug")] Category category)
         {
             // Generate and set the slug
-            category.Slug = Utils.GenerateSlug(category.Title);
+            category.Slug = Utils.GenerateSlug($"{category.Title}-{category.Id}");
+
 
             // Check if the slug already exists
             bool slugExisted = await _context.Brands.AnyAsync(p => p.Slug == category.Slug);
@@ -143,30 +144,18 @@ namespace App.Areas_Admin_Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories.FindAsync(id);
+            // Sử dụng AsNoTracking để tránh theo dõi thực thể nhiều lần
+            var category = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            // Check if the category being edited is not a child of itself
-            var categoryIds = await _context.Categories.Select(c => c.Id).ToListAsync();
-            if (!categoryIds.Contains(category.ParentId ?? 0))
-            {
-                ViewData["ParentId"] = new SelectList(await GetItemsSelectCategorie(), "Id", "Title", category.ParentId);
-            }
-            else
-            {
-                TempData["ErrorMessage"] = "Không thể cập nhật danh mục cha thành một danh mục con của nó.";
-                return RedirectToAction(nameof(Index)); // Redirect back to the index page or any other appropriate page
-            }
+            ViewData["ParentId"] = new SelectList(await GetItemsSelectCategorie(), "Id", "Title", category.ParentId);
 
             return View(category);
         }
 
-        // POST: Admin/Category/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,ParentId,Title,Content,Slug")] Category category)
@@ -176,15 +165,37 @@ namespace App.Areas_Admin_Controllers
                 return NotFound();
             }
 
+            if (category.ParentId == category.Id)
+            {
+                ModelState.AddModelError("ParentId", "Danh mục không thể cập nhật với chính nó làm mục cha.");
+                ViewData["ParentId"] = new SelectList(await GetItemsSelectCategorie(), "Id", "Title", category.ParentId);
+                return View(category);
+            }
+            if (await IsChildCategory(category.Id, category.ParentId))
+            {
+                ModelState.AddModelError("ParentId", "Danh mục không thể cập nhật với mục con làm mục cha.");
+                ViewData["ParentId"] = new SelectList(await GetItemsSelectCategorie(), "Id", "Title", category.ParentId);
+                return View(category);
+            }
             if (ModelState.IsValid)
             {
                 try
                 {
+                    // Sử dụng AsNoTracking để tránh lỗi
+                    var originalCategory = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+                    if (originalCategory.Title != category.Title)
+                    {
+                        // Tên đã thay đổi, gọi hàm generate slug mới
+                        category.Slug = Utils.GenerateSlug($"{category.Title}-{category.Id}");
+                    }
+
                     if (category.ParentId == -1)
                     {
                         category.ParentId = null;
                     }
-                    _context.Update(category);
+
+                    // Tách việc theo dõi thực thể cũ và cập nhật thực thể mới
+                    _context.Entry(category).State = EntityState.Modified;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
@@ -200,15 +211,42 @@ namespace App.Areas_Admin_Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            var listcategory = await _context.Categories.ToListAsync();
-            listcategory.Insert(0, new Category()
-            {
-                Title = "Không có danh mục cha",
-                Id = -1
-            });
-            ViewData["ParentId"] = new SelectList(listcategory, "Id", "Title", category.ParentId);
-            return View(category);
+            ViewData["ParentId"] = new SelectList(await GetItemsSelectCategorie(), "Id", "Title", category.ParentId);
+            TempData["StatusMessage"] = "Đã cập nhật thành công danh mục.";  // Success message
+            return RedirectToAction(nameof(Index));
         }
+
+        private async Task<bool> IsChildCategory(int parentId, int? childId)
+        {
+            // Sử dụng AsNoTracking để tránh theo dõi thực thể nhiều lần
+            var parentCategory = await _context.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Id == parentId);
+            if (parentCategory != null)
+            {
+                // Kiểm tra xem danh mục chính nó hoặc các danh mục con có chứa childId không
+                var allSubCategories = new List<Category> { parentCategory };
+                await GetChildCategories(allSubCategories, parentCategory);
+                if (allSubCategories.Any(c => c.Id == childId))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private async Task GetChildCategories(List<Category> allSubCategories, Category parentCategory)
+        {
+            // Sử dụng AsNoTracking để tránh theo dõi thực thể nhiều lần
+            var children = await _context.Categories.AsNoTracking().Where(c => c.ParentId == parentCategory.Id).ToListAsync();
+            if (children.Any())
+            {
+                allSubCategories.AddRange(children);
+                foreach (var child in children)
+                {
+                    await GetChildCategories(allSubCategories, child);
+                }
+            }
+        }
+
 
         // GET: Admin/Category/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -229,37 +267,49 @@ namespace App.Areas_Admin_Controllers
             return View(category);
         }
 
-        // POST: Admin/Category/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var category = await _context.Categories.FindAsync(id);
-            if (category == null)
+
+            // Check if Category has any related Products
+            if (_context.ProductCategories.Any(p => p.CategoryId == id))
             {
-                return NotFound();
+                TempData["StatusMessage"] = "Không thể xoá vì có sản phẩm tồn tại trong danh mục hiện tại.";
+                return RedirectToAction(nameof(Delete), new { id });  // Redirect to Delete with error.
             }
 
-            if (HasChildCategories(category))
+            // Check if Category has any sub categories
+            if (_context.Categories.Any(c => c.ParentId == id))
             {
-                TempData["ErrorMessage"] = "Không thể xóa danh mục có mục con.";
-                return RedirectToAction(nameof(Index)); // Redirect back to the index page or any other appropriate page
+                TempData["StatusMessage"] = "Không thể xoá vì có danh mục con trong danh mục hiện tại.";
+                return RedirectToAction(nameof(Delete), new { id });  // Redirect to Delete with error.
             }
 
             _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Xóa danh mục thành công."; // Return a success message
-            return RedirectToAction(nameof(Index)); // Redirect back to the index page or any other appropriate page
-        }
 
+            TempData["StatusMessage"] = "Đã xóa thành công danh mục.";  // Success message
+            return RedirectToAction(nameof(Index));
+        }
         private bool HasChildCategories(Category category)
         {
             return _context.Categories.Any(c => c.ParentId == category.Id);
+        }
+
+        private bool HasProducts(Category category)
+        {
+            return _context.ProductCategories.Any(pc => pc.CategoryId == category.Id);
         }
 
         private bool CategoryExists(int id)
         {
             return _context.Categories.Any(e => e.Id == id);
         }
+
+
+
     }
+
 }

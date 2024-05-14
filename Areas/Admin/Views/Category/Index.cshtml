@@ -16,7 +16,7 @@
                 @Html.DisplayNameFor(model => model.Title)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Slug)
+                @Html.DisplayNameFor(model => model.Content)
             </th>
 
             <th></th>
@@ -26,6 +26,8 @@
 
         @if (Model.Count() > 0)
             @await Component.InvokeAsync("RowTreeCategory", new { categories = Model, level = 0 })
+
+
 
 
     </tbody>

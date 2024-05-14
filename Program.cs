@@ -79,6 +79,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/khongduoctruycap.html";
 });
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromSeconds(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 builder.Services.AddAuthentication()
         .AddGoogle(options =>
@@ -133,7 +139,7 @@ app.UseStaticFiles();
 app.AddStatucCodePage();
 
 app.UseRouting();
-
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
