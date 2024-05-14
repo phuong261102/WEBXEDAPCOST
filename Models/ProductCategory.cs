@@ -9,14 +9,10 @@ namespace App.Models
     [Table("ProductCategory")]
     public class ProductCategory
     {
-        public int ProductID { set; get; }
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
 
-        public int CategoryID { set; get; }
-
-        [ForeignKey("ProductID")]
-        public Product Product { set; get; }
-
-        [ForeignKey("CategoryID")]
-        public Category Category { set; get; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
     }
 }

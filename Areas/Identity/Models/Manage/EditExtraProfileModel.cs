@@ -14,29 +14,63 @@ namespace App.Areas.Identity.Models.ManageViewModels
     [Display(Name = "Số điện thoại")]
     public string PhoneNumber { get; set; }
 
-    [Display(Name = "Địa chỉ")]
+    [Display(Name = "Địa chỉ mặc định")]
     [StringLength(400)]
     public string HomeAddress { get; set; }
 
     [Display(Name = "Ngày sinh")]
     public DateTime? BirthDate { get; set; }
 
-    // [Display(Name = "Số nhà")]
-    // public string StreetNumber { get; set; }
+    [Display(Name = "Số nhà")]
+    public string StreetNumber { get; set; }
 
     [Display(Name = "Tỉnh/Thành phố")]
     public string SelectedProvince { get; set; }
+
     [Display(Name = "Quận/Huyện")]
     public string SelectedDistrict { get; set; }
+
     [Display(Name = "Phường/Xã")]
     public string SelectedWard { get; set; }
 
     // Thêm thuộc tính để lưu trữ danh sách lựa chọn
+
     public IEnumerable<SelectListItem> ProvinceOptions { get; set; }
     public IEnumerable<SelectListItem> DistrictOptions { get; set; }
     public IEnumerable<SelectListItem> WardOptions { get; set; }
+
+    public List<AddressModel> Addresses { get; set; }
+
+    // Phương thức để thêm một địa chỉ mới vào danh sách
+    public void AddAddress(AddressModel address)
+    {
+      if (Addresses == null)
+      {
+        Addresses = new List<AddressModel>();
+      }
+      Addresses.Add(address);
+    }
+
+    // Phương thức để xóa một địa chỉ dựa trên chỉ mục
+    public void RemoveAddress(int index)
+    {
+      if (Addresses != null && Addresses.Count > index)
+      {
+        Addresses.RemoveAt(index);
+      }
+    }
+
+    // Phương thức để cập nhật một địa chỉ
+    public void UpdateAddress(int index, AddressModel address)
+    {
+      if (Addresses != null && Addresses.Count > index)
+      {
+        Addresses[index] = address;
+      }
+    }
   }
 }
+
 public class Province
 {
   public string Id { get; set; }
@@ -57,4 +91,12 @@ public class Ward
   public string Name { get; set; }
   public string Level { get; set; }
 
+}
+public class AddressModel
+{
+  public string StreetNumber { get; set; }
+  public string SelectedProvince { get; set; }
+  public string SelectedDistrict { get; set; }
+  public string SelectedWard { get; set; }
+  // Các thuộc tính khác cần thiết cho địa chỉ
 }

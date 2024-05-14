@@ -33,24 +33,27 @@ namespace App.Models
 
             modelBuilder.Entity<Category>(entity =>
             {
-                entity.HasIndex(p => p.Slug);
+                entity.HasIndex(p => p.Slug).IsUnique();
             });
 
-            modelBuilder.Entity<ProductCategory>(entity =>
-            {
-                entity.HasKey(p => new { p.ProductID, p.CategoryID });
-
-            });
             modelBuilder.Entity<Product>(entity =>
             {
                 entity.HasIndex(p => p.Slug).IsUnique();
 
             });
+            modelBuilder.Entity<ProductCategory>()
+           .HasKey(pc => new { pc.ProductId, pc.CategoryId });
+
+
+
+
         }
 
         public DbSet<Category> Categories { set; get; }
         public DbSet<Product> Products { set; get; }
-        public DbSet<ProductDetail> ProductDetails { set; get; }
-        public DbSet<ProductCategory> PostCategories { set; get; }
+        public DbSet<ProductCategory> ProductCategories { set; get; }
+        public DbSet<Address> Addresses { get; set; }
+
+        public DbSet<ProductVariant> productVariants { set; get; }
     }
 }

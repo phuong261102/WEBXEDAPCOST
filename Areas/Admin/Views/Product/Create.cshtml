@@ -1,22 +1,26 @@
-@model App.Models.Product
-
+@model XEDAPVIP.Areas.Admin.Models.CreateProductModel
 @{
     ViewData["Title"] = "Create";
+    var list = ViewData["categories"] as MultiSelectList;
 }
 
-<h1>Create</h1>
+<h1>Thêm mới</h1>
 
-<h4>Product</h4>
+<h4>Sản phẩm</h4>
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<form asp-action="Create" enctype="multipart/form-data">
+    <div class="">
+        <div class="col-md-6">
+            <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="CategoryId" class="control-label"></label>
-                <input asp-for="CategoryId" class="form-control" />
-                <span asp-validation-for="CategoryId" class="text-danger"></span>
+                <label class="control-label">Chọn danh mục</label>
+                @Html.ListBoxFor(model => model.CategoryId, (MultiSelectList)ViewBag.categories, new
+                    {
+                        @class = "w-100",
+                        id = "selectedCategories"
+                    })
             </div>
+
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -24,7 +28,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <textarea asp-for="Description" class="form-control a"> </textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -38,28 +42,95 @@
                 <span asp-validation-for="DiscountPrice" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Slug" class="control-label"></label>
-                <input asp-for="Slug" class="form-control" />
-                <span asp-validation-for="Slug" class="text-danger"></span>
+                <label for="MainImage" class="control-label">Ảnh chính</label>
+                <input type="file" id="MainImage" name="MainImage" class="form-control" />
             </div>
+
             <div class="form-group">
-                <label asp-for="DateCreated" class="control-label"></label>
-                <input asp-for="DateCreated" class="form-control" />
-                <span asp-validation-for="DateCreated" class="text-danger"></span>
+                <label for="subImages">Hình ảnh phụ:</label>
+                <input type="file" class="form-control-file" id="subImages" name="subImages" multiple>
             </div>
+            <div class="col-md-6">
+
+                <!-- Biến thể sản phẩm -->
+                <h4>Biến thể sản phẩm</h4>
+                <table id="variantsTable">
+                    <tbody>
+                        <tr>
+                            <th>Màu sắc</th>
+                            <th>Kích thước</th>
+                            <th>Số lượng</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Chi tiết sản phẩm -->
+            <h4>Chi tiết sản phẩm</h4>
+            <table id="productDetailsTable">
+                <tbody>
+                    <tr>
+                        <th>Chi tiết</th>
+                        <th style=" width: 70%;">Giá trị</th>
+                    </tr>
+                </tbody>
+            </table>
+            <!-- Nút thêm dòng mới -->
+            <button type="button" class="btn btn-primary" id="addProductDetail">Thêm dòng mới</button>
+            <!-- Kết thúc phần chi tiết sản phẩm -->
+
             <div class="form-group">
-                <label asp-for="DateUpdated" class="control-label"></label>
-                <input asp-for="DateUpdated" class="form-control" />
-                <span asp-validation-for="DateUpdated" class="text-danger"></span>
+                <input type="submit" value="Thêm sản phẩm" class="btn btn-primary" />
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+        </div>
     </div>
-</div>
+</form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<!-- Nút thêm dòng mới -->
+<button type="button" class="btn btn-primary" id="addVariant">Thêm biến thể</button>
+<!-- Kết thúc phần biến thể sản phẩm -->
 
+@section Scripts {
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="~/lib/multiple-select/multiple-select.min.js"></script>
+    <link rel="stylesheet" href="~/lib/multiple-select/multiple-select.min.css" />
+
+    <script>
+        $(document).ready(function () {
+            // Initialize the multiple select plugin on the selectedCategories ListBox
+            $("#selectedCategories").multipleSelect({
+                selectAll: false,
+                keepOpen: false,
+                isOpen: false,
+            });
+
+            // Add product detail row
+            $('#addProductDetail').click(function () {
+                var index = $('#productDetailsTable tbody tr').length - 1; // decrement 1 because you have a header row 
+
+                var newDetailRow = `<tr>
+                                                                        <td><input type="text" name="ProductDetails[` + index + `].DetailsName" class="form-control" /></td>
+                                                                        <td><input type="text" name="ProductDetails[` + index + `].DetailsValue" class="form-control" /></td>
+                                                                    </tr>`;
+
+
+                $('#productDetailsTable').append(newDetailRow);
+            });
+
+            $('#addVariant').click(function () {
+                var variantIndex = $('#variantsTable tbody tr').length - 1; // decrement 1 because you have a header row 
+
+                var newVariantRow = `<tr>
+                                                            <td><input type="text" name="Variants[` + variantIndex + `].Color" class="form-control" /></td>
+                                                            <td><input type="text" name="Variants[` + variantIndex + `].Size" class="form-control" /></td>
+                                                            <td><input type="number" name="Variants[` + variantIndex + `].Quantity" class="form-control" /></td>
+                                                        </tr>`;
+
+                $('#variantsTable').append(newVariantRow);
+            });
+        });
+
+
+    </script>
+    <partial name="_ValidationScriptsPartial" />
+}

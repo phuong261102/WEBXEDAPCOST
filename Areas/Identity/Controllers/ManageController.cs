@@ -27,18 +27,21 @@ namespace App.Areas.Identity.Controllers
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ManageController> _logger;
         private readonly HttpClient _httpClient;
+        private readonly AppDbContext _context;
 
         public ManageController(
         UserManager<AppUser> userManager,
         SignInManager<AppUser> signInManager,
         IEmailSender emailSender,
-        ILogger<ManageController> logger)
+        ILogger<ManageController> logger,
+        AppDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
             _logger = logger;
             _httpClient = new HttpClient();
+            _context = context;
         }
 
         //
@@ -462,12 +465,81 @@ namespace App.Areas.Identity.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddAddress(AddressModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Convert AddressModel to App.Models.Address
+                var address = new App.Models.Address
+                {
+                    StreetNumber = model.StreetNumber,
+                    SelectedWard = model.SelectedWard,
+                    SelectedDistrict = model.SelectedDistrict,
+                    SelectedProvince = model.SelectedProvince,
+                    // Set other properties as needed
+                };
 
-        [HttpGet]
+                // Set the UserId property of the Address entity
+                var user = await _userManager.GetUserAsync(HttpContext.User);
+                address.UserId = user.Id;
+
+                // Add the Address object to the context
+                _context.Addresses.Add(address);
+
+                // Save changes to the database
+                await _context.SaveChangesAsync();
+
+                // Return success message with the formatted new address
+                return Json(new { success = true, newAddressFormatted = $"{address.StreetNumber}, {address.SelectedWard}, {address.SelectedDistrict}, {address.SelectedProvince}" });
+            }
+            else
+            {
+                // Return error message if the model state is not valid
+                return Json(new { success = false, errorMessage = "Thông tin địa chỉ không hợp lệ." });
+            }
+        }
+
+        private async Task<string> GetProvinceNameById(string provinceId)
+        {
+            var provinces = await GetProvincesAsync();
+            var province = provinces.FirstOrDefault(p => p.Id == provinceId);
+            return province != null ? province.Name : "";
+        }
+
+        private async Task<string> GetDistrictNameById(string districtId)
+        {
+            var provinces = await GetProvincesAsync();
+            foreach (var province in provinces)
+            {
+                var district = province.Districts.FirstOrDefault(d => d.Id == districtId);
+                if (district != null)
+                {
+                    return district.Name;
+                }
+            }
+            return "";
+        }
+
+        private async Task<string> GetWardNameById(string wardId)
+        {
+            var provinces = await GetProvincesAsync();
+            foreach (var province in provinces)
+            {
+                foreach (var district in province.Districts)
+                {
+                    var ward = district.Wards.FirstOrDefault(w => w.Id == wardId);
+                    if (ward != null)
+                    {
+                        return ward.Name;
+                    }
+                }
+            }
+            return "";
+        }
         public async Task<IActionResult> EditProfileAsync()
         {
             var user = await GetCurrentUserAsync();
-
             var provinces = await GetProvincesAsync();
 
             // Convert list of provinces to list of SelectListItem
@@ -476,6 +548,28 @@ namespace App.Areas.Identity.Controllers
                 Value = p.Id.ToString(),
                 Text = p.Name
             }).ToList();
+
+            // Fetch the user's addresses from the database
+            var addresses = _context.Addresses.Where(a => a.UserId == user.Id).ToList();
+
+            // Create a List<AddressModel> instead of List<string>
+            var addressModels = new List<AddressModel>();
+            foreach (var address in addresses)
+            {
+                var provinceName = await GetProvinceNameById(address.SelectedProvince);
+                var districtName = await GetDistrictNameById(address.SelectedDistrict);
+                var wardName = await GetWardNameById(address.SelectedWard);
+
+                // Create an AddressModel object for each address
+                var addressModel = new AddressModel
+                {
+                    StreetNumber = address.StreetNumber,
+                    SelectedProvince = provinceName,
+                    SelectedDistrict = districtName,
+                    SelectedWard = wardName
+                };
+                addressModels.Add(addressModel);
+            }
 
             // Initialize model with necessary data
             var model = new EditExtraProfileModel()
@@ -487,12 +581,12 @@ namespace App.Areas.Identity.Controllers
                 BirthDate = user.BirthDate,
                 ProvinceOptions = provinceOptions, // Assign the list of SelectListItem
                 DistrictOptions = new List<SelectListItem>(), // Initialize with empty list
-                WardOptions = new List<SelectListItem>() // Initialize with empty list
+                WardOptions = new List<SelectListItem>(), // Initialize with empty list
+                Addresses = addressModels // Assign the list of AddressModel objects
             };
 
             return View(model);
         }
-
         [HttpPost]
         public async Task<IActionResult> EditProfileAsync(EditExtraProfileModel model)
         {

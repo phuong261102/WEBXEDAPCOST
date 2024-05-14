@@ -24,21 +24,38 @@
                 <label asp-for="PhoneNumber"></label>
                 <input asp-for="PhoneNumber" class="form-control" disabled />
             </div>
-            <div class="form-group">
-                <label asp-for="HomeAddress"></label>
-                <select asp-for="HomeAddress" class="form-control"></select>
-                <option value="HomeAddress" class="text-danger"></option>
+            <div id="existing-addresses">
+                <h5>Địa chỉ hiện có</h5>
+                @if (Model.Addresses != null && Model.Addresses.Count > 0)
+                {
+                    foreach (var address in Model.Addresses)
+                    {
+                        <p>@address.StreetNumber, @address.SelectedWard, @address.SelectedDistrict, @address.SelectedProvince
+                        </p>
+                    }
+                }
+                else
+                {
+                    <p>Không có địa chỉ được lưu.</p>
+                }
             </div>
-            <div class="form-group d-flex">
-                <select asp-for="SelectedProvince" asp-items="Model.ProvinceOptions" class="form-control me-2">
-                    <option value="">Chọn Tỉnh/Thành phố</option>
-                </select>
-                <select asp-for="SelectedDistrict" asp-items="Model.DistrictOptions" class="form-control me-2">
-                    <option value="">Chọn Quận/Huyện</option>
-                </select>
-                <select asp-for="SelectedWard" asp-items="Model.WardOptions" class="form-control">
-                    <option value="">Chọn Phường/Xã</option>
-                </select>
+            <button type="button" id="add-address" class="btn btn-secondary">Thêm Địa Chỉ Mới</button>
+            <div id="add-address-form" style="display:none;">
+                <div>
+                    <label asp-for="StreetNumber"></label>
+                    <input asp-for="StreetNumber" class="form-control mb-2" />
+                </div>
+                <div class="form-group d-flex">
+                    <select asp-for="SelectedProvince" asp-items="Model.ProvinceOptions" class="form-control me-2">
+                        <option value="">Chọn Tỉnh/Thành phố</option>
+                    </select>
+                    <select asp-for="SelectedDistrict" asp-items="Model.DistrictOptions" class="form-control me-2">
+                        <option value="">Chọn Quận/Huyện</option>
+                    </select>
+                    <select asp-for="SelectedWard" asp-items="Model.WardOptions" class="form-control">
+                        <option value="">Chọn Phường/Xã</option>
+                    </select>
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="BirthDate"></label>
@@ -56,6 +73,8 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
+
+        //Lấy Quận Huyện
         $('#SelectedProvince').change(function () {
             var provinceId = $(this).val();
             if (provinceId) {
@@ -74,6 +93,7 @@
             $('#SelectedWard').empty().append($('<option/>', { value: '', text: 'Chọn Phường/Xã' }));
         });
 
+        // Lấy Phường Xã 
         $('#SelectedDistrict').change(function () {
             var districtId = $(this).val();
             if (districtId) {
@@ -91,5 +111,53 @@
             }
         });
 
+
+        $(document).ready(function () {
+            $('#add-address').click(function () {
+                // Only show the form if it's hidden
+                if ($('#add-address-form').is(':hidden')) {
+                    $('#add-address-form').show();
+                } else {
+                    // Logic to handle when the form is already shown and the user wants to add an address
+                    // Collect data from the form
+                    var streetNumber = $('#StreetNumber').val();
+                    var selectedProvince = $('#SelectedProvince').val(); // Use .val() instead of .text()
+                    var selectedDistrict = $('#SelectedDistrict').val(); // Use .val() instead of .text()
+                    var selectedWard = $('#SelectedWard').val(); // Use .val() instead of .text()
+                    // Create a new address object
+                    var newAddress = {
+                        StreetNumber: streetNumber,
+                        SelectedProvince: selectedProvince,
+                        SelectedDistrict: selectedDistrict,
+                        SelectedWard: selectedWard
+                    };
+                    // Send the new address object to the server via AJAX
+                    $.post('/Member/AddAddress', newAddress, function (response) {
+                        // Handle the response from the server
+                        // Update UI or notify the user
+                        displayAddresses();
+
+                        $('#add-address-form').hide(); // Hide the form after adding
+                    });
+                }
+            });
+
+        });
+        function displayAddresses() {
+            $.getJSON('/Member/GetAddresses', function (addresses) {
+                var existingAddressesContainer = $('#existing-addresses');
+                existingAddressesContainer.empty(); // Clear existing addresses
+                if (addresses.length > 0) {
+                    // Iterate through addresses and display them
+                    $.each(addresses, function (index, address) {
+                        existingAddressesContainer.append($('<p>').text(address));
+                    });
+                } else {
+                    existingAddressesContainer.append('<p>No addresses found.</p>');
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                console.error("Error fetching addresses:", textStatus, errorThrown);
+            });
+        }
     </script>
 }

@@ -42,7 +42,7 @@ namespace App.Models
         [ForeignKey("ParentId")]
         public Category? ParentCategory { set; get; }
 
-        public List<ProductCategory> Productcategories { get; set; }
+        public List<ProductCategory>? Productcategories { get; set; }
 
         public List<Category> ListParents()
         {
