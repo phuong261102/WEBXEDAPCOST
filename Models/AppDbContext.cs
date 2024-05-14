@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using XEDAPVIP.Models;
 
 namespace App.Models
 {
@@ -53,7 +54,7 @@ namespace App.Models
         public DbSet<Product> Products { set; get; }
         public DbSet<ProductCategory> ProductCategories { set; get; }
         public DbSet<Address> Addresses { get; set; }
-
+        public DbSet<Brand> Brands { get; set; }
         public DbSet<ProductVariant> productVariants { set; get; }
     }
 }

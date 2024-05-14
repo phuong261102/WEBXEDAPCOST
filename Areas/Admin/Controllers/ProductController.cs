@@ -17,7 +17,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
 {
     [Authorize(Roles = RoleName.Administrator)]
     [Area("Admin")]
-    [Route("/Product/[action]")]
+    [Route("Admin/Product/[action]")]
     public class ProductController : Controller
     {
         private readonly AppDbContext _context;

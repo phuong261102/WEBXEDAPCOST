@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using XEDAPVIP.Models;
 
 namespace App.Models
 {
@@ -61,6 +62,7 @@ namespace App.Models
 
         public string MainImage { get; set; }
         public IList<string>? SubImages { get; set; }
-
+        public int BrandId { get; set; }
+        public Brand Brand { get; set; }
     }
 }

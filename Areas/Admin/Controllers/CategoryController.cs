@@ -13,7 +13,7 @@ namespace App.Areas_Admin_Controllers
 {
     [Authorize(Roles = RoleName.Administrator)]
     [Area("Admin")]
-    [Route("/Category/[action]")]
+    [Route("Admin/Category/[action]")]
     public class CategoryController : Controller
     {
         private readonly AppDbContext _context;

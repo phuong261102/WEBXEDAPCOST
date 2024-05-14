@@ -27,7 +27,7 @@ namespace App.Areas.Identity.Controllers
 
     [Authorize(Roles = RoleName.Administrator)]
     [Area("Identity")]
-    [Route("/ManageUser/[action]")]
+    [Route("Admin/Identity/ManageUser/[action]")]
     public class UserController : Controller
     {
 
