@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using App.Models;
 using Microsoft.AspNetCore.Authorization;
 using App.Data;
+using App.Utilities;
 
 namespace App.Areas_Admin_Controllers
 {
@@ -105,6 +106,16 @@ namespace App.Areas_Admin_Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,ParentId,Title,Content,Slug")] Category category)
         {
+            // Generate and set the slug
+            category.Slug = Utils.GenerateSlug(category.Title);
+
+            // Check if the slug already exists
+            bool slugExisted = await _context.Brands.AnyAsync(p => p.Slug == category.Slug);
+            if (slugExisted)
+            {
+                ModelState.AddModelError("Slug", "Slug đã tồn tại trong cơ sở dữ liệu");
+            }
+
             if (ModelState.IsValid)
             {
                 if (category.ParentId == -1)
