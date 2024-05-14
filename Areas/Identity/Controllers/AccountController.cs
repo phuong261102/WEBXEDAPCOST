@@ -22,7 +22,7 @@ namespace App.Areas.Identity.Controllers
 {
     [Authorize]
     [Area("Identity")]
-    [Route("Identity/Account/[action]")]
+    [Route("/Account/[action]")]
     public class AccountController : Controller
     {
         private readonly UserManager<AppUser> _userManager;

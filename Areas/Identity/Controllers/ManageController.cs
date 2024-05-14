@@ -19,7 +19,7 @@ namespace App.Areas.Identity.Controllers
 
     [Authorize]
     [Area("Identity")]
-    [Route("Identity/Member/[action]")]
+    [Route("/Member/[action]")]
     public class ManageController : Controller
     {
         private readonly UserManager<AppUser> _userManager;

@@ -138,9 +138,9 @@
                 var index = $('#productDetailsTable tbody tr').length;
 
                 var newDetailRow = `<tr>
-                                        <td><input type="text" name="ProductDetails[` + index + `].DetailsName" class="form-control" /></td>
-                                        <td><input type="text" name="ProductDetails[` + index + `].DetailsValue" class="form-control" /></td>
-                                    </tr>`;
+                                            <td><input type="text" name="ProductDetails[` + index + `].DetailsName" class="form-control" /></td>
+                                            <td><input type="text" name="ProductDetails[` + index + `].DetailsValue" class="form-control" /></td>
+                                        </tr>`;
 
                 $('#productDetailsTable').append(newDetailRow);
             });
@@ -150,29 +150,29 @@
                 var variantIndex = $('#variantsTable tbody tr').length;
 
                 var newVariantRow = `<tr>
-                                        <td>
-                                            <select class="form-control" name="Variants[` + variantIndex + `].Color">
-                                                <option value="Red">Red</option>
-                                                <option value="Green">Green</option>
-                                                <option value="Blue">Blue</option>
-                                                <option value="Black">Black</option>
-                                                <option value="White">White</option>
-                                                <option value="Yellow">Yellow</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <select class="form-control" name="Variants[` + variantIndex + `].Size">
-                                                <option value="S">S</option>
-                                                <option value="M">M</option>
-                                                <option value="L">L</option>
-                                                <option value="XL">XL</option>
-                                                <option value="XXL">XXL</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <input type="number" name="Variants[` + variantIndex + `].Quantity" class="form-control" />
-                                        </td>
-                                    </tr>`;
+                                            <td>
+                                                <select class="form-control" name="Variants[` + variantIndex + `].Color">
+                                                    <option value="Red">Red</option>
+                                                    <option value="Green">Green</option>
+                                                    <option value="Blue">Blue</option>
+                                                    <option value="Black">Black</option>
+                                                    <option value="White">White</option>
+                                                    <option value="Yellow">Yellow</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <select class="form-control" name="Variants[` + variantIndex + `].Size">
+                                                    <option value="S">S</option>
+                                                    <option value="M">M</option>
+                                                    <option value="L">L</option>
+                                                    <option value="XL">XL</option>
+                                                    <option value="XXL">XXL</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="number" name="Variants[` + variantIndex + `].Quantity" class="form-control" />
+                                            </td>
+                                        </tr>`;
 
                 $('#variantsTable').append(newVariantRow);
             });
@@ -185,7 +185,7 @@
             e.preventDefault(); // Prevent form submission
             }
             }); *@
-                    });
+                        });
     </script>
     <partial name="_ValidationScriptsPartial" />
 }
