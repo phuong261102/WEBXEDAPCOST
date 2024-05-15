@@ -40,10 +40,74 @@ button.accept-policy {
 }
 
 .footer {
-  position: absolute;
+  background-color: #e0e0e0;
+  color: #334862;
+  padding: 40px 0;
   bottom: 0;
-  width: 100%;
-  white-space: nowrap;
-  line-height: 60px;
+    display: flex;
+      justify-content: center;
 }
 
+.footer-inner {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.footer-column {
+  flex: 1;
+  margin-bottom: 20px;
+}
+
+.footer-column h3 {
+  color: #7777;
+  font-family: "Open Sans", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.footer-column p {
+  font-family: "Open Sans", sans-serif;
+  font-size: 18px;
+  padding-bottom: 10px;
+
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column ul li a {
+  font-family: Roboto, sans-serif;
+  font-size: 18px;
+  color: #334862;
+  text-decoration: none;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #666;
+}
+
+.footer-item {
+  font-size: 30px;
+  margin: 25px 5px;
+  text-align: center;
+  text-decoration: none;
+}
+
+.fa-youtube {
+  color: #ff4200;
+}
+
+.fa-facebook {
+  color: blue;
+}

@@ -1,11 +1,11 @@
 @model IEnumerable<App.Models.Brand>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Thương hiệu";
     Layout = "_Layout";
 }
 
-<h1>Index</h1>
+<h1>Thương hiệu</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -39,7 +39,7 @@
                 <td>
                     @if (!string.IsNullOrEmpty(item.Image))
                     {
-                        <img src="@item.Image" alt="@item.Name" style="max-width:auto; max-height:auto;" />
+                        <img src="@item.Image" alt="@item.Name" style="max-width:250px; max-height:auto;" />
                     }
                     else
                     {
