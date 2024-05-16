@@ -1,9 +1,10 @@
 @model EditRoleModel
- 
+
 @{
     ViewData["Title"] = "Cập nhật role";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
 }
-<h2>@ViewData["Title"]</h2>
 <partial name="_StatusMessage"></partial>
 
 <hr>
@@ -24,7 +25,7 @@
             </div>
         </form>
         <hr>
-        <p>Các đặc tính  (claim) của role:
+        <p>Các đặc tính (claim) của role:
             <a asp-action="AddRoleClaim" asp-route-roleid="@Model.role.Id">+ Thêm claim</a>
         </p>
         @if (Model.Claims.Count > 0)
@@ -34,9 +35,9 @@
                 {
                     <li>
                         <a asp-action="EditRoleClaim" asp-route-claimid="@claim.Id">
-                            @claim.ClaimType  : @claim.ClaimValue
+                            @claim.ClaimType : @claim.ClaimValue
                         </a>
-                        
+
 
                     </li>
                 }
@@ -47,5 +48,7 @@
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

@@ -1,8 +1,9 @@
 @model UserListModel
 @{
     ViewData["Title"] = "Danh sách các thành viên";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
 }
-<h2>@ViewData["Title"]</h2>
 <partial name="_StatusMessage"></partial>
 <p>Tổng số thành viên: @Model.totalUsers</p>
 
@@ -34,11 +35,11 @@
 </table>
 @{
     var pagingmodel = new PagingModel()
-    {
-        currentpage = Model.currentPage,
-        countpages = Model.countPages,
-        generateUrl = (int? p) => Url.Action("Index", new { p = p})
-    };
+            {
+                currentpage = Model.currentPage,
+                countpages = Model.countPages,
+                generateUrl = (int? p) => Url.Action("Index", new { p = p })
+            };
 }
 
 <partial name="_PagingXTL" model="@pagingmodel" />

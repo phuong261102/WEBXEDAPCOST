@@ -31,7 +31,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         // GET: Brand
         public async Task<IActionResult> Index([FromQuery(Name = "p")] int currentPage, int pagesize)
         {
-            var items = _context.Brands.OrderByDescending(p => p.DateCreated);
+            var items = _context.Brands.AsNoTracking().OrderByDescending(p => p.DateCreated);
             int totalItems = await items.CountAsync();
             if (pagesize <= 0) pagesize = 10;
             int countPages = (int)Math.Ceiling((double)totalItems / pagesize);
@@ -67,8 +67,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var brand = await _context.Brands
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var brand = await _context.Brands.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
             if (brand == null)
             {
                 return NotFound();
@@ -111,15 +110,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                 // Save image if exists
                 if (Image != null && Image.Length > 0)
                 {
-                    var directoryPath = Path.Combine(_hostingEnvironment.WebRootPath, "images/Brands", brand.Slug);
-                    Directory.CreateDirectory(directoryPath);
-
-                    var filePath = Path.Combine(directoryPath, Image.FileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await Image.CopyToAsync(stream);
-                    }
-                    brand.Image = $"/images/Brands/{brand.Slug}/{Image.FileName}";
+                    brand.Image = await SaveImageAsync(Image, brand.Slug);
                 }
 
                 _context.Add(brand);
@@ -137,7 +128,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var brand = await _context.Brands.FindAsync(id);
+            var brand = await _context.Brands.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
             if (brand == null)
             {
                 return NotFound();
@@ -159,7 +150,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
             {
                 try
                 {
-                    var existingBrand = await _context.Brands.FindAsync(id);
+                    var existingBrand = await _context.Brands.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
                     if (existingBrand == null)
                     {
                         return NotFound();
@@ -173,15 +164,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                     // Save image if exists
                     if (Image != null && Image.Length > 0)
                     {
-                        var directoryPath = Path.Combine(_hostingEnvironment.WebRootPath, "images/Brands", existingBrand.Slug);
-                        Directory.CreateDirectory(directoryPath);
-
-                        var filePath = Path.Combine(directoryPath, Image.FileName);
-                        using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await Image.CopyToAsync(stream);
-                        }
-                        existingBrand.Image = $"/images/Brands/{existingBrand.Slug}/{Image.FileName}";
+                        existingBrand.Image = await SaveImageAsync(Image, existingBrand.Slug);
                     }
 
                     _context.Update(existingBrand);
@@ -211,8 +194,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                 return NotFound();
             }
 
-            var brand = await _context.Brands
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var brand = await _context.Brands.AsNoTracking().FirstOrDefaultAsync(m => m.Id == id);
             if (brand == null)
             {
                 return NotFound();
@@ -228,25 +210,40 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         {
             var brand = await _context.Brands.FindAsync(id);
 
-            // Kiểm tra sản phẩm có tham chiếu đến brand này không
+            // Check if any products reference this brand
             var isBrandInUse = _context.Products.Any(p => p.BrandId == id);
             if (isBrandInUse)
             {
-                TempData["FailureMessage"] = "Brand đang được sử dụng bởi một số sản phẩm và không thể xóa!";
+                TempData["FailureMessage"] = "Brand is being used by some products and cannot be deleted!";
                 return RedirectToAction(nameof(Details), new { id = id });
             }
 
-            // Nếu không có sản phẩm thì xóa brand
+            // If no products reference the brand, delete it
             if (brand != null)
             {
                 _context.Brands.Remove(brand);
                 await _context.SaveChangesAsync();
             }
+            TempData["SuccessMessage"] = "Brand deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
+
         private bool BrandExists(int id)
         {
             return _context.Brands.Any(e => e.Id == id);
+        }
+
+        private async Task<string> SaveImageAsync(IFormFile image, string slug)
+        {
+            var directoryPath = Path.Combine(_hostingEnvironment.WebRootPath, "images/Brands", slug);
+            Directory.CreateDirectory(directoryPath);
+
+            var filePath = Path.Combine(directoryPath, image.FileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+            return $"/images/Brands/{slug}/{image.FileName}";
         }
     }
 }
