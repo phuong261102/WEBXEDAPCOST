@@ -5,7 +5,7 @@
 }
 
 <h1>Create</h1>
-
+<partial name="_StatusMessage" />
 <h4>Brand</h4>
 <hr />
 <div class="row">
@@ -18,11 +18,6 @@
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <textarea asp-for="Content" class="form-control"></textarea>
-                <span asp-validation-for="Content" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label asp-for="Image" class="control-label"></label>
                 <input type="file" asp-for="Image" class="form-control" onchange="previewImage(event)" />
                 <span asp-validation-for="Image" class="text-danger"></span>
@@ -30,6 +25,12 @@
             <div class="form-group">
                 <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width:100%; height:auto;" />
             </div>
+            <div class="form-group">
+                <label asp-for="Content" class="control-label"></label>
+                <textarea asp-for="Content"></textarea>
+                <span asp-validation-for="Content" class="text-danger"></span>
+            </div>
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -42,7 +43,10 @@
 </div>
 
 @section Scripts {
+
     <script>
+
+
         function previewImage(event) {
             var input = event.target;
             var reader = new FileReader();

@@ -1,0 +1,235 @@
+
+
+#wrapper{
+    margin-top: 30px;
+}
+
+
+#wrapper .collect{
+    border: 2px solid #332ff8;
+    border-radius: 25px;
+    
+}
+#wrapper .collect h1{
+    position: absolute;
+    transform: translate(100%, -100%);
+    text-align: center;
+    font-size: 1.5rem;
+}
+#wrapper .collect h1 span{
+    background-color: #332ff8;
+    border: 2px solid #332ff8;
+    border-radius: 25px;
+    padding: 4px 50px;
+    font-family: "Open Sans", sans-serif;
+    color: #fff;
+}
+.headline{
+    padding-top: 50px;
+    padding-left: 0;
+}
+#wrapper .headline a{
+    margin: 10px;
+    font-size: 1.3rem;
+    text-decoration: none;
+    font-weight: 700;
+    color: blue;
+    font-family: "Open Sans", sans-serif;
+}
+
+ul.products{
+    padding: 30px 0 15px 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+ul.products li{
+    flex-basis: 25%;
+    padding-left: 15px;
+    padding-right: 15px;
+    box-sizing: border-box;
+}
+
+.product-thumb img{
+    height: 250px;
+    width: 100%;
+    object-fit: cover;
+}
+.BH img{
+    width: 100%;
+    height: 250px;
+}
+
+ul.products li .product-info  a{
+    line-height: 1.6;
+    display: block;
+    font-weight: 500;
+    font-family: "Open Sans", sans-serif;
+    text-decoration: none;
+    color: #111;
+    text-align: center;
+}
+
+.product-price{
+    font-family: "Open Sans", sans-serif;
+    margin: 5px 0 10px 0;
+    font-weight: 550;
+    color: blue;
+    text-align: center;
+    font-size: 170%;
+    
+}
+
+.product_main .collect-more_product{
+    text-align: center;
+    padding-top: 50px;
+}
+.product_main .collect-more_product a {
+    text-decoration: none;
+}
+.product_main .collect-more_product a span{
+    font-size: 16px;
+    text-decoration: none;
+    color: #446084;
+    font-weight: bolder;
+    font-family: "Open Sans", sans-serif;
+
+}
+.product_main .collect-more_product a i{
+    font-size: 16px;
+    margin-left: 10px;
+}
+.onr{
+    max-width: 100%;
+    height: 2px;
+    background-color: #a5a5a9;
+    margin-top: 25px;
+    margin-bottom: 25px;
+}
+
+.section-title b {
+    display: block;
+    -ms-flex: 1;
+    flex: 1;
+    height: 2px;
+    opacity: .1;
+    background-color: currentColor;
+}
+.section-title {
+    position: relative;
+    -js-display: flex;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+    -ms-flex-align: center;
+    align-items: center;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    width: 100%;
+}
+.section-title span {
+    margin: 0 15px;
+    text-transform: uppercase;
+    font-family: "Open Sans", sans-serif;
+    font-weight: 700;
+    color: #a5a5a9;
+}
+
+.product-info span{
+    font-family: "Open Sans", sans-serif;
+    width: 100%;
+    font-size: 13px;
+    margin-top: 15px;
+}
+ul.products-cty{
+    padding: 15px 0 15px 0;
+    list-style: none;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+/*slider-product*/
+
+.prod-1{
+    display: inline-flex;
+    width: 100%;
+    padding-top: 30px;
+    height: 400px;
+    text-align: center;
+}
+
+.prod-1_1{
+    width: 60%;
+    
+}
+
+.slider-product{
+    width: 100%;
+}
+.tst-slider{
+    width: 24%;
+}
+.tst-1{
+    width: 19%;
+}
+
+.slider-product{
+    width: 1300px;
+    max-width: 100vw;
+    position: relative;
+    overflow: hidden;
+}
+.slider-product .list{
+    position: absolute;
+    width: max-content;
+    height: 100%;
+    left: 0;
+    top: 0;
+    display: flex;
+    transition: 1s;
+}
+.slider-product .buttons{
+    position: absolute;
+    top: 20%;
+    left: 3%;
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+}
+.slider-product .buttons button{
+    cursor: pointer;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: #8b8b8b;
+    border: none;
+    background: none;
+    font-family: monospace;
+}
+
+.item{
+    width: 50%;
+}
+
+.product-info a {
+    line-height: 1.8;
+    text-decoration: none;
+    font-weight: 500;
+}
+.product-price{
+    font-weight: 500;
+    font-size: 18px;
+}
+
+
+
+@media screen and (max-width: 768px){
+    .slider-product{
+        height: 400px;
+    }
+}
+
+

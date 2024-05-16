@@ -1,0 +1,165 @@
+@{
+    ViewData["Title"] = "Cart Page";
+}
+
+<body>
+    <div style="padding-bottom: 200px;" class="cart_shop">
+        <div class="grid">
+            <div  class="is-large">
+                <nav style="text-align: center; width: 100%;" class="woocommerce-breadcrumb breadcrumbs">
+                    <a style="color: black;">SHOPPING CART</a>
+                    <span style="font-weight: 100;" class="divider">></span>
+                    <a href="home_shop.html">CHECKOUT DETAILS</a>
+                    <span style="font-weight: 100;" class="divider">></span>
+                    <a >ORDER COMPLETE</a>
+                </nav>
+                
+            </div>
+
+            <!-- no-product
+            <div class="none_product">
+                <h3>Chưa có sản phẩm nào trong giỏ hàng.</h3>
+                <a href="home_shop.html"><span>QUAY TRỞ LẠI CỬA HÀNG</span></a>
+            </div>
+            -->
+
+            <!--products-->
+            <div class="product_cart_shops">
+                <div class="cart_products">
+                    <table class="address_cart_product">
+                        <tbody>
+                            <tr class="product_cart">
+                                <td class="product_name">Tên sản phẩm</td>
+                                <td class="product_address ">Thông Tin Sản phẩm</td>
+                                <td  class="product_price ">Giá</td>
+                                <td style="width: 10%;" class="product_quantity">Số lượng</td>
+                                <td  class="product_total text ">Tổng</td>
+                                <td style="width: 10%;" class="product_delete text">Hủy SP</td>
+                            </tr>
+                            
+                        </tbody>
+                        
+                    </table>
+                    <!--products-giohang-->
+                    <table class="cart_product_buy">
+                        <tbody>
+                            <tr class="product_cart_buy">
+                                <td class="product_img"><img src="/images/img/xedapmau1/xedapmau1-1.jpg" alt=""></td>
+                                <td class="product_address text">N/A</td>
+                                <td class="product_price text">N/A</td>
+                                <td style="width: 10%;" class="product_quantity">
+                                    <div class="quantity">
+                                        <input type="button" value="-" class="minus button is-form">
+                                        <label class="screen-reader-text" for="quantity_6635973865498"></label>
+                                        <input type="number" id="quantity_6635973865498" class="input-text qty text hiden" step="1" min="1" max="58" name="quantity" value="1" title="Qty" size="4" inputmode="numeric">
+                                        <input type="button" value="+" class="plus button is-form">
+                                    </div>
+                                </td>
+                                <td class="product_total text">N/A</td>
+                                <td style="width: 10%;" class="product_detele text">
+                                    <button class="delete-button">x</button>
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                    <table class="cart_product_buy">
+                        <tbody>
+                            <tr class="product_cart_buy">
+                                <td class="product_img"><img src="/images/img/xedapmau1/xedapmau1-1.jpg" alt=""></td>
+                                <td class="product_address text">N/A</td>
+                                <td class="product_price text">N/A</td>
+                                <td style="width: 10%;" class="product_quantity">
+                                    <div class="quantity">
+                                        <input type="button" value="-" class="minus button is-form">
+                                        <label class="screen-reader-text" for="quantity_6635973865498"></label>
+                                        <input type="number" id="quantity_6635973865498" class="input-text qty text hiden" step="1" min="1" max="58" name="quantity" value="1" title="Qty" size="4" inputmode="numeric">
+                                        <input type="button" value="+" class="plus button is-form">
+                                    </div>
+                                </td>
+                                <td class="product_total text">N/A</td>
+                                <td style="width: 10%;" class="product_detele text">
+                                    <button class="delete-button">x</button>
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                    <div class="orn"></div>
+                    <div class="button_home">
+                        <a style="color: rgb(80, 80, 169);" href="home_shop.html"><i class="fa-solid fa-house"></i></a>
+                        Home
+                        <i class="fa-solid fa-arrow-up-from-ground-water"></i>
+                        Cập Nhật
+                    </div>
+                </div>
+                
+
+                <div class="cart_products_total">
+                    <table class="cart_product_buy">
+                        <tbody>
+                            <tr class="product_cart_buys buy_products">
+                                <th>Số Lượng</th>
+                                <td>N/A</td>
+                            </tr>
+                            
+                        </tbody>
+                        
+                    </table>
+                    
+                    <table class="cart_product_buy total">
+                        <tbody>
+                            <tr class="product_cart_buys buy_products">
+                                <th>Tổng Phụ</th>
+                                <td>N/A</td>
+                            </tr>
+                            
+                        </tbody>
+                        
+                    </table>
+
+                    <table class="cart_product_buy total">
+                        <tbody>
+                            <tr class="product_cart_buys buy_products">
+                                <th>Phiếu/Mã Sale</th>
+                                <td>N/A</td>
+                            </tr>
+                            
+                        </tbody>
+                        
+                    </table>
+
+                    <table class="cart_product_buy total check">
+                        <tbody>
+                            <tr class="product_cart_buys check" colspan="2">
+                                <td class="title_product" style="background-color: rgb(190, 190, 191);">
+                                    <span>Áp Dụng</span> 
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <table class="cart_product_buy total">
+                        <tbody>
+                            <tr class="product_cart_buys buy_products">
+                                <th>Thành Tiền</th>
+                                <td>N/A</td>
+                            </tr>
+                        </tbody>
+                        
+                    </table>
+                    <table class="cart_product_buy total check">
+                        <tbody>
+                            <tr class="product_cart_buys check" colspan="2">
+                                <td class="title_product">
+                                    <a style="text-decoration: none; color: #fff;" asp-area="" asp-controller="Home" asp-action="Check_out"><span>TIẾN HÀNH THANH TOÁN</span> </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</body>

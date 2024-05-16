@@ -186,7 +186,7 @@ namespace App.Areas_Admin_Controllers
                     if (originalCategory.Title != category.Title)
                     {
                         // Tên đã thay đổi, gọi hàm generate slug mới
-                        category.Slug = Utils.GenerateSlug($"{category.Title}-{category.Id}");
+                        category.Slug = Utils.GenerateSlug($"{category.Title}");
                     }
 
                     if (category.ParentId == -1)

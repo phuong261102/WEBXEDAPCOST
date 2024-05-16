@@ -6,6 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] -Home </title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/base.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/product_sale.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/product-footer.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/bicyle.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/cart_check.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/header-footer.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/cart.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/content_address.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/content_main.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/content_dichvu.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/slide.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sale.css" asp-append-version="true" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="~/css/slide_bicycle_main.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/layout/style.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/XEDAPVIP.styles.css" asp-append-version="true" />
     <script src="https://kit.fontawesome.com/e21f566ee8.js" crossorigin="anonymous"></script>
@@ -15,56 +29,69 @@
 
 <body>
     <header>
-        @*infor bar*@
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm justify-content-center">
-            <div class="menu_left row me-5 justify-content-center">
-                <a class="fs-7 text-decoration-none col-sm-auto" href="#"><i
-                        class="fa-solid fa-location-dot text-primary me-1"></i> TÌM ĐỊA CHỈ CỬA HÀNG</a>
-                <a class="fs-7 text-decoration-none col-sm-auto" href="#"><i class="fa-solid fa-phone me-1"></i> HOTLINE
-                    : 0352222222</a>
-                <a class="fs-7 text-decoration-none col-sm-auto" href="#"><i
-                        class="fa-solid fa-location-dot text-primary"></i> CSKH : 1800 9555</a>
-            </div>
-            <div class="menu_right row ms-5 align-items">
-                <li class="menu_list_item col-sm-auto" style="background-color: #236f39"> Chất Lượng Quốc Tế</li>
-                <li class="menu_list_item col-sm-auto" style="background-color: #f61212"> Freeship Toàn Quốc</li>
-                <li class="menu_list_item col-sm-auto"> Giao Nhanh 48h</li>
-            </div>
-        </nav>
+        <div class="grid">
+            @*infor bar*@
+            <nav style="padding: 0;" class="navbar navbar-expand-sm navbar-toggleable-sm justify-content-center">
+                <div class="menu_left row me-5 justify-content-center">
+                    <a class="fs-7 text-decoration-none col-sm-auto" asp-area="" asp-controller="Home" asp-action="Address"><i
+                            class="fa-solid fa-location-dot text-primary me-1"></i> TÌM ĐỊA CHỈ CỬA HÀNG</a>
+                    <a class="fs-7 text-decoration-none col-sm-auto" href="#"><i class="fa-solid fa-phone me-1"></i>
+                        HOTLINE
+                        : 0352222222</a>
+                    <a class="fs-7 text-decoration-none col-sm-auto" href="#"><i
+                            class="fa-solid fa-location-dot text-primary"></i> CSKH : 1800 9555</a>
+                </div>
+                <div class="menu_right row ms-5 align-items">
+                    <li class="menu_list_item col-sm-auto" style="background-color: #236f39"> Chất Lượng Quốc Tế</li>
+                    <li class="menu_list_item col-sm-auto" style="background-color: #f61212"> Freeship Toàn Quốc</li>
+                    <li class="menu_list_item col-sm-auto"> Giao Nhanh 48h</li>
+                </div>
+            </nav>
+        </div>
         @*menu bar *@
         <nav
-            class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light navbar-sticky bg-primary border-bottom box-shadow mb-3">
-            <div class="container-fluid d-flex al-center ">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="/image/logo.png" alt="" class="img-fluid">
-                </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="" asp-action="">SẢN PHẨM</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="" asp-action="">KHUYẾN MÃI</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="" asp-action="">DỊCH VỤ</a>
-                        </li>
-                    </ul>
-
-                    <partial name="_LoginPartial" />
-                    <partial name="_MenuManagePartial" />
-
+            class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light navbar-sticky bg-primary border-bottom box-shadow">
+            <div class="grid">
+                <div class="container-fluid d-flex al-center ">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="/images/logo.png" alt="" class="img-fluid">
+                    </a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false"
+                        aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav">
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Product">SẢN PHẨM</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Sale">KHUYẾN
+                                    MÃI</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Service">DỊCH VỤ</a>
+                            </li>
+                        </ul>
+                        <div class="header__serach">
+                            <input type="text" class="header__search__input" placeholder="Tìm Kiếm">
+                            <butoon class="header__search-btn">
+                                <i class="header__search-icon fa-solid fa-magnifying-glass"></i>
+                            </butoon>
+                        </div>
+                        <partial name="_LoginPartial" />
+                        <partial name="_MenuManagePartial" />
+                        <a asp-area="" asp-controller="Home" asp-action="Cart" class="header-item header__item__cart">
+                            <i class="fa-solid fa-cart-shopping"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </nav>
-
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="contain">
+        <main role="main">
             @RenderBody()
 
         </main>
@@ -73,6 +100,8 @@
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - XEDAPVIP - TEAMDA_1 <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <a asp-area="" asp-controller="Home" asp-action="Product_information">Product information</a>
+            <a asp-area="" asp-controller="Home" asp-action="Product_select">Product select</a>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

@@ -22,6 +22,40 @@ public class HomeController : Controller
     {
         return View();
     }
+    public IActionResult Sale()
+    {
+        return View();
+    }
+    
+    public IActionResult Product()
+    {
+        return View();
+    }
+    
+    public IActionResult Service()
+    {
+        return View();
+    }
+    public IActionResult Cart()
+    {
+        return View();
+    }
+
+    public IActionResult Check_out(){
+        return View();
+    }
+    
+    public IActionResult Product_information(){
+        return View();
+    }
+
+    public IActionResult Product_select(){
+        return View();
+    }
+
+    public IActionResult Address(){
+        return View();
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

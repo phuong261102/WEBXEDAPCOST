@@ -87,38 +87,58 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Brand brand, IFormFile Image)
         {
-            if (brand == null)
-            {
-                return NotFound("Brand not found");
-            }
-
-            // Generate and set the slug
-            brand.Slug = Utils.GenerateSlug(brand.Name);
-
-            // Check if the slug already exists
-            bool slugExisted = await _context.Brands.AnyAsync(p => p.Slug == brand.Slug);
-            if (slugExisted)
-            {
-                ModelState.AddModelError("Slug", "Slug đã tồn tại trong cơ sở dữ liệu");
-            }
-
             if (ModelState.IsValid)
             {
-                brand.DateCreated = DateTime.Now;
-                brand.DateUpdated = DateTime.Now;
-
-                // Save image if exists
-                if (Image != null && Image.Length > 0)
+                if (string.IsNullOrWhiteSpace(brand.Name))
                 {
-                    brand.Image = await SaveImageAsync(Image, brand.Slug);
+                    ModelState.AddModelError("Name", "Trường tên không được để trống.");
                 }
 
-                _context.Add(brand);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (Image == null || Image.Length == 0)
+                {
+                    ModelState.AddModelError("Image", "Vui lòng chọn một hình ảnh.");
+                }
+
+                if (string.IsNullOrWhiteSpace(brand.Content))
+                {
+                    ModelState.AddModelError("Content", "Trường nội dung không được để trống.");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    // Generate and set the slug
+                    brand.Slug = Utils.GenerateSlug(brand.Name);
+
+                    // Check if the slug already exists
+                    bool slugExisted = await _context.Brands.AnyAsync(p => p.Slug == brand.Slug);
+                    if (slugExisted)
+                    {
+                        ModelState.AddModelError("Slug", "Slug đã tồn tại trong cơ sở dữ liệu.");
+                    }
+
+                    if (ModelState.IsValid)
+                    {
+                        brand.DateCreated = DateTime.Now;
+                        brand.DateUpdated = DateTime.Now;
+
+                        // Save image if exists
+                        if (Image != null && Image.Length > 0)
+                        {
+                            brand.Image = await SaveImageAsync(Image, brand.Slug);
+                        }
+
+                        _context.Add(brand);
+                        await _context.SaveChangesAsync();
+
+                        TempData["StatusMessage"] = "Thương hiệu đã được tạo thành công.";
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
             }
+            // If ModelState is not valid, return to the Create view with validation errors
             return View(brand);
         }
+
 
         // GET: Brand/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -145,7 +165,10 @@ namespace XEDAPVIP.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-
+            if (string.IsNullOrEmpty(brand.Name) || string.IsNullOrEmpty(brand.Content))
+            {
+                ModelState.AddModelError("", "Vui lòng điền đầy đủ thông tin.");
+            }
             if (ModelState.IsValid)
             {
                 try
@@ -154,6 +177,12 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                     if (existingBrand == null)
                     {
                         return NotFound();
+                    }
+                    var originalBrand = await _context.Brands.AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+                    if (originalBrand.Name != brand.Name)
+                    {
+                        // Tên đã thay đổi, gọi hàm generate slug mới
+                        brand.Slug = Utils.GenerateSlug($"{brand.Name}");
                     }
 
                     existingBrand.Name = brand.Name;
@@ -210,8 +239,23 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         {
             var brand = await _context.Brands.FindAsync(id);
 
+            if (brand == null)
+            {
+                return NotFound();
+            }
+
+            // Xác định đường dẫn tệp ảnh cần xoá
+            var imagePath = Path.Combine(_hostingEnvironment.WebRootPath, brand.Image.TrimStart('/'));
+
+            // Kiểm tra xem tệp ảnh có tồn tại không trước khi xoá
+            if (System.IO.File.Exists(imagePath))
+            {
+                // Xoá tệp ảnh
+                System.IO.File.Delete(imagePath);
+            }
+
             // Check if any products reference this brand
-            var isBrandInUse = _context.Products.Any(p => p.BrandId == id);
+            var isBrandInUse = await _context.Products.AnyAsync(p => p.BrandId == id);
             if (isBrandInUse)
             {
                 TempData["FailureMessage"] = "Brand is being used by some products and cannot be deleted!";
@@ -219,14 +263,14 @@ namespace XEDAPVIP.Areas.Admin.Controllers
             }
 
             // If no products reference the brand, delete it
-            if (brand != null)
-            {
-                _context.Brands.Remove(brand);
-                await _context.SaveChangesAsync();
-            }
+            _context.Brands.Remove(brand);
+            await _context.SaveChangesAsync();
+
             TempData["SuccessMessage"] = "Brand deleted successfully.";
             return RedirectToAction(nameof(Index));
         }
+
+
 
         private bool BrandExists(int id)
         {

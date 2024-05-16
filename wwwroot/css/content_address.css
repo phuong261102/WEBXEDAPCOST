@@ -1,0 +1,80 @@
+
+.address_fomr{
+    padding-top: 50px;
+}
+.address_fomr h1 {
+    color: #2424cd;
+    margin-bottom: 50px;
+}
+.address_fomr h3 {
+    color: #2424cd;
+    font-size: 1rem;
+}
+.address_fomr p {
+    color: #2d2d2e;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.address-container {
+    display: flex;
+    justify-content: space-around;
+}
+
+.address-column {
+    flex: 1;
+    margin-right: 20px;
+}
+
+
+.address-column ul { 
+    padding: 0;
+}
+
+.address-column ul {
+    list-style: none;
+}
+
+.address-column ul li {
+    margin-bottom: 10px;
+}
+
+.address-column i {
+    font-size: 16px;
+    color: #2424cd;
+    text-decoration: none;
+}
+.address-column a {
+    font-size: 16px;
+    color: #070707;
+    text-decoration: none;
+}
+
+.address_fomr img{
+    width: 150px;
+    height: 150px;
+    margin-left: 30px;
+    text-align: center; 
+}
+.kingcycle-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.kingcycle-description a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.kingcycle-description a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+
+
