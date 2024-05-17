@@ -67,21 +67,21 @@
         font-size: 1.3rem;
     }
 </style>
+<partial name="_StatusMessage" />
 
 <body>
     <div class="gd">
-        <div class="grid">
-            <div class="user">
-                <div class="ts_1">
-                    <div style="text-align: center;"><i class="fa-solid fa-user-tie"></i></div>
-                </div>
-                <div style="padding-left: 2%; display: block;">
-                    <div class="mol-1">@Html.DisplayFor(m => Model.profile.UserName)</div>
-                    <div class="mol-1">@Html.DisplayFor(m => Model.profile.BirthDate)</div>
-                </div>
-            </div>
-
+        @* <div class="grid">
+        <div class="user">
+        <div class="ts_1">
+        <div style="text-align: center;"><i class="fa-solid fa-user-tie"></i></div>
         </div>
+        <div style="padding-left: 2%; display: block;">
+        <div class="mol-1">@Html.DisplayFor(m => Model.profile.UserName)</div>
+        </div>
+        </div>
+
+        </div> *@
         <div style="padding-bottom: 100px;" class="grid">
             <div class="Information" style="margin-top: 50px;">
                 <h4>Hồ Sơ Tài Khoản</h4>
@@ -183,7 +183,7 @@
                                         <td class="col-sm-6">
                                             @Html.DisplayFor(m => Model.profile.PhoneNumber)
                                         </td>
-                                        
+
                                     </tr>
                                     <tr>
                                         <th></th>

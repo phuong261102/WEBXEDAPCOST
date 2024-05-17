@@ -27,6 +27,7 @@ namespace App.Models
         public string SelectedProvince { get; set; }
 
         // Add other properties as needed
+        public bool isDefault { get; set; } // Add this property
 
         // Foreign key for User (if needed)
         public string UserId { get; set; }
