@@ -1,10 +1,3 @@
-* {
-  box-sizing: border-box;
-}
-
-*:focus {
-  outline: none;
-}
 body {
   font-family: Arial;
   background-color: #52f5f5;
@@ -17,7 +10,12 @@ body {
   margin: 20px auto;
   width: 350px;
 }
-.login-screen {
+.login-screen{
+    background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+}
+.col-md-4 {
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
@@ -42,10 +40,11 @@ input {
   border: 2px solid transparent;
   border-radius: 10px;
   font-size: 16px;
-  font-weight: 200;
+  font-weight: 200px;
   padding: 10px 0;
   width: 300px;
   transition: border 0.5s;
+  display: flex;
 }
 
 input:focus {
@@ -107,14 +106,20 @@ input:focus {
 }
 
 .logo-container {
-  margin-bottom: 20px; /* Adjust as needed */
+  margin-bottom: 20px;
+    /* Adjust as needed */
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .logo {
   width: 100px; /* Adjust width as needed */
   height: auto; /* Maintain aspect ratio */
 }
-
+.logo-register{
+  display: flex;
+}
 .checkbox {
   display: flex;
 }
@@ -139,3 +144,22 @@ input:focus {
   transform: translateY(-50%);
   cursor: pointer;
 }
+/* Reset CSS */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Custom CSS */
+.container {
+    text-align: center;
+}
+
+h1 {
+  text-align: center;
+}
+
+.form-container {
+    margin-top: 20px; /* Khoảng cách giữa tiêu đề và phần form */
+}
+
