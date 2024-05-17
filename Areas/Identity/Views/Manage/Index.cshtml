@@ -2,138 +2,245 @@
 @{
     ViewData["Title"] = "Quản lý tài khoản của bạn";
 }
-
-<h1>@ViewData["Title"].</h1>
 <p class="text-success">@ViewData["StatusMessage"]</p>
+<style>
+    .gd {
+        padding-top: 50px;
+    }
 
-<div>
-    <h4>Cập nhật thông tin tài khoản</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-4">Thông tin cơ bản:</dt>
-        <dd class="col-sm-6">
-            <dl class="row">
-                <dt class="col-sm-6">
-                    @Html.DisplayNameFor(m => Model.profile.UserName)
-                </dt>
-                <dd class="col-sm-6">
-                    @Html.DisplayFor(m => Model.profile.UserName)
-                </dd>
-            </dl>
-            <dl class="row">
-                <dt class="col-sm-6">
-                    @Html.DisplayNameFor(m => Model.profile.UserEmail)
-                </dt>
-                <dd class="col-sm-6">
-                    @Html.DisplayFor(m => Model.profile.UserEmail)
-                </dd>
-            </dl>
-            <dl class="row">
-                <dt class="col-sm-6">
-                    @Html.DisplayNameFor(m => Model.profile.PhoneNumber)
-                </dt>
-                <dd class="col-sm-6">
-                    @Html.DisplayFor(m => Model.profile.PhoneNumber)
-                </dd>
-            </dl>
-            <dl class="row">
-                <dt class="col-sm-6">
-                    @Html.DisplayNameFor(m => Model.profile.HomeAddress)
-                </dt>
-                <dd class="col-sm-6">
-                    @Html.DisplayFor(m => Model.profile.HomeAddress)
-                </dd>
-            </dl>
-            <dl class="row">
-                <dt class="col-sm-6">
-                    @Html.DisplayNameFor(m => Model.profile.BirthDate)
-                </dt>
-                <dd class="col-sm-6">
-                    @Html.DisplayFor(m => Model.profile.BirthDate)
-                </dd>
-            </dl>
-            <a asp-action="EditProfile" class="btn btn-primary btn-sm">Sửa</a>
+    dt span {
+        margin: 20px 0;
+        font-size: 20px;
+        font-weight: 100;
+    }
 
-        </dd>
+    .lio {
+        display: flex;
+    }
 
-        <dt class="col-sm-4">Mật khẩu:</dt>
-        <dd class="col-sm-6">
-            @if (Model.HasPassword)
-            {
-                <a asp-controller="Manage" asp-action="ChangePassword">Đổi mật khẩu</a>
-            }
-            else
-            {
-                <a asp-controller="Manage" asp-action="SetPassword">Tạo mật khẩu</a>
-            }
-        </dd>
-        <dt class="col-sm-4">Liên kết tài khoản ngoài:</dt>
-        <dd class="col-sm-6">
-            Có @Model.Logins.Count liên kết. <a asp-controller="Manage" asp-action="ManageLogins">Quản lý liên kết
-                ngoài</a>
-        </dd>
+    .infomation_baomat,
+    .infomation_user {
+        border: 2px solid #000;
+        border-radius: 7px;
+    }
 
-        <dt class="col-sm-4">Số điện thoại:</dt>
-        <dd class="col-sm-6">
-            <p>
-                Số điện thoại dùng để xác thực hai yêu tố
-            </p>
-            @(Model.PhoneNumber ?? "không có")
-            @if (Model.PhoneNumber != null)
-            {
-                <text>:</text>
-                <text>&nbsp;&nbsp;<a asp-controller="Manage" asp-action="AddPhoneNumber">Thay đổi</a>&nbsp;&nbsp;</text>
-                <form asp-controller="Manage" asp-action="RemovePhoneNumber" method="post" role="form">
-                    <button type="submit" class="btn btn-danger btn-sm">Loại bỏ số điện thoại</button>
-                </form>
-            }
-            else
-            {
-                <text>&nbsp;&nbsp;<a asp-controller="Manage" asp-action="AddPhoneNumber">Thêm số điện thoại</a></text>
-            }
-        </dd>
+    dt {
+        padding: 10px 0;
+    }
 
-        <dt class="col-sm-4">Xác thực hai yếu tố:</dt>
-        <dd class="col-sm-6">
-            <!--<p>
+    .table_user {
+        width: 100%;
+    }
+
+    .table_user tr td,
+    .table_user tr th {
+        padding-top: 25px;
+    }
+
+    .table_user tr th {
+        font-size: 16px;
+        padding-left: 10px;
+    }
+
+    .table_user tr td {
+        padding-right: 10px;
+    }
+
+    .user {
+        display: flex;
+        align-items: center;
+    }
+
+    .user .ts_1 {
+        width: 100px;
+        height: 100px;
+        font-size: 30px;
+        color: rgb(13 110 253) !important;
+        border: 10px solid rgb(13 110 253);
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .mol-1 {
+        font-size: 1.3rem;
+    }
+</style>
+
+<body>
+    <div class="gd">
+        <div class="grid">
+            <div class="user">
+                <div class="ts_1">
+                    <div style="text-align: center;"><i class="fa-solid fa-user-tie"></i></div>
+                </div>
+                <div style="padding-left: 2%; display: block;">
+                    <div class="mol-1">@Html.DisplayFor(m => Model.profile.UserName)</div>
+                    <div class="mol-1">@Html.DisplayFor(m => Model.profile.BirthDate)</div>
+                </div>
+            </div>
+
+        </div>
+        <div style="padding-bottom: 100px;" class="grid">
+            <div class="Information" style="margin-top: 50px;">
+                <h4>Hồ Sơ Tài Khoản</h4>
+                <hr />
+                <dl style="display: block;">
+                    <div style="display: flex;">
+                        <div style="width: 50%;" class="infomation_user">
+                            <dt
+                                style="border-radius: 5px; font-weight: 600; color: #fff; background:  rgb(13 110 253) !important; text-align: center; border-bottom: 1px solid #000;">
+                                <span> Thông Tin Tài Khoản</span>
+                            </dt>
+                            <table class="table_user">
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(m => Model.profile.UserName)
+                                    </th>
+                                    <td>
+                                        @Html.DisplayFor(m => Model.profile.UserName)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(m => Model.profile.UserEmail)
+                                    </th>
+                                    <td>
+                                        @Html.DisplayFor(m => Model.profile.UserEmail)
+                                    </td>
+                                </tr>
+                                <!--
+                                    <tr>
+                                    <th class="col-sm-6">
+                                @Html.DisplayNameFor(m => Model.profile.PhoneNumber)
+                                    </th>
+                                    <td class="col-sm-6">
+                                @Html.DisplayFor(m => Model.profile.PhoneNumber)
+                                    </td>
+                                    </tr>
+                                -->
+
+                                <tr>
+                                    <th class="col-sm-6">
+                                        @Html.DisplayNameFor(m => Model.profile.HomeAddress)
+                                    </th>
+                                    <td class="col-sm-6">
+                                        @Html.DisplayFor(m => Model.profile.HomeAddress)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="col-sm-6">
+                                        @Html.DisplayNameFor(m => Model.profile.BirthDate)
+                                    </th>
+                                    <td class="col-sm-6">
+                                        @Html.DisplayFor(m => Model.profile.BirthDate)
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="text-align:center; padding: 20px 0;" colspan="2">
+                                        <a style="padding: 5px 15px;" asp-action="EditProfile"
+                                            class="btn btn-primary btn-sm">Sửa</a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                        <div style="padding: 5%;"></div>
+                        <div style="width: 50%;">
+                            <div style="height: 100%; " class="infomation_baomat">
+                                <dt
+                                    style="border-radius: 5px; font-weight: 600; color: #fff; background:rgb(13 110 253) !important;  text-align: center;  border-bottom: 1px solid #000;">
+                                    <span> Thông Tin Bảo Mật</span>
+                                </dt>
+
+                                <table class="table_user">
+                                    <tr>
+                                        <th class="col-sm-4">Mật khẩu :</th>
+                                        <td class="col-sm-6">
+                                            @if (Model.HasPassword)
+                                            {
+                                                <a asp-controller="Manage" asp-action="ChangePassword">Đổi mật khẩu</a>
+                                            }
+                                            else
+                                            {
+                                                <a asp-controller="Manage" asp-action="SetPassword">Tạo mật khẩu</a>
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="col-sm-4">Liên kết tài khoản:</th>
+                                        <td class="col-sm-6">
+                                            @Model.Logins.Count liên kết.
+                                            <a asp-controller="Manage" asp-action="ManageLogins">
+                                                Quản lý liên kết ngoài
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="col-sm-4">Số điện thoại :</th>
+                                        <td class="col-sm-6">
+                                            @Html.DisplayFor(m => Model.profile.PhoneNumber)
+                                        </td>
+                                        
+                                    </tr>
+                                    <tr>
+                                        <th></th>
+                                        <td class="col-sm-6">
+                                            @if (Model.PhoneNumber != null)
+                                            {
+                                                <text>:</text>
+                                                <text>&nbsp;&nbsp;
+                                                    <a asp-controller="Manage" asp-action="AddPhoneNumber">
+                                                        Thay đổi</a>
+                                                    &nbsp;&nbsp;</text>
+                                                <form asp-controller="Manage" asp-action="RemovePhoneNumber" method="post"
+                                                    role="form">
+                                                    <button type="submit" class="btn btn-danger btn-sm">Loại bỏ số điện
+                                                        thoại</button>
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <a asp-controller="Manage" asp-action="AddPhoneNumber">
+                                                    Thêm số điện thoại
+                                                </a>
+                                            }
+                                        </td>
+                                    </tr>
+                                </table>
+
+
+                            </div>
+                        </div>
+                        <!--<p>
                 There are no two-factor authentication providers configured. See <a href="http://go.microsoft.com/fwlink/?LinkID=532713">this article</a>
                 for setting up this application to support two-factor authentication.
             </p>-->
-            @if (Model.TwoFactor)
-            {
-                <form asp-controller="Manage" asp-action="DisableTwoFactorAuthentication" method="post"
-                    class="form-horizontal" role="form">
-                    (Đang kích hoạt) <button type="submit" class="btn btn-danger btn-sm">Hủy</button>
-                </form>
-            }
-            else
-            {
-                <form asp-controller="Manage" asp-action="EnableTwoFactorAuthentication" method="post"
-                    class="form-horizontal" role="form">
-                    <button type="submit" class="btn btn-primary btn-sm">Kích hoạt</button>
-                </form>
-            }
-        </dd>
+                </dl>
+            </div>
+        </div>
 
-        <dt class="col-sm-4">Xác thực ứng dụng:</dt>
-        <dd class="col-sm-6">
-            @if (Model.AuthenticatorKey == null)
-            {
-                <form asp-controller="Manage" asp-action="ResetAuthenticatorKey" method="post" class="form-horizontal"
-                    role="form">
-                    <button type="submit" class="btn btn-sm btn-primary">Phát sinh mã</button>
-                </form>
-            }
-            else
-            {
-                <text>Mã xác thực là: @Model.AuthenticatorKey</text>
-                <p>Nhập mã này khi yêu cầu xác thực 2 yếu tố</p>
-                <form asp-controller="Manage" asp-action="GenerateRecoveryCode" method="post" class="form-horizontal"
-                    role="form">
-                    <button type="submit" class="btn btn-sm btn-primary">Phát sinh mã phục hồi</button>
-                    <p>Mã phục hồi sử dụng để xác thực hai yếu tố</p>
-                </form>
-            }
-        </dd>
-    </dl>
-</div>
+        <div style="padding-bottom: 100px;" class="grid">
+            <div class="Information" style="margin-top: 50px;">
+                <h4>Sản Phẩm Đã Mua</h4>
+                <hr />
+                <dl style="display: block;">
+                    <div style="display: flex;">
+                        <div style="width: 100%;" class="infomation_user">
+                            <dt
+                                style="border-radius: 5px; font-weight: 600; color: #fff; background:  rgb(13 110 253) !important; text-align: center; border-bottom: 1px solid #000;">
+                                <span> Thông Tin Sản Phẩm</span>
+                            </dt>
+                            <div style="height: 500px;"></div>
+                        </div>
+                        <!--<p>
+                There are no two-factor authentication providers configured. See <a href="http://go.microsoft.com/fwlink/?LinkID=532713">this article</a>
+                for setting up this application to support two-factor authentication.
+            </p>-->
+                </dl>
+            </div>
+        </div>
+    </div>
+</body>

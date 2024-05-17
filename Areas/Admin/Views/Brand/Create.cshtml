@@ -1,65 +1,86 @@
 @model App.Models.Brand
 
 @{
-    ViewData["Title"] = "Create";
+    
 }
 
-<h1>Create</h1>
-<partial name="_StatusMessage" />
-<h4>Brand</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input type="file" asp-for="Image" class="form-control" onchange="previewImage(event)" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <img id="imagePreview" src="#" alt="Image Preview" style="display:none; max-width:100%; height:auto;" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <textarea asp-for="Content"></textarea>
-                <span asp-validation-for="Content" class="text-danger"></span>
-            </div>
+<body>
+    <div class="create_TH">
+        <partial name="_StatusMessage" />
+        <h4>Thương Hiệu</h4>
+        <hr />
+        <div>
+            <div class="">
+                <form asp-action="Create" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="form-group col-md-4">
+                        <label asp-for="Name" class="control-label">Tên Thương Hiệu</label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label style="width: 5%;" asp-for="Image" class="control-label"></label>
+                        <input style="height: 100%;" type="file" asp-for="Image" class="form-control"
+                            onchange="previewImage(event)" />
+                        <span asp-validation-for="Image" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <img  id="imagePreview" src="#" alt="Image Preview"
+                            style="display:none; width: 10%;" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Content" class="control-label"></label>
+                        <div>
+                            <textarea style="width: 100%; height: 500px;" id="productDescription"
+                                asp-for="Content"></textarea>
+                            <span asp-validation-for="Content" class="text-danger"></span>
+                        </div>
+                    </div>
 
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                    <div class="form-group">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
+
+        <div>
+            <a asp-action="Index">Back to List</a>
+        </div>
     </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+    @section Scripts {
 
-@section Scripts {
+        <script>
+            function previewImage(event) {
+                var input = event.target;
+                var reader = new FileReader();
+                reader.onload = function () {
+                    var dataURL = reader.result;
+                    var imagePreview = document.getElementById('imagePreview');
+                    imagePreview.src = dataURL;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        </script>
 
-    <script>
-
-
-        function previewImage(event) {
-            var input = event.target;
-            var reader = new FileReader();
-            reader.onload = function () {
-                var dataURL = reader.result;
-                var imagePreview = document.getElementById('imagePreview');
-                imagePreview.src = dataURL;
-                imagePreview.style.display = 'block';
-            };
-            reader.readAsDataURL(input.files[0]);
+        <script>
+            tinymce.init({
+                selector: '#productDescription',
+                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                tinycomments_mode: 'embedded',
+                tinycomments_author: 'Author name',
+                mergetags_list: [
+                    { value: 'First.Name', title: 'First Name' },
+                    { value: 'Email', title: 'Email' },
+                ],
+                ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+            });
+        </script>
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
         }
-    </script>
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+</body>

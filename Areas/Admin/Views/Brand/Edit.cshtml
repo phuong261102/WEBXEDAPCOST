@@ -1,71 +1,91 @@
 @model App.Models.Brand
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Chỉnh Sửa";
 }
 
-<h1>Edit</h1>
-
-<h4>Brand</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Slug" class="control-label"></label>
-                <input asp-for="Slug" class="form-control" disabled />
-                <span asp-validation-for="Slug" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Image" class="control-label"></label>
-                <input type="file" asp-for="Image" class="form-control" accept=".jpg,.jpeg,.gif,.png"
-                    onchange="previewImage(event);" />
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <img id="imagePreview" src="@Model.Image" alt="Image Preview" style="max-width:100%; height:auto;" />
-            </div>
-            <div class="form-group">
-                <label asp-for="Content" class="control-label"></label>
-                <input asp-for="Content" class="form-control" />
-                <span asp-validation-for="Content" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
-    </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
-@section Scripts {
-
-    <script>
-
-        function previewImage(event) {
-            var input = event.target;
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function () {
-                    var dataURL = reader.result;
-                    var imagePreview = document.getElementById('imagePreview');
-                    imagePreview.src = dataURL;
-                };
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-    </script>
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+<style>
+    .wol{
+        width: 50%;
     }
-}
+    .form-group.wol label{
+       font-weight: bold;
+    }
+</style>
+<body>
+    <div class="">
+        <div class="">
+            <form asp-action="Edit" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+                <div class="form-group wol">
+                    <label asp-for="Name" class="control-label">Tên Thương Hiệu</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group wol">
+                    <label asp-for="Slug" class="control-label"></label>
+                    <input asp-for="Slug" class="form-control" disabled />
+                    <span asp-validation-for="Slug" class="text-danger"></span>
+                </div>
+                <div class="form-group wol">
+                    <label asp-for="Image" class="control-label"></label>
+                    <input style="height: 100%;" type="file" asp-for="Image" class="form-control"
+                        accept=".jpg,.jpeg,.gif,.png" onchange="previewImage(event);" />
+                    <span asp-validation-for="Image" class="text-danger"></span>
+                </div>
+                <div style="width: 20%;" class="form-group">
+                    <img id="imagePreview" src="@Model.Image" alt="Image Preview"
+                        style="max-width:100%; height:auto;" />
+                </div>
+                <div class="form-group">
+                    <label style="font-weight: bold;" asp-for="Content" class="control-label"></label>
+                    <input asp-for="Content" class="form-control" id="productDescription" />
+                    <span asp-validation-for="Content" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+
+    @section Scripts {
+        <script>
+            tinymce.init({
+                selector: '#productDescription',
+                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                tinycomments_mode: 'embedded',
+                tinycomments_author: 'Author name',
+                mergetags_list: [
+                    { value: 'First.Name', title: 'First Name' },
+                    { value: 'Email', title: 'Email' },
+                ],
+                ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+            });
+        </script>
+        <script>
+
+            function previewImage(event) {
+                var input = event.target;
+                if (input.files && input.files[0]) {
+                    var reader = new FileReader();
+                    reader.onload = function () {
+                        var dataURL = reader.result;
+                        var imagePreview = document.getElementById('imagePreview');
+                        imagePreview.src = dataURL;
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+        </script>
+        @{
+            await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        }
+    }
+</body>

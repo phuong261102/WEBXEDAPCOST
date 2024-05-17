@@ -11,18 +11,22 @@
         <ul class="nav navbar-nav navbar-right">
             <li class="nav-item">
                 <a class="nav-link text-white" asp-area="Identity" asp-controller="Manage" asp-action="Index"
-                    title="Manage">Xin chào
-                    @UserManager.GetUserName(User)!</a>
+                    title="Manage">
+                    <i class="fa-solid fa-user text-white"></i>
+                    @UserManager.GetUserName(User)
+                </a>
             </li>
-            <li class="nav-item">
-                <button type="submit" class="btn btn-link text-white navbar-btn navbar-link">Đăng xuất</button>
+            <li style="display: flex; justify-content: center;" class="nav-item">
+                <button type="submit" class="btn btn-link text-white navbar-btn navbar-link">
+                    <i style="font-size: 18px;" class="fa-solid fa-right-to-bracket"></i>
+                </button>
             </li>
         </ul>
     </form>
 }
 else
 {
-    <ul class="nav navbar-nav navbar-right">
+    <ul style="font-size: 18px;" class="nav navbar-nav navbar-right">
         <li class="nav-item">
             <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Login">
                 <i class="fa-solid fa-user text-white"></i>

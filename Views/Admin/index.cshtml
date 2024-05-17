@@ -2,16 +2,3 @@
     ViewData["Title"] = "Admin";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
-<div class="text-center">
-    <h1>Welcome to CKEditor&nbsp;5 in .NET</h1>
-    <div id="editor"></div>
-    <script src="assets/vendor/ckeditor5/build/ckeditor.js"></script>
-    <script>
-        ClassicEditor
-            .create(document.querySelector('#editor'))
-            .catch(error => {
-                console.error(error);
-            });
-    </script>
-</div>

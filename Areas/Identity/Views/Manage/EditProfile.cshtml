@@ -2,73 +2,102 @@
 @{
     ViewData["Title"] = "Hồ sơ cá nhân";
 }
+<style>
+    .gd {
+        padding-top: 50px;
+        padding-bottom: 200px;
+    }
 
-<h4>@ViewData["Title"]</h4>
+    .form-group label {
+        padding: 10px 0;
+    }
 
-<partial name="_StatusMessage" />
+    .gd-1 {
+        width: 100%;
+    }
+</style>
 
-<div class="row">
-    <div class="col-md-6">
-        <form id="profile-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName"></label>
-                <input asp-for="UserName" class="form-control" disabled />
-            </div>
-            <div class="form-group">
-                <label asp-for="UserEmail"></label>
-                <input asp-for="UserEmail" class="form-control" disabled />
-            </div>
+<body>
+    <div class="gd">
+        <div class="grid">
+            <h4>@ViewData["Title"]</h4>
 
-            <div class="form-group">
-                <label asp-for="PhoneNumber"></label>
-                <input asp-for="PhoneNumber" class="form-control" disabled />
-            </div>
-            <div id="existing-addresses">
-                <h5>Địa chỉ hiện có</h5>
-                @if (Model.Addresses != null && Model.Addresses.Count > 0)
-                {
-                    foreach (var address in Model.Addresses)
-                    {
-                        <p>@address.StreetNumber, @address.SelectedWard, @address.SelectedDistrict, @address.SelectedProvince
-                        </p>
-                    }
-                }
-                else
-                {
-                    <p>Không có địa chỉ được lưu.</p>
-                }
-            </div>
-            <button type="button" id="add-address" class="btn btn-secondary">Thêm Địa Chỉ Mới</button>
-            <div id="add-address-form" style="display:none;">
-                <div>
-                    <label asp-for="StreetNumber"></label>
-                    <input asp-for="StreetNumber" class="form-control mb-2" />
+            <partial name="_StatusMessage" />
+
+            <div style="display: flex; width: 100%;">
+                <div style="width: 50%;">
+                    <div class="col-md-6 gd-1">
+                        <form id="profile-form" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="UserName"></label>
+                                <input asp-for="UserName" class="form-control" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="UserEmail"></label>
+                                <input asp-for="UserEmail" class="form-control" disabled />
+                            </div>
+
+                            <div id="existing-addresses">
+                                <h5 style="padding-top: 20px;">Địa chỉ hiện có</h5>
+                                @if (Model.Addresses != null && Model.Addresses.Count > 0)
+                                {
+                                    foreach (var address in Model.Addresses)
+                                    {
+                                        <p>@address.StreetNumber, @address.SelectedWard, @address.SelectedDistrict,
+                                            @address.SelectedProvince
+                                        </p>
+                                    }
+                                }
+                                else
+                                {
+                                    <p style="padding-top: 10px;">Không có địa chỉ được lưu.</p>
+                                }
+                            </div>
+                            <button type="button" id="add-address" class="btn btn-secondary">Thêm Địa Chỉ Mới</button>
+                            <div id="add-address-form" style="display:none;">
+                                <div>
+                                    <label style="padding: 10px 0;" asp-for="StreetNumber"></label>
+                                    <input asp-for="StreetNumber" class="form-control mb-2" />
+                                </div>
+                                <div class="form-group d-flex">
+                                    <select asp-for="SelectedProvince" asp-items="Model.ProvinceOptions"
+                                        class="form-control me-2">
+                                        <option value="">Chọn Tỉnh/Thành phố</option>
+                                    </select>
+                                    <select asp-for="SelectedDistrict" asp-items="Model.DistrictOptions"
+                                        class="form-control me-2">
+                                        <option value="">Chọn Quận/Huyện</option>
+                                    </select>
+                                    <select asp-for="SelectedWard" asp-items="Model.WardOptions" class="form-control">
+                                        <option value="">Chọn Phường/Xã</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="BirthDate"></label>
+                                <input asp-for="BirthDate" class="form-control" />
+                                <span style="padding: 10px 0;" asp-validation-for="BirthDate"
+                                    class="text-danger"></span>
+                            </div>
+
+                            <div style="padding-top: 20px; width: 100%; text-align: center;" class="btn">
+                                <button id="update-profile-button" type="submit" class="btn btn-primary">Lưu dữ
+                                    liệu</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="form-group d-flex">
-                    <select asp-for="SelectedProvince" asp-items="Model.ProvinceOptions" class="form-control me-2">
-                        <option value="">Chọn Tỉnh/Thành phố</option>
-                    </select>
-                    <select asp-for="SelectedDistrict" asp-items="Model.DistrictOptions" class="form-control me-2">
-                        <option value="">Chọn Quận/Huyện</option>
-                    </select>
-                    <select asp-for="SelectedWard" asp-items="Model.WardOptions" class="form-control">
-                        <option value="">Chọn Phường/Xã</option>
-                    </select>
+                <div style="padding: 5%;"></div>
+
+                <div style="width: 50%;">
+
                 </div>
             </div>
-            <div class="form-group">
-                <label asp-for="BirthDate"></label>
-                <input asp-for="BirthDate" class="form-control" />
-                <span asp-validation-for="BirthDate" class="text-danger"></span>
-            </div>
 
-            <button id="update-profile-button" type="submit" class="btn btn-primary">Lưu dữ liệu</button>
-        </form>
+        </div>
     </div>
-</div>
-
-
+</body>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

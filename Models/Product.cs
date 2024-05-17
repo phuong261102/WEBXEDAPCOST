@@ -27,11 +27,11 @@ namespace App.Models
         [Required(ErrorMessage = "Giá sản phẩm là bắt buộc")]
         [Display(Name = "Giá sản phẩm")]
         [DataType(DataType.Currency)]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
         [Display(Name = "Giá giảm")]
         [DataType(DataType.Currency)]
-        public decimal? DiscountPrice { get; set; } // Giá sau khi giảm
+        public double? DiscountPrice { get; set; } // Giá sau khi giảm
 
         [Display(Name = "Chuỗi định danh (url)", Prompt = "Nhập hoặc để trống tự phát sinh theo Title")]
         [StringLength(160, MinimumLength = 5, ErrorMessage = "{0} dài {1} đến {2}")]

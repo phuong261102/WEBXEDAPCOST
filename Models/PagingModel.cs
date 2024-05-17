@@ -8,7 +8,7 @@ namespace App.Models
         public int countpages { get; set; }
 
         public Func<int?, string> generateUrl { get; set; }
-        
+        public int TotalPages { get; internal set; }
     }
-   
+
 }

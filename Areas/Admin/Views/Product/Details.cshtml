@@ -6,55 +6,157 @@
 
 <h1>Details</h1>
 
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DiscountPrice)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DiscountPrice)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Slug)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Slug)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DateCreated)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DateCreated)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.DateUpdated)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.DateUpdated)
-        </dd>
-    </dl>
+<div class="row">
+    <div class="col-md-6">
+        <h4>Product</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Price)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Price)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.DiscountPrice)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.DiscountPrice)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Slug)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Slug)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.DateCreated)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.DateCreated)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.DateUpdated)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.DateUpdated)
+            </dd>
+            <dt class="col-sm-4">
+                @Html.DisplayNameFor(model => model.Brand.Name)
+            </dt>
+            <dd class="col-sm-8">
+                @Html.DisplayFor(model => model.Brand.Name)
+            </dd>
+            <dt class="col-sm-4">
+                Main Image
+            </dt>
+            <dd class="col-sm-8">
+                @if (!string.IsNullOrEmpty(Model.MainImage))
+                {
+                    <img src="~/images/products/@Model.Slug/@Model.MainImage" alt="@Model.Name" style="max-width: 200px;" />
+                }
+                else
+                {
+                    <p>No main image available</p>
+                }
+            </dd>
+            <dt class="col-sm-4">
+                Sub Images
+            </dt>
+            <dd class="col-sm-8">
+                @if (Model.SubImages != null && Model.SubImages.Any())
+                {
+                    @foreach (var subImage in Model.SubImages)
+                    {
+                        <img src="~/images/products/@Model.Slug/subImg/@subImage" alt="@Model.Name" style="max-width: 100px;" />
+                    }
+                }
+                else
+                {
+                    <p>No sub images available</p>
+                }
+            </dd>
+            <dt class="col-sm-4">
+                Categories
+            </dt>
+            <dd class="col-sm-8">
+                @if (Model.ProductCategories != null && Model.ProductCategories.Any())
+                {
+                    @foreach (var productCategory in Model.ProductCategories)
+                    {
+                        <span class="badge bg-secondary">@productCategory.Category.Title</span>
+                    }
+                }
+                else
+                {
+                    <p>No categories assigned</p>
+                }
+            </dd>
+        </dl>
+    </div>
+    <div class="col-md-6">
+        <h4>Specifications</h4>
+        <hr />
+        @if (Model.DetailsDictionary != null && Model.DetailsDictionary.Any())
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var detail in Model.DetailsDictionary)
+                    {
+                        <tr>
+                            <td>@detail.Key</td>
+                            <td>@detail.Value</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No specifications available</p>
+        }
+    </div>
 </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <h4>Description</h4>
+        <hr />
+        <div>
+            @Html.Raw(Model.Description)
+        </div>
+    </div>
+</div>
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.tiny.cloud/1/d51bskdfs25amewl89wyimb34fzqqpq1xuyy6qcaosi9fwin/tinymce/6/tinymce.min.js"
+        referrerpolicy="origin"></script>
+    <script>
+        // Initialize TinyMCE for any textareas that you want to use in the page (if any).
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'image link media table',
+            toolbar: 'undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | outdent indent | link image | table',
+            height: 300,
+            menubar: false,
+            branding: false
+        });
+    </script>
+}
