@@ -1,58 +1,67 @@
 @model IEnumerable<App.Models.Brand>
 
 @{
-    ViewData["Title"] = "Thương hiệu";
-    Layout = "_Layout";
+    ViewData["Title"] = "Thương Hiệu";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 
-<h1>Thương hiệu</h1>
+<body>
+    <partial name="_StatusMessage" />
+    <p>
+        <a style="font-size: 20px; padding-left: 10px; text-decoration: none;" asp-action="Create">
+            <i class="fa-solid fa-gears"></i>
+            Tạo chuyên mục mới
+        </a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr style="font-size: 18px;">
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-
-            <th>
-                    @Html.DisplayNameFor(model => model.Content)
-            </th>
-            <th>
+                <th>
                     @Html.DisplayNameFor(model => model.Image)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.Content)
-                </td>
-                <td>
-                    @if (!string.IsNullOrEmpty(item.Image))
-                    {
-                        <img src="@item.Image" alt="@item.Name" style="max-width:250px; max-height:auto;" />
-                    }
-                    else
-                    {
-                        <span>No Image</span>
-                    }
-                </td>
-
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
+                </th>
+                <th>
+                </th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr style="font-size: 1.7rem;">
+                    <td>
+                        <a style="color: #c3c3c3;" asp-action="Details" asp-route-id="@item.Id" class="">
+
+                            @Html.DisplayFor(modelItem => item.Name)
+
+                        </a>
+                    </td>
+
+                    <td>
+                        @if (!string.IsNullOrEmpty(item.Image))
+                        {
+                            <img src="@item.Image" alt="@item.Name" style="max-width:100px; max-height:100px;" />
+                        }
+                        else
+                        {
+                            <span>No Image</span>
+                        }
+                    </td>
+                    <td style="display: block;">
+                        <div class="edit_1">
+                            <a style="padding: 5px 23px;" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                        </div>
+
+                        <form style="width: 0;" asp-action="Delete">
+                            <input type="hidden" asp-for="@item.Id" name="id" />
+                            <input type="submit" value="Delete" class="btn btn-danger" />
+                        </form>
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>

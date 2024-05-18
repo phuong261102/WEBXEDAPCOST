@@ -1,13 +1,227 @@
 @{
-    var mgs = TempData["StatusMessage"] as string;
+    var errorMessage = TempData["ErrorMessage"] as string;
+
 }
 
-@if (!String.IsNullOrEmpty(mgs))
+@if (!string.IsNullOrEmpty(errorMessage))
 {
-    var statusMessageClass = mgs.StartsWith("Error") ? "danger" : "success";
-    <div class="alert alert-@statusMessageClass alert-dismissible" role="alert">
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
-                aria-hidden="true">&times;</span></button>
-        @mgs
+    <div id="error-popup" class="popup error" onload="hidePopup('error-popup')">
+        <div class="icon">
+            <div class="circle">
+                <span class="cross">X</span>
+            </div>
+        </div>
+        <div class="message">
+            <h2>!!!</h2>
+            <p>@errorMessage</p>
+        </div>
+        <div class="buttons">
+        </div>
     </div>
 }
+
+@{
+    var successMessage = TempData["SuccessMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div id="success-popup" class="popup success" onload="hidePopup('success-popup')">
+        <div class="icon">
+            <div class="circle">
+                <span class="checkmark">✔</span>
+            </div>
+        </div>
+        <div class="message">
+            <h2>Success!</h2>
+            <p>@successMessage</p>
+        </div>
+        <div class="buttons">
+        </div>
+    </div>
+}
+
+
+@{
+    var warningMessage = TempData["WarningMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(warningMessage))
+{
+    <div id="warning-popup" class="popup warning" onload="hidePopup('warning-popup')">
+        <div class="icon">
+            <div class="circle">
+                <span class="warning-sign">⚠</span>
+            </div>
+        </div>
+        <div class="message">
+            <h2>Chắc chưa?</h2>
+            <p>@warningMessage</p>
+        </div>
+        <div class="buttons">
+        </div>
+    </div>
+}
+
+<style>
+    .popup {
+        position: fixed;
+        right: 20px;
+        bottom: 20px;
+        width: 300px;
+        z-index: 1000;
+        width: 400px;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        font-family: Arial, sans-serif;
+        margin: 20px auto;
+    }
+
+    .icon {
+        margin-bottom: 10px;
+    }
+
+    .circle {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto;
+    }
+
+    .checkmark {
+        color: white;
+        font-size: 24px;
+    }
+
+    .cross {
+        color: white;
+        font-size: 24px;
+    }
+
+    .warning-sign {
+        color: white;
+        font-size: 24px;
+    }
+
+    .success .circle {
+        background-color: green;
+    }
+
+    .success h2 {
+        color: green;
+    }
+
+    .error .circle {
+        background-color: red;
+    }
+
+    .warning .circle {
+        background-color: yellow;
+    }
+
+    .message h2 {
+        margin: 0;
+        font-size: 18px;
+    }
+
+    .message p {
+        margin: 5px 0 15px 0;
+        font-size: 14px;
+        color: #666;
+    }
+
+    .buttons button {
+        margin: 5px;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .buttons button:hover {
+        opacity: 0.8;
+    }
+
+    .success .buttons button {
+        background-color: green;
+        color: white;
+    }
+
+    .error .buttons button {
+        background-color: red;
+        color: white;
+    }
+
+    .warning .buttons button {
+        background-color: yellow;
+        color: black;
+    }
+
+    .buttons button:last-child {
+        background-color: #ccc;
+        color: black;
+    }
+</style>
+
+<script>
+    var messageQueue = [];
+    var messageCount = 0;
+    var messageHeight = 100; // Chiều cao thông báo (bao gồm cả padding và margin)
+
+    function enqueueMessage(popupId) {
+        messageQueue.unshift(popupId);
+        showMessage();
+    }
+
+    function showMessage() {
+        if (messageQueue.length > 0) {
+            var popupId = messageQueue.shift();
+            var popup = document.getElementById(popupId);
+            popup.style.display = 'block';
+            popup.style.bottom = `${50 + messageCount * messageHeight}px`;
+            messageCount += 1;
+            hidePopup(popupId);
+        }
+    }
+
+    function hidePopup(popupId) {
+        setTimeout(function () {
+            var popup = document.getElementById(popupId);
+            popup.style.display = 'none';
+            messageCount -= 1;
+
+            // Di chuyển các thông báo còn lại xuống
+            var shownPopups = document.querySelectorAll('.popup[style*="display: block"]');
+            shownPopups.forEach(function (p, index) {
+                p.style.bottom = `${20 + index * messageHeight}px`;
+            });
+
+        }, 3000);
+    }
+
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <text>
+                enqueueMessage('error-popup');
+        </text>
+    }
+
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <text>
+                enqueueMessage('success-popup');
+        </text>
+    }
+
+    @if (!string.IsNullOrEmpty(warningMessage))
+    {
+        <text>
+                enqueueMessage('warning-popup');
+        </text>
+    }
+</script>

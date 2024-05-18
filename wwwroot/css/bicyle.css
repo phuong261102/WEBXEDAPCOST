@@ -1,0 +1,258 @@
+.main_bicycle_shop{
+    max-width: 100%;
+    height: auto;
+    max-width: 100%;
+}
+
+.is-large{
+    margin-bottom: 50px;
+    display: flex;
+    justify-content: space-between;
+    padding: 35px 0 0 0;
+    min-height: 60px;
+    font-size: 1.3rem;
+    font-family: "Open Sans", sans-serif;
+    border-bottom: 2px solid rgba(189, 187, 187, 0.7);
+}
+.is-large nav .woocommerce-breadcrumb{
+    text-transform: initial;
+}
+.breadcrumbs{
+    color: #222;
+    font-weight: bolder;
+    letter-spacing: 0px;
+    padding: 0;
+}
+.breadcrumbs a:first-of-type{
+    margin-left: 0;
+}
+
+.breadcrumbs a{
+    text-decoration: none;
+    color: rgba(102, 102, 102, .7);
+    font-weight: 500;
+}
+
+.breadcrumbs a:hover {
+    color: #222;
+}
+.breadcrumbs .divider {
+    margin: 0 5px; /* Điều chỉnh khoảng cách nếu cần */
+    color: #999; /* Màu sắc của dấu phân cách */
+}
+.medium-text-center{
+    position: absolute;
+    transform: translate(264%, -20%);
+}
+.woocommerce-ordering select {
+    margin: 5px 0;
+    display: inline-block;
+}
+select {
+    font: inherit;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 20px 10px 15px;
+    border: 1px solid #cbcac9;
+    background: #e0e0e0;
+    color: #555;
+    border-radius: 5px;
+    height: auto !important;
+}
+
+/*side-bar*/
+.main_bicycle{
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+    width: 100%;
+    display: flex;
+}
+
+
+.side-bar h2 {
+    color: #333;
+    margin-bottom: 5px;
+    font-family: "Open Sans", sans-serif;
+    font-size: 1.8rem;
+}
+
+.side-bar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.side-bar ul li {
+    margin-bottom: 10px;
+}
+
+.side-bar ul li a {
+    text-decoration: none;
+    color: #555;
+    font-family: "Open Sans", sans-serif;
+}
+
+.side-bar ul li a:hover {
+    color: #000;
+}
+
+
+
+.sidebar{
+    display: block;
+    width: 25%;
+}
+.woof_block_html_items{
+    padding-top: 10px;
+}
+
+.woof_childs_list_li{
+    border-bottom: 2px solid #eae6e6;
+}
+.side-bar{
+    padding-bottom: 20px;
+}
+.side-bar .menu{
+    width: 100%;
+}
+
+
+.side-bar .menu .item{
+    position: relative;
+    cursor: pointer;
+    width: 100%;
+}
+.side-bar .menu .item .sub-btn{
+    font-weight: bolder;
+    padding-bottom: 20px;
+    font-size: 1.3rem;
+    color: #7d7e7d;
+    margin: 0;
+    
+}
+.side-bar .menu .item a:hover{
+    color: #000;
+}
+.side-bar .menu .item a .dropdown{
+    position:  absolute;
+    right: 0;
+    transition: 0.3 ease;
+}
+.side-bar .menu .item .sub-menu{
+    display: none;
+}
+
+.sub-menu label{
+    width: 100%;
+    border-bottom: 2px solid #b2b3b2 ;
+    display: inline-block;
+    text-decoration: none;
+    padding-top: 15px;
+    padding-bottom: 15px;
+    font-size: 18px;
+    font-family: "Open Sans", sans-serif;
+    color: #000;
+}
+.sub-menu.product-checkbox{
+    width: 0;
+}
+[type=checkbox], [type=radio] {
+    margin-right: 5%;
+}
+/*main shop*/
+.mainshop{
+    width: 75%;
+}
+
+.headline,
+.content_shop{
+    padding-left: 5%;
+}
+
+ 
+.headline_mainshop{
+    font-size: 1.4rem;
+    font-weight: 600;
+}
+.content_shop ul.products li{
+    padding: 10px 0 ;
+    flex-basis: 33%;
+    box-sizing: border-box;
+}
+
+.product-item.product-thumb img{
+    object-fit: contain;
+}
+
+/*woocommerce-pagination*/
+nav{
+    display: block;
+}
+.woocommerce-pagination .content{
+    
+    
+}
+.woocommerce-pagination .content ul{
+    
+    text-decoration: none;
+}
+ul.links {
+    
+    margin: 5px 0;
+    font-size: 1.5rem;
+}
+ul.links li {
+    margin: 0 .4em;
+    display: inline-block;
+}
+.text-center {
+    text-align: center;
+    
+}
+.woocommerce-pagination ul.links li {
+    margin-left: inherit;
+    list-style: none;
+    
+}
+
+.nav-pagination>li>.current, .nav-pagination>li>span:hover, .nav-pagination>li>a:hover {
+    border-color: #446084;
+    background-color: #446084;
+    color: #fff;
+}
+.nav-pagination>li>span, .nav-pagination>li>a {
+    font-size: 0.85em;
+    display: block;
+    height: 2.25em;
+    line-height: 2em;
+    text-align: center;
+    text-decoration: none;
+    width: auto;
+    min-width: 2.25em;
+    padding: 0 7px;
+    font-weight: bolder;
+    border-radius: 99px;
+    border: 2px solid currentColor;
+    transition: all .3s;
+    
+}
+ul.links li a {
+    color: currentColor;
+}
+
+.infor p{
+    margin-top: 10px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    text-align: justify;
+}
+
+.page-next,
+.page-pev{
+    font-family: monospace;
+}
+
+.imformation_product{
+    border: 3px solid blue;
+    border-radius: 15px;
+}

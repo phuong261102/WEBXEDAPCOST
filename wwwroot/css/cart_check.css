@@ -1,0 +1,136 @@
+.text.text-information{
+    margin-top: 20px;
+}
+.text p{
+    font-size: 1.2rem;
+    font-weight: 550;
+}
+.product_cart_shops .textbox {
+    width: 100%;
+    margin: 20px auto;
+    
+}
+
+.cart_products_address{
+    width: 60%;
+}
+
+.text_box input {
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.text_box_block{
+    height: 100px;
+}
+
+.cart_products_oder{
+    width: 33%;
+    padding-left: 1%;
+    
+}
+
+.oder_address{
+    padding: 5%;
+    border: 1px solid #000;
+}
+.oder_product-col{
+    width: 100%;
+    border-bottom: 1px solid #000;
+}
+
+.oder_product-col.address-col{
+    margin-top: 20px;
+}
+th{
+    text-align: left;
+    font-size: 14px;
+}
+
+td{
+    font-size: 14px;
+}
+
+.checkcart.col-oder td{
+    text-align: right;
+}
+
+
+/*radio*/
+
+/* Style the radio container */
+.radio-container {
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* Hide the default radio button */
+.radio-container input {
+    position: absolute;
+    opacity: 0;
+}
+
+/* Style the custom radio button */
+.radio-checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 50%;
+}
+
+/* Move the radio button in front of the span */
+.radio-container input[type="radio"] ~ .radio-checkmark {
+    z-index: 1;
+}
+
+/* On mouse-over, add a grey background color */
+.radio-container:hover input ~ .radio-checkmark {
+    background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.radio-container input:checked ~ .radio-checkmark {
+    background-color: blue;
+}
+
+/* Create the radio indicator (a dot/circle - hidden when not checked) */
+.radio-checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+/* Show the radio indicator when checked */
+.radio-container input:checked ~ .radio-checkmark:after {
+    display: block;
+}
+
+/* Style the radio indicator (dot/circle) */
+.radio-container .radio-checkmark:after {
+    top: 6px;
+    left: 6px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
+
+label.radio-container{
+    font-size: 13px;
+}
+
+textarea{
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+}
