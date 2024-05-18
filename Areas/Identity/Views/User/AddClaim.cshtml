@@ -1,6 +1,7 @@
 @model AddUserClaimModel
 @{
     ViewData["Title"] = "Claim của user";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
 <h1>@ViewData["Title"] : @ViewBag.user.UserName</h1>
 <partial name="_StatusMessage" />
@@ -27,14 +28,14 @@
                 @if (ViewBag.userclaim != null)
                 {
                     <input type="submit" value="Cập nhật" class="btn btn-primary" />
-                    <input type="submit" value="Xóa" asp-route-claimid="@ViewBag.userclaim.Id" 
-                      class="btn btn-danger" asp-action="DeleteClaim" />
+                    <input type="submit" value="Xóa" asp-route-claimid="@ViewBag.userclaim.Id" class="btn btn-danger"
+                        asp-action="DeleteClaim" />
                 }
-                else 
+                else
                 {
                     <input type="submit" value="Tạo mới" class="btn btn-primary" />
                 }
-                
+
 
                 <a class="btn btn-primary" asp-action="AddRole" asp-route-id="@ViewBag.user.Id">Edit User Role</a>
             </div>
@@ -44,5 +45,7 @@
 
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

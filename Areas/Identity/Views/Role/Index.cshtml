@@ -1,6 +1,8 @@
 @model List<RoleModel>
 @{
     ViewData["Title"] = "Danh sách các role (vai trò)";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+
 }
 <h2>@ViewData["Title"]</h2>
 
@@ -24,7 +26,9 @@
                 <p>@role.Name</p>
                 @foreach (var claim in @role.Claims)
                 {
-                    <small>@claim</small><br>
+                    <small>@claim</small>
+
+                    <br>
                 }
             </td>
             <td>
