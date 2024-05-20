@@ -1,6 +1,24 @@
 @{
     ViewData["Title"] = "Product Select";
 }
+@using App.Components
+
+@{
+
+    List<Category> categories = ViewBag.categories as List<Category>;
+    List<Brand> brands = ViewBag.brands as List<Brand>;
+}
+@section Popup {
+    @await Component.InvokeAsync("App.Components.CategorySideBar",
+        new CategorySideBar.CategorySideBarData()
+{
+    level = 0,
+    Categories = ViewBag.categories,
+    slugCategory = ViewBag.categoryslug,
+    brands = ViewBag.brands,
+    slugBrand = ViewBag.brandslug
+})
+}
 
 <body>
     <div style="padding-bottom: 200px;" class="main_bicycle_shop">
@@ -42,10 +60,10 @@
                                     <label><input type="checkbox" class="sub-item"> Xe Đạp Phụ Nữ</label>
                                 </div>
                             </div>
-    
-    
+
+
                         </div>
-    
+
                     </div>
                     <div class="side-bar">
                         <div class="menu">
@@ -60,12 +78,12 @@
                                     <label><input type="checkbox" class="sub-item"> VinFom</label>
                                     <label><input type="checkbox" class="sub-item"> NaLu</label>
                                 </div>
-    
+
                             </div>
-    
-    
+
+
                         </div>
-    
+
                     </div>
                     <div class="side-bar">
                         <div class="menu">
@@ -81,10 +99,10 @@
                                     <label><input type="checkbox" class="sub-item"> 2020</label>
                                 </div>
                             </div>
-    
-    
+
+
                         </div>
-    
+
                     </div>
                     <div class="side-bar">
                         <div class="menu">
@@ -101,10 +119,10 @@
                                     <label><input type="checkbox" class="sub-item"> L</label>
                                 </div>
                             </div>
-    
-    
+
+
                         </div>
-                        
+
                     </div>
                     <div class="side-bar">
                         <div class="menu">
@@ -122,13 +140,13 @@
                                     <label><input type="checkbox" class="sub-item">Trên 10.00.000 VND</label>
                                 </div>
                             </div>
-    
-    
+
+
                         </div>
-                        
+
                     </div>
-                    
-                </div> 
+
+                </div>
                 <!--mainshop-->
                 <div class="mainshop" id="wrapper wrapper_mainshop">
                     <div class="headline headline_mainshop" style="padding-left: 5%;">Xe Đạp Trẻ Em</div>
@@ -137,11 +155,12 @@
                             <li class="product-item">
                                 <div class="product-top">
                                     <a href="home_shop_bicycle-main.html" class="product-thumb">
-                                        <img  src="../assets/img/mauxe01_blu.jpg" alt="">
+                                        <img src="../assets/img/mauxe01_blu.jpg" alt="">
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -152,7 +171,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -163,7 +183,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -174,7 +195,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -185,7 +207,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -196,7 +219,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -207,7 +231,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -218,7 +243,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -229,7 +255,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -240,7 +267,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -251,7 +279,8 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
@@ -262,18 +291,20 @@
                                     </a>
                                 </div>
                                 <div class="product-info">
-                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </a>
+                                    <a href="" class="product-name">Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14
+                                        Inches </a>
                                     <div class="product-price">2.190.000VND</div>
                                 </div>
                             </li>
-                            
-                        </ul> 
+
+                        </ul>
                     </div>
                     <nav class="woocommerce-pagination">
                         <div class="content" style="padding-bottom: 50px;">
                             <ul class="page-numbers nav-pagination links text-center">
                                 <li class="page-pev">
-                                    <a href="#"><</a>
+                                    <a href="#">
+                                        << /a>
                                 </li>
                                 <li class="page-number">
                                     <span aria-current="page" class="page-number current">1</span>
@@ -299,8 +330,10 @@
 
                     <div class="infor">
                         <h1 style="text-align: center;">XE ĐẠP CHÍNH HÃNG - GIÁ TỐT - NHIỀU ƯU ĐÃI</h1>
-                        <p>Xe đạp là phương tiện di chuyển và rèn luyện thể chất được rất nhiều người ưa chuộng. Hiện nay, tùy vào nhu cầu sử dụng và địa hình di chuyển mà xe đạp được chia thành nhiều loại. Cùng tìm hiểu kỹ hơn về xe đạp qua các thông tin hữu ích dưới đây nhé!</p>
-                        
+                        <p>Xe đạp là phương tiện di chuyển và rèn luyện thể chất được rất nhiều người ưa chuộng. Hiện
+                            nay, tùy vào nhu cầu sử dụng và địa hình di chuyển mà xe đạp được chia thành nhiều loại.
+                            Cùng tìm hiểu kỹ hơn về xe đạp qua các thông tin hữu ích dưới đây nhé!</p>
+
                         <h2>Lợi ích khi đạp xe hàng ngày</h2>
                         <p style="text-align: justify;">Đạp xe hàng ngày mang đến nhiều lợi ích cho sức khỏe như:</p>
                         <p style="text-align: justify;">– Cải thiện sức khỏe tim mạch.</p>
@@ -312,7 +345,8 @@
                         <p style="text-align: justify;">– Tăng độ dẻo dai và rèn luyện sức bền.</p>
                         <p style="text-align: justify;">– Thư giãn tinh thần.</p>
                         <h2 style="text-align: justify;">Các thương hiệu xe đạp đáng mua hiện nay</h2>
-                        <p style="text-align: justify;">Dưới đây là các thương hiệu xe đạp lớn, đa dạng sản phẩm và có chất lượng cao cho bạn tham khảo:</p>
+                        <p style="text-align: justify;">Dưới đây là các thương hiệu xe đạp lớn, đa dạng sản phẩm và có
+                            chất lượng cao cho bạn tham khảo:</p>
                         <p style="text-align: justify;">– Giant (Đài Loan)</p>
                         <p style="text-align: justify;">– Vinbike (Việt Nam)</p>
                         <p style="text-align: justify;">– Max (Việt Nam)</p>
@@ -323,7 +357,15 @@
                         <p style="text-align: justify;">– Momentum (Đài Loan)</p>
                         <p style="text-align: justify;">– Royal Baby (Nước Anh)</p>
                         <h2 style="text-align: justify;">Các lưu ý khi sử dụng để xe đạp luôn bền và như mới</h2>
-                        <p style="text-align: justify; padding-bottom: 50px;">Để xe đạp luôn bền chắc và mới, bạn nên <span style="color: #00ccff;"><a style="color: #00ccff;" href="https://xedap.vn/bao-duong-xe-dap/" target="_blank" rel="noopener noreferrer">thường xuyên vệ sinh xe, bảo dưỡng định kỳ</a></span>, chú ý các âm thanh lạ khi đạp xe, <span style="color: #00ccff;"><a style="color: #00ccff;" href="https://xedap.vn/cach-bom-xe-dap/" target="_blank" rel="noopener noreferrer">bơm lốp xe</a></span> nếu nhận thấy lốp bị mềm, luôn dựng xe theo phương thẳng đứng, để xe trong nhà thay vì ngoài trời.</p>
+                        <p style="text-align: justify; padding-bottom: 50px;">Để xe đạp luôn bền chắc và mới, bạn nên
+                            <span style="color: #00ccff;"><a style="color: #00ccff;"
+                                    href="https://xedap.vn/bao-duong-xe-dap/" target="_blank"
+                                    rel="noopener noreferrer">thường xuyên vệ sinh xe, bảo dưỡng định kỳ</a></span>, chú
+                            ý các âm thanh lạ khi đạp xe, <span style="color: #00ccff;"><a style="color: #00ccff;"
+                                    href="https://xedap.vn/cach-bom-xe-dap/" target="_blank"
+                                    rel="noopener noreferrer">bơm lốp xe</a></span> nếu nhận thấy lốp bị mềm, luôn dựng
+                            xe theo phương thẳng đứng, để xe trong nhà thay vì ngoài trời.
+                        </p>
                     </div>
                 </div>
             </div>

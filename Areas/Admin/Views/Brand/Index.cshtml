@@ -13,6 +13,9 @@
             Tạo chuyên mục mới
         </a>
     </p>
+    <p>
+        Số lượng thương hiệu: @Model.Count()
+    </p>
     <table class="table">
         <thead>
             <tr style="font-size: 18px;">
@@ -49,19 +52,41 @@
                             <span>No Image</span>
                         }
                     </td>
-                    <td style="display: block;">
+                    <td style="display:flex;">
                         <div class="edit_1">
-                            <a style="padding: 5px 23px;" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
+                            <a style="padding: 5px 25px;" asp-action="Edit" asp-route-id="@item.Id"
+                                class="btn btn-sm btn-warning">Edit</a>
                         </div>
 
-                        <form style="width: 0;" asp-action="Delete">
-                            <input type="hidden" asp-for="@item.Id" name="id" />
-                            <input type="submit" value="Delete" class="btn btn-danger" />
-                        </form>
+                        <div style="padding-left: 1%;">
+                            <a style="padding: 5px 15px;" href="#" onclick="showPopup('warning-popup')" class="btn btn-sm btn-warning">Delete</a>
+                            <form id="delete-form" style="display: none;" asp-action="Delete" asp-route-id="@item.Id">
+                                <input type="submit" value="Confirm">
+                            </form>
+                        </div>
                     </td>
-
                 </tr>
             }
         </tbody>
     </table>
 </body>
+<div id="warning-popup" class="popup-0">
+    <div class="popup-content">
+        <p>Are you sure you want to delete this item?</p>
+        <button onclick="document.getElementById('delete-form').submit()">Yes</button>
+        <button class="no" onclick="hidePopup('warning-popup')">
+            <i class="fa-solid fa-circle-xmark"></i>
+        </button>
+    </div>
+</div>
+<script>
+    function showPopup(id) {
+        document.getElementById(id).classList.add('show');
+    }
+
+    function hidePopup(id) {
+        document.getElementById(id).classList.remove('show');
+    }
+</script>
+<style>
+</style>

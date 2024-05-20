@@ -21,6 +21,7 @@ namespace App.Areas.Identity.Models.ManageViewModels
     public string HomeAddress { get; set; }
 
     [Display(Name = "Ngày sinh")]
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateTime? BirthDate { get; set; }
 
     [Display(Name = "Số nhà")]
@@ -65,6 +66,8 @@ namespace App.Areas.Identity.Models.ManageViewModels
         Addresses[index] = address;
       }
     }
+
+
   }
 
   public class Province

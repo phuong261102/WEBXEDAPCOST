@@ -12,7 +12,7 @@
 }
 .slider_bicycle{
     width: 100%;
-    height: 450px;
+    height: 550px;
     margin: auto;
     position: relative;
     overflow: hidden;
@@ -320,3 +320,75 @@ table{
     padding-bottom: 20px;
 }
 
+ .slider_bicycle {
+     position: relative;
+     max-width: 600px;
+     margin: auto;
+     text-align: center;
+     padding-bottom: 100px;
+     /* Thêm khoảng trống dưới cùng */
+ }
+
+ .main-image-container img {
+     width: 100%;
+     max-width: 600px;
+     height: auto;
+ }
+
+ .thumbnail-carousel {
+     display: flex;
+     justify-content: center;
+     margin-top: 10px;
+ }
+
+ .thumbnail-carousel img {
+     width: 100px;
+     height: 100px;
+     margin: 0 5px;
+     cursor: pointer;
+     border: 2px solid transparent;
+     display: none;
+ }
+
+ .thumbnail-carousel img:hover {
+     border-color: #ddd;
+ }
+
+ .buttons {
+     position: absolute;
+     top: 50%;
+     width: 100%;
+     display: flex;
+     justify-content: space-between;
+     transform: translateY(-50%);
+ }
+
+ .buttons button {
+     background-color: rgba(0, 0, 0, 0.5);
+     border: none;
+     color: white;
+     padding: 10px;
+     cursor: pointer;
+ }
+
+ .dots {
+     display: flex;
+     justify-content: center;
+     margin-top: 10px;
+     position: relative;
+     /* Thêm để định vị z-index */
+     z-index: 1;
+     /* Đảm bảo phần dots nằm trên cùng */
+ }
+
+ .dots img {
+     width: 120px;
+     height: 120px;
+     margin: 0 5px;
+     cursor: pointer;
+     border: 2px solid transparent;
+ }
+
+ .dots img.active {
+     border-color: #333;
+ }

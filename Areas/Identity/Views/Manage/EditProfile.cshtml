@@ -41,7 +41,7 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="PhoneNumber"></label>
-                                <input asp-for="PhoneNumber" class="form-control" />
+                                <input asp-for="PhoneNumber" class="form-control" type="text" />
                             </div>
 
                             <div id="existing-addresses">
@@ -97,14 +97,15 @@
                             </div>
                             <div class="form-group">
                                 <label asp-for="BirthDate"></label>
-                                <input asp-for="BirthDate" class="form-control" />
+                                <input asp-for="BirthDate" class="form-control" type="date" />
                                 <span style="padding: 10px 0;" asp-validation-for="BirthDate"
                                     class="text-danger"></span>
                             </div>
 
                             <div style="padding-top: 20px; width: 100%; text-align: center;" class="btn">
-                                <button id="update-profile-button" type="submit" class="btn btn-primary">Lưu dữ
-                                    liệu</button>
+                                <button id="update-profile-button" type="submit" class="btn btn-primary">
+                                    Lưu dữ liệu
+                                </button>
                             </div>
                         </form>
                     </div>
@@ -240,5 +241,34 @@
             });
 
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const phoneNumberInput = document.querySelector('input[name="PhoneNumber"]');
+
+            phoneNumberInput.addEventListener('input', () => {
+                const maxDigits = 10;
+                let value = phoneNumberInput.value;
+
+                if (value.length > maxDigits) {
+                    phoneNumberInput.value = value.slice(0, maxDigits);
+                }
+            });
+
+            phoneNumberInput.addEventListener('blur', () => {
+                const maxDigits = 10;
+                let value = phoneNumberInput.value;
+
+                // Kiểm tra nếu số điện thoại có ít hơn 10 số
+                if (value.length < maxDigits) {
+                    // Hiển thị thông báo
+                    alert('Số điện thoại phải có đủ 10 số.');
+                    // Xóa nội dung của trường nhập liệu
+                    phoneNumberInput.value = '';
+                }
+            });
+        });
+
+
+
     </script>
 }

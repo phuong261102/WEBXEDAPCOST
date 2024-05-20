@@ -1,227 +1,232 @@
-@model XEDAPVIP.Areas.Admin.Models.CreateProductModel
+@model XEDAPVIP.Areas.Admin.ModelsProduct.CreateProductModel
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Tạo Sản Phẩm";
     var list = ViewData["categories"] as MultiSelectList;
 }
 
-<h1>Thêm mới</h1>
 
-<partial name="_AlertMessage" />
 
-<h4>Sản phẩm</h4>
-<hr />
-<form asp-action="Create" enctype="multipart/form-data" id="productForm">
-    <div class="row">
-        <div class="col-md-6">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label class="control-label">Chọn danh mục</label>
-                @Html.ListBoxFor(model => model.CategoryId, (MultiSelectList)ViewBag.categories, new
-                    {
-                        @class = "w-100",
-                        id = "selectedCategories"
-                    })
+<body>
+    <partial name="_AlertMessage" />
+    <form asp-action="Create" enctype="multipart/form-data" id="productForm">
+        <div class="row">
+            <div class="col-md-6">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <label class="control-label">Chọn danh mục</label>
+                    @Html.ListBoxFor(model => model.CategoryId, (MultiSelectList)ViewBag.categories, new
+                        {
+                            @class = "w-100",
+                            id = "selectedCategories"
+                        })
+                </div>
+                <div class="form-group">
+                    <label class="control-label">Chọn thương hiệu</label>
+                    <select asp-for="BrandId" asp-items="ViewBag.brands" class="form-control">
+                        <option value="">-- Chọn thương hiệu --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Price" class="control-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="DiscountPrice" class="control-label"></label>
+                    <input asp-for="DiscountPrice" class="form-control" />
+                    <span asp-validation-for="DiscountPrice" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="MainImage" class="control-label">Ảnh chính</label>
+                    <input style="height: 100%;" type="file" id="MainImage" name="MainImage" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label for="subImages">Hình ảnh phụ:</label>
+                    <input type="file" class="form-control-file" id="subImages" name="subImages" multiple>
+                    <div id="selectedSubImages" class="image-container"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label class="control-label">Chọn thương hiệu</label>
-                <select asp-for="BrandId" asp-items="ViewBag.brands" class="form-control">
-                    <option value="">-- Chọn thương hiệu --</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Price" class="control-label"></label>
-                <input asp-for="Price" class="form-control" />
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="DiscountPrice" class="control-label"></label>
-                <input asp-for="DiscountPrice" class="form-control" />
-                <span asp-validation-for="DiscountPrice" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="MainImage" class="control-label">Ảnh chính</label>
-                <input type="file" id="MainImage" name="MainImage" class="form-control" />
-            </div>
-            <div class="form-group">
-                <label for="subImages">Hình ảnh phụ:</label>
-                <input type="file" class="form-control-file" id="subImages" name="subImages" multiple>
-                <div id="selectedSubImages" class="image-container"></div>
+
+            <div class="col-md-6">
+                <h4>Biến thể sản phẩm</h4>
+                <br>
+                <table id="variantsTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Màu sắc</th>
+                            <th>Kích thước</th>
+                            <th>Số lượng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" name="Variants[0].Color" class="form-control" /></td>
+                            <td>
+                                <select class="form-control" name="Variants[0].Size">
+                                    <option value="S">S</option>
+                                    <option value="M">M</option>
+                                    <option value="L">L</option>
+                                    <option value="XL">XL</option>
+                                    <option value="XXL">XXL</option>
+                                </select>
+                            </td>
+                            <td><input type="number" name="Variants[0].Quantity" class="form-control" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="text-align: center;">
+                    <button type="button" class="btn btn-primary" id="addVariant">Thêm biến thể</button>
+                </div>
+
+                <h4>Chi tiết sản phẩm</h4>
+                <br>
+                <table id="productDetailsTable" class="table">
+                    <thead>
+                        <tr>
+                            <th>Chi tiết</th>
+                            <th>Giá trị</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" name="ProductDetails[0].DetailsName" class="form-control" /></td>
+                            <td><input type="text" name="ProductDetails[0].DetailsValue" class="form-control" /></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div style="text-align: center;">
+                    <button type="button" class="btn btn-primary" id="addProductDetail">Thêm Chi Tiết</button>
+                </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <h4>Biến thể sản phẩm</h4>
-            <table id="variantsTable" class="table">
-                <thead>
-                    <tr>
-                        <th>Màu sắc</th>
-                        <th>Kích thước</th>
-                        <th>Số lượng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="text" name="Variants[0].Color" class="form-control" /></td>
-                        <td>
-                            <select class="form-control" name="Variants[0].Size">
-                                <option value="S">S</option>
-                                <option value="M">M</option>
-                                <option value="L">L</option>
-                                <option value="XL">XL</option>
-                                <option value="XXL">XXL</option>
-                            </select>
-                        </td>
-                        <td><input type="number" name="Variants[0].Quantity" class="form-control" /></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button type="button" class="btn btn-primary" id="addVariant">Thêm biến thể</button>
+        <!-- Chi tiết sản phẩm -->
 
-            <h4>Chi tiết sản phẩm</h4>
-            <table id="productDetailsTable" class="table">
-                <thead>
-                    <tr>
-                        <th>Chi tiết</th>
-                        <th>Giá trị</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><input type="text" name="ProductDetails[0].DetailsName" class="form-control" /></td>
-                        <td><input type="text" name="ProductDetails[0].DetailsValue" class="form-control" /></td>
-                    </tr>
-                </tbody>
-            </table>
-            <button type="button" class="btn btn-primary" id="addProductDetail">Thêm dòng mới</button>
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" id="productDescription" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
         </div>
-    </div>
 
-    <!-- Chi tiết sản phẩm -->
+        <div class="form-group">
+            <input type="submit" value="Thêm sản phẩm" class="btn btn-primary" />
+        </div>
+    </form>
 
-    <div class="form-group">
-        <label asp-for="Description" class="control-label"></label>
-        <textarea asp-for="Description" id="productDescription" class="form-control"></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
-    </div>
+    @section Scripts {
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="~/lib/multiple-select/multiple-select.min.js"></script>
+        <link rel="stylesheet" href="~/lib/multiple-select/multiple-select.min.css" />
 
-    <div class="form-group">
-        <input type="submit" value="Thêm sản phẩm" class="btn btn-primary" />
-    </div>
-</form>
+        <script>
+            $(document).ready(function () {
+                var existingFiles = [];
 
-@section Scripts {
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="~/lib/multiple-select/multiple-select.min.js"></script>
-    <link rel="stylesheet" href="~/lib/multiple-select/multiple-select.min.css" />
+                $("#selectedCategories").multipleSelect({
+                    selectAll: false,
+                    keepOpen: false,
+                    isOpen: false,
+                });
 
-    <script>
-        $(document).ready(function () {
-            var existingFiles = [];
+                $('#addProductDetail').click(function () {
+                    var index = $('#productDetailsTable tbody tr').length;
+                    var newDetailRow = `
+                                                        <tr>
+                                                            <td><input type="text" name="ProductDetails[` + index + `].DetailsName" class="form-control" /></td>
+                                                            <td><input type="text" name="ProductDetails[` + index + `].DetailsValue" class="form-control" /></td>
+                                                        </tr>`;
+                    $('#productDetailsTable').append(newDetailRow);
+                });
 
-            $("#selectedCategories").multipleSelect({
-                selectAll: false,
-                keepOpen: false,
-                isOpen: false,
-            });
+                $('#addVariant').click(function () {
+                    var variantIndex = $('#variantsTable tbody tr').length;
+                    var newVariantRow = `
+                                                        <tr>
+                                                            <td><input type="text" name="Variants[` + variantIndex + `].Color" class="form-control" /></td>
+                                                            <td>
+                                                                <select class="form-control" name="Variants[` + variantIndex + `].Size">
+                                                                    <option value="S">S</option>
+                                                                    <option value="M">M</option>
+                                                                    <option value="L">L</option>
+                                                                    <option value="XL">XL</option>
+                                                                    <option value="XXL">XXL</option>
+                                                                </select>
+                                                            </td>
+                                                            <td><input type="number" name="Variants[` + variantIndex + `].Quantity" class="form-control" /></td>
+                                                        </tr>`;
+                    $('#variantsTable').append(newVariantRow);
+                });
 
-            $('#addProductDetail').click(function () {
-                var index = $('#productDetailsTable tbody tr').length;
-                var newDetailRow = `
-                                        <tr>
-                                            <td><input type="text" name="ProductDetails[` + index + `].DetailsName" class="form-control" /></td>
-                                            <td><input type="text" name="ProductDetails[` + index + `].DetailsValue" class="form-control" /></td>
-                                        </tr>`;
-                $('#productDetailsTable').append(newDetailRow);
-            });
+                $('#subImages').change(function () {
+                    var selectedFiles = $('#subImages')[0].files;
+                    var dataTransfer = new DataTransfer();
 
-            $('#addVariant').click(function () {
-                var variantIndex = $('#variantsTable tbody tr').length;
-                var newVariantRow = `
-                                        <tr>
-                                            <td><input type="text" name="Variants[` + variantIndex + `].Color" class="form-control" /></td>
-                                            <td>
-                                                <select class="form-control" name="Variants[` + variantIndex + `].Size">
-                                                    <option value="S">S</option>
-                                                    <option value="M">M</option>
-                                                    <option value="L">L</option>
-                                                    <option value="XL">XL</option>
-                                                    <option value="XXL">XXL</option>
-                                                </select>
-                                            </td>
-                                            <td><input type="number" name="Variants[` + variantIndex + `].Quantity" class="form-control" /></td>
-                                        </tr>`;
-                $('#variantsTable').append(newVariantRow);
-            });
+                    for (var i = 0; i < selectedFiles.length; i++) {
+                        existingFiles.push(selectedFiles[i]);
+                    }
 
-            $('#subImages').change(function () {
-                var selectedFiles = $('#subImages')[0].files;
-                var dataTransfer = new DataTransfer();
+                    existingFiles.forEach(function (file, index) {
+                        dataTransfer.items.add(file);
+                    });
 
-                for (var i = 0; i < selectedFiles.length; i++) {
-                    existingFiles.push(selectedFiles[i]);
+                    $('#subImages')[0].files = dataTransfer.files;
+                    updateImagePreview();
+                });
+
+                $(document).on('click', '.remove-image', function () {
+                    var index = $(this).data('index');
+                    existingFiles.splice(index, 1);
+                    updateImagePreview();
+                });
+
+                function updateImagePreview() {
+                    $('#selectedSubImages').empty();
+
+                    existingFiles.forEach(function (file, index) {
+                        var reader = new FileReader();
+                        reader.onload = function (e) {
+                            $('#selectedSubImages').append(`
+                                        <div class="image-preview" id="image-preview-` + index + `">
+                                            <img src="` + e.target.result + `" alt="Image Preview" style="max-width: 100px; margin: 5px;" />
+                                            <button type="button" class="btn btn-danger btn-sm remove-image" data-index="` + index + `">Remove</button>
+                                        </div>
+                                    `);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+
+                    var dataTransfer = new DataTransfer();
+                    existingFiles.forEach(function (file) {
+                        dataTransfer.items.add(file);
+                    });
+                    $('#subImages')[0].files = dataTransfer.files;
                 }
-
-                existingFiles.forEach(function (file, index) {
-                    dataTransfer.items.add(file);
-                });
-
-                $('#subImages')[0].files = dataTransfer.files;
-                updateImagePreview();
             });
-
-            $(document).on('click', '.remove-image', function () {
-                var index = $(this).data('index');
-                existingFiles.splice(index, 1);
-                updateImagePreview();
+        </script>
+        <script>
+            tinymce.init({
+                selector: 'textarea',
+                plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+                toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+                tinycomments_mode: 'embedded',
+                tinycomments_author: 'Author name',
+                mergetags_list: [
+                    { value: 'First.Name', title: 'First Name' },
+                    { value: 'Email', title: 'Email' },
+                ],
+                ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
             });
-
-            function updateImagePreview() {
-                $('#selectedSubImages').empty();
-
-                existingFiles.forEach(function (file, index) {
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        $('#selectedSubImages').append(`
-                        <div class="image-preview" id="image-preview-` + index + `">
-                            <img src="` + e.target.result + `" alt="Image Preview" style="max-width: 100px; margin: 5px;" />
-                            <button type="button" class="btn btn-danger btn-sm remove-image" data-index="` + index + `">Remove</button>
-                        </div>
-                    `);
-                    };
-                    reader.readAsDataURL(file);
-                });
-
-                var dataTransfer = new DataTransfer();
-                existingFiles.forEach(function (file) {
-                    dataTransfer.items.add(file);
-                });
-                $('#subImages')[0].files = dataTransfer.files;
-            }
-        });
-    </script>
-    <script>
-        tinymce.init({
-            selector: '#productDescription',
-            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
-            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-            tinycomments_mode: 'embedded',
-            tinycomments_author: 'Author name',
-            mergetags_list: [
-                { value: 'First.Name', title: 'First Name' },
-                { value: 'Email', title: 'Email' },
-            ],
-            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
-        });
-    </script>
-    <partial name="_ValidationScriptsPartial" />
-}
-<style>
-    .image-preview {
-        display: inline-block;
+        </script>
+        <partial name="_ValidationScriptsPartial" />
     }
-</style>
+    <style>
+        .image-preview {
+            display: inline-block;
+        }
+    </style>
+</body>

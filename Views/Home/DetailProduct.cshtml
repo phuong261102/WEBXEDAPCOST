@@ -1,0 +1,223 @@
+@model App.Models.Product
+@using App.Components
+
+@{
+    ViewData["Title"] = Model?.Name;
+    var categories = ViewBag.categories as List<Category> ?? new List<Category>();
+    var brands = ViewBag.brands as List<Brand> ?? new List<Brand>();
+    var categoryslug = ViewBag.categoryslug as string ?? string.Empty;
+    var brandslug = ViewBag.brandslug as string ?? string.Empty;
+    var images = new List<string>();
+
+    if (!string.IsNullOrEmpty(Model?.MainImage))
+    {
+        images.Add(Model.MainImage);
+    }
+    if (Model?.SubImages != null)
+    {
+        images.AddRange(Model.SubImages);
+    }
+}
+
+@section Popup {
+    @await Component.InvokeAsync(CategorySideBar.COMPONENTNAME,
+        new CategorySideBar.CategorySideBarData
+{
+    level = 0,
+    Categories = categories,
+    slugCategory = categoryslug,
+    brands = brands,
+    slugBrand = brandslug
+})
+}
+
+<body>
+    <div class="content_main_bicycle">
+        <div class="grid">
+            <div class="is-large">
+                <nav class="woocommerce-breadcrumb breadcrumbs">
+                    <a href="~/">Home</a>
+                    <span class="divider">/</span>
+                    <a asp-action="Product">Product</a>
+                    <span class="divider">/</span>
+                    @if (!string.IsNullOrEmpty(categoryslug))
+                    {
+                        <a asp-action="Product" asp-route-categoryslug="@categoryslug">@categoryslug</a>
+                        <span class="divider">/</span>
+                    }
+                    @if (!string.IsNullOrEmpty(brandslug))
+                    {
+                        <a asp-action="Product" asp-route-brandslug="@brandslug">@brandslug</a>
+                        <span class="divider">/</span>
+                    }
+                    <a asp-controller="Home" asp-action="DetailProduct"
+                        asp-route-productslug="@Model.Slug">@Model.Name</a>
+                </nav>
+            </div>
+            <div class="bicycle_main">
+                <div class="slide_bar">
+                    <div class="slider_bicycle">
+                        <div class="main-image-container">
+                            @if (!string.IsNullOrEmpty(Model?.MainImage))
+                            {
+                                <img id="mainImage"
+                                    src="@Url.Content("~/images/products/" + Model.Slug +"/" + Model.MainImage)"
+                                    alt="@Model.Name" />
+                            }
+                        </div>
+                        <div class="thumbnail-carousel">
+                            @foreach (var subImage in Model.SubImages)
+                            {
+                                <img class="thumbnail"
+                                    src="@Url.Content("~/images/products/" + Model.Slug + "/subImg/" + subImage)"
+                                    alt="@Model.Name"
+                                    onclick="updateMainImage('@Url.Content("~/images/products/" + Model.Slug + "/subImg/" + subImage)')" />
+                            }
+                        </div>
+                        <div class="buttons">
+                            <button id="prev">&lt;</button>
+                            <button id="next">&gt;</button>
+                        </div>
+                        <div class="dots">
+                            @foreach (var subImage in Model.SubImages)
+                            {
+                                <img class="dot @(subImage == Model.SubImages.First() ? "active" : "")"
+                                    src="@Url.Content("~/images/products/" + Model.Slug + "/subImg/" + subImage)"
+                                    onclick="changeImage('@Model.SubImages.IndexOf(subImage)')" />
+                            }
+                        </div>
+                    </div>
+                </div>
+
+                <div class="address_bicycle">
+                    <h1>@Model.Name</h1>
+                    <div class="price">@Model.Price.ToString("N0") <span>VND</span></div>
+                    @if (Model.DiscountPrice.HasValue)
+                    {
+                        <div class="discounted-price">Discounted Price: @Model.DiscountPrice.Value.ToString("N0")
+                            <span>VND</span>
+                        </div>
+                    }
+
+                    <div class="variations">
+                        @foreach (var variant in Model.Variants)
+                        {
+                            <div class="variant">
+                                <label for="">Màu sắc: @variant.Color</label>
+                                <label for="">Kích thước: @variant.Size</label>
+                                <label for="">Số lượng: @variant.Quantity</label>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="address_product">
+                        <div class="product_meta">
+                            <span class="msp_wrapper">Mã Sản Phẩm : <span class="msp">@Model.Id ?? "N/A"</span></span>
+                        </div>
+                        <div class="product_meta_address">
+                            <span class="msp_wrapper">Thương hiệu: <a
+                                    href="@Url.Action("Product", "Home", new { brandslug = Model.Brand.Slug })"
+                                    class="link_TH">@Model.Brand.Name</a></span>
+                        </div>
+                        <div class="product_meta_address">
+                            <span class="msp_wrapper">Nhóm sản phẩm:
+                                @foreach (var category in Model.ProductCategories.Select(pc => pc.Category))
+                                {
+                                    <a href="@Url.Action("Product", "Home", new { categoryslug = category.Slug })"
+                                        class="link_TH">@category.Title</a>
+                                }
+                            </span>
+                        </div>
+                        <div class="product_meta_address">
+                            <span style="color: rgb(8, 110, 44); font-weight: 600;" class="msp_wrapper">Còn hàng</span>
+                        </div>
+
+                        <div class="quantity">
+                            <input type="button" value="-" class="minus button is-form">
+                            <label class="screen-reader-text" for="quantity_6635973865498">@Model.Name quantity</label>
+                            <input type="number" id="quantity_6635973865498" class="input-text qty text hidden" step="1"
+                                min="1" max="58" name="quantity" value="1" title="Qty" size="4" inputmode="numeric">
+                            <input type="button" value="+" class="plus button is-form">
+                            <button type="submit" class="single_add_to_cart_button button alt">THÊM VÀO GIỎ
+                                HÀNG</button>
+                        </div>
+
+                        <div class="product_sale_bicycle">
+                            <div class="address_sale_product">
+                                <div class="title"><span>KHUYẾN MÃI XE ĐẠP ONLINE</span></div>
+                                <div class="content">
+                                    <ul>
+                                        <li>Miễn phí ship giao hàng khi mua xe đạp, không áp dụng với các sản phẩm đang
+                                            có khuyến mãi từ 50%</li>
+                                        <li>Giảm 10% đối với đơn hàng phụ kiện từ 3 món</li>
+                                        <li>Giảm 15% đối với đơn hàng phụ kiện từ 5 món</li>
+                                    </ul>
+                                    <p>Lưu ý: không áp dụng đồng thời các Chương trình Khuyến mãi khác</p>
+                                </div>
+                            </div>
+                        </div>
+                        <button style="width: 100%; margin: 10px 0 10px 0;" type="submit"
+                            class="single_add_to_cart_button button alt">MUA NGAY</button>
+                    </div>
+                </div>
+
+                <div class="address_products">
+                    <div class="information_product">
+                        <table class="bike_specifications">
+                            <tbody>
+                                <tr>
+                                    <td class="title_product" colspan="2">
+                                        <h1>THÔNG SỐ KỸ THUẬT</h1>
+                                    </td>
+                                </tr>
+                                @foreach (var detail in Model.DetailsDictionary)
+                                {
+                                    <tr class="address_col">
+                                        <td>@detail.Key</td>
+                                        <td>@detail.Value</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div style="margin-top: 50px;" class="product-footers">
+                <div class="container">
+                    <div class="woocommerce-tabs wc-tabs-wrapper tabbed-content">
+                        <ul class="tabs wc-tabs product-tabs small-nav-collapse nav nav-uppercase nav-line nav-left"
+                            role="tablist">
+                            <li class="description_tab active" id="tab-title-description" role="tab"
+                                aria-controls="tab-description">
+                                <a href="#tab-description" class="active">MÔ TẢ SẢN PHẨM</a>
+                            </li>
+                            <li class="video_tab" id="tab-title-video" role="tab" aria-controls="tab-video">
+                                <a href="#tab-video">Video</a>
+                            </li>
+                            <li class="binh_luan_tab" id="tab-title-binh_luan" role="tab" aria-controls="tab-binh_luan">
+                                <a href="#tab-binh_luan">Bình luận</a>
+                            </li>
+                            <li class="danh_gia_tab" id="tab-title-danh_gia" role="tab" aria-controls="tab-danh_gia">
+                                <a href="#tab-danh_gia">Đánh giá</a>
+                            </li>
+                            <li class="thong-tin-san-pham_tab" id="tab-title-thong-tin-san-pham" role="tab"
+                                aria-controls="tab-thong-tin-san-pham">
+                                <a href="#tab-thong-tin-san-pham">Thông Tin Sản Phẩm</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div style="padding-bottom: 200px;">
+                <div class="Description">@Html.Raw(Model.Description)</div>
+                <div id="product-video"></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="~/js/slider_bicycle.js"></script>

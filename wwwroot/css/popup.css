@@ -1,0 +1,43 @@
+.popup-0 {
+    position: fixed;
+    padding: 10px;
+    color: #fff;
+    margin-bottom: 10px;
+    width: 400px;
+    border-radius: 5px;
+    --color: #0abf30;
+    background-image: linear-gradient(to right, #0abf3055, #22242f 30%);
+    animation: show 0.3s ease 1 forwards;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(1.1);
+    transition: all 0.3s;
+    right: 1%;
+    top: 2%;
+}
+
+.popup-0.show {
+    opacity: 1;
+    /* Show the popup */
+    visibility: visible;
+    transform: scale(1);
+    /* Zoom in */
+}
+
+.popup-content {
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.1);
+}
+
+.popup-content button.no,
+.popup-content button i {
+    font-size: 1.7rem;
+    color: red;
+    background: none;
+    position: absolute;
+    top: 7%;
+    right: 1%;
+
+}

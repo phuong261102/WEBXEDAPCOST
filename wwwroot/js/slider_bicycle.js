@@ -1,43 +1,50 @@
-let slider = document.querySelector('.slider_bicycle .list');
-let items = document.querySelectorAll('.slider_bicycle .list .item');
+let mainImage = document.getElementById('mainImage');
+let thumbnails = document.querySelectorAll('.thumbnail-carousel img');
 let next = document.getElementById('next');
 let prev = document.getElementById('prev');
-let dots = document.querySelectorAll('.slider_bicycle .dots li');
+let dots = document.querySelectorAll('.dots img');
 
-let lengthItems = items.length - 1;
-let active = 0;
-next.onclick = function(){
-    active = active + 1 <= lengthItems ? active + 1 : 0;
-    reloadSlider();
-}
-prev.onclick = function(){
-    active = active - 1 >= 0 ? active - 1 : lengthItems;
-    reloadSlider();
-}
-let refreshInterval = setInterval(()=> {next.click()}, 3000);
-function reloadSlider(){
-    slider.style.left = -items[active].offsetLeft + 'px';
-    // 
-    let last_active_dot = document.querySelector('.slider_bicycle .dots li.active');
-    last_active_dot.classList.remove('active');
-    dots[active].classList.add('active');
+let currentIndex = 0;
+let images = Array.from(thumbnails).map(thumbnail => thumbnail.src);
 
-    clearInterval(refreshInterval);
-    refreshInterval = setInterval(()=> {next.click()}, 3000);
-
-    
+next.onclick = function() {
+    currentIndex = (currentIndex + 1) % images.length;
+    updateMainImage(images[currentIndex]);
+    updateDots();
 }
 
-dots.forEach((li, key) => {
-    li.addEventListener('click', ()=>{
-         active = key;
-         reloadSlider();
-    })
-})
-window.onresize = function(event) {
-    reloadSlider();
-};
+prev.onclick = function() {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    updateMainImage(images[currentIndex]);
+    updateDots();
+}
 
+thumbnails.forEach((thumbnail, index) => {
+    thumbnail.onclick = function() {
+        updateMainImage(images[index]);
+        currentIndex = index;
+        updateDots();
+    }
+});
 
+dots.forEach((dot, index) => {
+    dot.onclick = function() {
+        updateMainImage(images[index]);
+        currentIndex = index;
+        updateDots();
+    }
+});
 
+function updateMainImage(src) {
+    mainImage.src = src;
+}
 
+function updateDots() {
+    dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === currentIndex);
+    });
+}
+
+// Initialize slider
+updateMainImage(images[currentIndex]);
+updateDots();

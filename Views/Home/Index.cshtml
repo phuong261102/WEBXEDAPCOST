@@ -1,8 +1,27 @@
-﻿@{
+﻿@using App.Components
+
+@{
     ViewData["Title"] = "KINGCYCLE";
+    List<Category> categories = ViewBag.categories as List<Category>;
+    List<Brand> brands = ViewBag.brands as List<Brand>;
+}
+
+@section Popup {
+    @{
+        @await Component.InvokeAsync(CategorySideBar.COMPONENTNAME,
+            new CategorySideBar.CategorySideBarData()
+{
+    level = 0,
+    Categories = ViewBag.categories,
+    slugCategory = ViewBag.categoryslug,
+    brands = ViewBag.brands,
+    slugBrand = ViewBag.brandslug
+})
+    }
 }
 
 <body>
+
     <div style="  background-color: #1b6ec2;;" class="sliders">
         <div class="slider">
             <div class="list">
@@ -23,8 +42,9 @@
                 </div>
             </div>
             <div class="buttons">
-                <button id="prev"><</button>
-                <button id="next">></button>
+                <button id="prev">
+                    < </button>
+                        <button id="next">></button>
             </div>
             <ul class="dots">
                 <li class="active"></li>
@@ -255,8 +275,10 @@
                             </div>
                             <div class="slider">
                                 <div class="buttons">
-                                    <button class="prev"><</button>
-                                    <button class="next">></button>
+                                    <button class="prev">
+                                        < </button>
+
+                                            <button class="next">></button>
                                 </div>
                             </div>
                         </div>
@@ -419,8 +441,9 @@
                             </div>
                             <div class="slider">
                                 <div class="buttons">
-                                    <button class="prev"><</button>
-                                    <button class="next">></button>
+                                    <button class="prev">
+                                        < </button>
+                                            <button class="next">></button>
                                 </div>
                             </div>
                         </div>
@@ -583,8 +606,9 @@
                             </div>
                             <div class="slider">
                                 <div class="buttons">
-                                    <button class="prev"><</button>
-                                    <button class="next">></button>
+                                    <button class="prev">
+                                        < </button>
+                                            <button class="next">></button>
                                 </div>
                             </div>
                         </div>
@@ -747,8 +771,9 @@
                             </div>
                             <div class="slider">
                                 <div class="buttons">
-                                    <button class="prev"><</button>
-                                    <button class="next">></button>
+                                    <button class="prev">
+                                        < </button>
+                                            <button class="next">></button>
                                 </div>
                             </div>
                         </div>
@@ -911,8 +936,10 @@
                             </div>
                             <div class="slider slider-main">
                                 <div class="buttons">
-                                    <button class="prev"><</button>
-                                    <button class="next">></button>
+                                    <button class="prev">
+                                        < </button>
+
+                                            <button class="next">></button>
                                 </div>
                             </div>
                         </div>
@@ -995,8 +1022,8 @@
                 </div>
             </div>
         </div>
+
     </div>
-    <script src="~/js/slider.js"asp-append-version="true"></script>
-    <script src="~/js/slider_product.js"asp-append-version="true"></script>
-    
+    <script src="~/js/slider.js" asp-append-version="true"></script>
+    <script src="~/js/slider_product.js" asp-append-version="true"></script>
 </body>

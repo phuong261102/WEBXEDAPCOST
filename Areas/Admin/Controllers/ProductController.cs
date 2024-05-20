@@ -10,11 +10,11 @@ using App.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using App.Utilities;
-using XEDAPVIP.Areas.Admin.Models;
 using Newtonsoft.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using System.IO;
+using XEDAPVIP.Areas.Admin.ModelsProduct;
 
 namespace XEDAPVIP.Areas.Admin.Controllers
 {
@@ -36,8 +36,10 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         public async Task<IActionResult> Index([FromQuery(Name = "p")] int currentPage, int pagesize)
         {
             var products = _context.Products.OrderByDescending(p => p.DateCreated);
+            var productCount = products.Count();
+            ViewBag.countproduct = productCount;
             int totalProduc = await products.CountAsync();
-            if (pagesize <= 0) pagesize = 10;
+            if (pagesize <= 0) pagesize = 12;
             int countPages = (int)Math.Ceiling((double)totalProduc / pagesize);
             if (currentPage > countPages)
                 currentPage = countPages;
@@ -75,6 +77,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Brand)
+                .Include(p => p.Variants)
                 .Include(p => p.ProductCategories)
                     .ThenInclude(pc => pc.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -194,6 +197,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                 if (subImages != null && subImages.Count > 0)
                 {
                     newProduct.SubImages = new List<string>();
+                    int imageCount = 1;
                     foreach (var image in subImages)
                     {
                         if (image.Length > 0)
@@ -201,13 +205,14 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                             var fileDirectoryName = Path.Combine(Directory.GetCurrentDirectory(), $"wwwroot/images/products/{newProduct.Slug}/subImg");
                             Directory.CreateDirectory(fileDirectoryName);
 
-                            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
+                            var fileName = $"{newProduct.Slug}_{newProduct.Id}_{imageCount}{Path.GetExtension(image.FileName)}";
                             var filePath = Path.Combine(fileDirectoryName, fileName);
                             using (var stream = new FileStream(filePath, FileMode.Create))
                             {
                                 await image.CopyToAsync(stream);
                             }
                             newProduct.SubImages.Add(fileName);
+                            imageCount++;
                         }
                     }
                 }
@@ -266,19 +271,16 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                     Size = v.Size,
                     Quantity = v.Quantity
                 }).ToList(),
-                DetailsDictionary = product.DetailsDictionary // Adjust if necessary
+                DetailsDictionary = product.DetailsDictionary
             };
 
             return View(model);
         }
 
-
-
-
         // POST: Admin/Product/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, CreateProductModel product, IFormFile mainImage, List<IFormFile> subImages, List<ProductVariant> variants)
+        public async Task<IActionResult> Edit(int id, CreateProductModel product, IFormFile mainImage, List<IFormFile> subImages, List<ProductVariant> variants, string existingSubImages)
         {
             var categories = await _context.Categories.ToListAsync();
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Title");
@@ -353,10 +355,8 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                     }
 
                     // Update sub images
-                    if (subImages != null && subImages.Count > 0)
-                    {
-                        UpdateSubImages(existingProduct, subImages);
-                    }
+                    var existingSubImagesList = existingSubImages?.Split(',').ToList() ?? new List<string>();
+                    UpdateSubImages(existingProduct, subImages, existingSubImagesList);
 
                     _context.Update(existingProduct);
                     await _context.SaveChangesAsync();
@@ -387,9 +387,35 @@ namespace XEDAPVIP.Areas.Admin.Controllers
             return View(product);
         }
 
+        // Update sub images
+        private void UpdateSubImages(Product product, List<IFormFile> newSubImages, List<string> existingSubImages)
+        {
+            product.SubImages = new List<string>();
 
+            // Add existing sub images to the product
+            foreach (var existingImage in existingSubImages)
+            {
+                product.SubImages.Add(existingImage);
+            }
 
+            // Add new sub images to the product
+            foreach (var image in newSubImages)
+            {
+                if (image.Length > 0)
+                {
+                    var fileDirectoryName = Path.Combine(_hostingEnvironment.WebRootPath, "images", "products", product.Slug, "subImg");
+                    Directory.CreateDirectory(fileDirectoryName);
 
+                    var fileName = $"{product.Slug}_{product.Id}_{Guid.NewGuid()}{Path.GetExtension(image.FileName)}";
+                    var filePath = Path.Combine(fileDirectoryName, fileName);
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        image.CopyTo(stream);
+                    }
+                    product.SubImages.Add(fileName);
+                }
+            }
+        }
         // Update product variants
         private void UpdateProductVariants(Product existingProduct, List<ProductVariant> newVariants)
         {
@@ -422,38 +448,43 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         // Update main image
         private void UpdateMainImage(Product product, IFormFile mainImage)
         {
-            var directoryPath = Path.Combine(_hostingEnvironment.WebRootPath, "images", "products", product.Slug);
-            Directory.CreateDirectory(directoryPath);
-
-            var path = Path.Combine(directoryPath, mainImage.FileName);
-            using (var stream = new FileStream(path, FileMode.Create))
+            try
             {
-                mainImage.CopyTo(stream);
-            }
-            product.MainImage = mainImage.FileName;
-        }
-
-        // Update sub images
-        private void UpdateSubImages(Product product, List<IFormFile> subImages)
-        {
-            product.SubImages = new List<string>();
-            foreach (var image in subImages)
-            {
-                if (image.Length > 0)
+                if (mainImage != null && mainImage.Length > 0)
                 {
-                    var fileDirectoryName = Path.Combine(_hostingEnvironment.WebRootPath, "images", "products", product.Slug, "subImg");
-                    Directory.CreateDirectory(fileDirectoryName);
+                    var directoryPath = Path.Combine(_hostingEnvironment.WebRootPath, "images", "products", product.Slug);
+                    Directory.CreateDirectory(directoryPath);
 
-                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(image.FileName);
-                    var filePath = Path.Combine(fileDirectoryName, fileName);
+                    // Generate a unique file name to prevent conflicts
+                    var uniqueFileName = Guid.NewGuid().ToString() + "_" + Path.GetFileName(mainImage.FileName);
+                    var filePath = Path.Combine(directoryPath, uniqueFileName);
+
+                    // Delete the old main image if it exists
+                    var oldImagePath = Path.Combine(directoryPath, product.MainImage);
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+
+                    // Save the new main image
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
-                        image.CopyTo(stream);
+                        mainImage.CopyTo(stream);
                     }
-                    product.SubImages.Add(fileName);
+
+                    // Update the product's main image property
+                    product.MainImage = uniqueFileName;
                 }
             }
+            catch (Exception ex)
+            {
+                // Handle the exception, log it, or display an error message
+                ModelState.AddModelError(string.Empty, $"An error occurred while updating the main image: {ex.Message}");
+            }
         }
+
+
+
 
         // Reinitialize edit view
         private async Task<IActionResult> ReinitializeEditView(int? id, Product product)
@@ -487,6 +518,64 @@ namespace XEDAPVIP.Areas.Admin.Controllers
             ViewBag.brands = new SelectList(brands, "Id", "Name");
 
             return View("Create", product);
+        }
+
+        // GET: Admin/Post/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var product = await _context.Products.Where(p => p.Id == id)
+                    .Include(p => p.Variants)
+                    .Include(p => p.Brand)
+                    .Include(p => p.ProductCategories)
+                    .ThenInclude(c => c.Category).FirstOrDefaultAsync();
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return View(product);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var product = await _context.Products.Where(p => p.Id == id)
+                  .Include(p => p.Variants)
+                  .Include(p => p.Brand)
+                  .Include(p => p.ProductCategories)
+                  .ThenInclude(c => c.Category).FirstOrDefaultAsync();
+
+            // Lấy thông tin đường dẫn tới file hình ảnh chính và các hình ảnh phụ
+            var mainImagePath = product.MainImage;
+            var subImagePaths = product.SubImages; // Giả sử hình ảnh phụ được lưu trong thuộc tính SubImages 
+
+            // Xóa file hình ảnh chính và các hình ảnh phụ
+            if (!string.IsNullOrEmpty(mainImagePath) && System.IO.File.Exists(mainImagePath))
+            {
+                System.IO.File.Delete(mainImagePath);
+            }
+
+            if (subImagePaths != null)
+            {
+                foreach (var imagePath in subImagePaths)
+                {
+                    if (System.IO.File.Exists(imagePath))
+                    {
+                        System.IO.File.Delete(imagePath);
+                    }
+                }
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
     }
 }

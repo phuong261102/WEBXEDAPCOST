@@ -5,13 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using App.Models;
 
-namespace XEDAPVIP.Areas.Admin.Models
+namespace XEDAPVIP.Areas.Admin.ModelsProduct
 {
     public class CreateProductModel : Product
     {
         [Display(Name = "Danh mục")]
         public int[]? CategoryId { get; set; }
         public List<ProductDetailEntry> ProductDetails { get; set; }
+
     }
 
     public class ProductDetailEntry

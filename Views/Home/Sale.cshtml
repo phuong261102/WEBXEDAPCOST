@@ -1,6 +1,27 @@
 @{
     ViewData["Title"] = "Sale Page";
 }
+@using App.Components
+
+@{
+
+    List<Category> categories = ViewBag.category as List<Category>;
+    List<Brand> brands = ViewBag.brands as List<Brand>;
+}
+
+@section Popup {
+
+    @await Component.InvokeAsync(CategorySideBar.COMPONENTNAME,
+        new CategorySideBar.CategorySideBarData()
+{
+    level = 0,
+    Categories = ViewBag.categories,
+    slugCategory = ViewBag.categoryslug,
+    brands = ViewBag.brands,
+    slugBrand = ViewBag.brandslug
+})
+
+}
 
 <body>
     <div style="  background-color: #1b6ec2;;" class="sliders">
@@ -23,8 +44,9 @@
                 </div>
             </div>
             <div class="buttons">
-                <button id="prev"><</button>
-                <button id="next">></button>
+                <button id="prev">
+                    << /button>
+                        <button id="next">></button>
             </div>
             <ul class="dots">
                 <li class="active"></li>
@@ -1074,6 +1096,6 @@
 
         </div>
     </div>
-    <script src="~/js/slider.js"asp-append-version="true"></script>
-    <script src="~/js/slider_product.js"asp-append-version="true"></script>
+    <script src="~/js/slider.js" asp-append-version="true"></script>
+    <script src="~/js/slider_product.js" asp-append-version="true"></script>
 </body>

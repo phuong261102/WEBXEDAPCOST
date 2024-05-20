@@ -58,7 +58,18 @@ namespace App.Models
             return li;
         }
 
-
+        public List<Category> ListParentsAndSelf()
+        {
+            List<Category> list = new List<Category>();
+            var parent = this;
+            while (parent != null)
+            {
+                list.Add(parent);
+                parent = parent.ParentCategory;
+            }
+            list.Reverse(); // Đảo ngược danh sách để danh mục cha ở trước
+            return list;
+        }
         public static Category Find(ICollection<Category> lis, int CategoryId)
         {
             foreach (var c in lis)
