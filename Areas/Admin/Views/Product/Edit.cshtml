@@ -260,19 +260,19 @@
             $('#addVariant').click(function () {
                 var variantIndex = $('#variantsTable tbody tr').length;
                 var newVariantRow = `
-                                                                                                                <tr>
-                                                                                                                    <td><input type="text" name="Variants[${variantIndex}].Color" class="form-control" /></td>
-                                                                                                                    <td>
-                                                                                                                        <select class="form-control" name="Variants[${variantIndex}].Size">
-                                                                                                                            <option value="S">S</option>
-                                                                                                                            <option value="M">M</option>
-                                                                                                                            <option value="L">L</option>
-                                                                                                                            <option value="XS">XS</option>
-                                                                                                                        </select>
-                                                                                                                    </td>
-                                                                                                                    <td><input type="number" name="Variants[${variantIndex}].Quantity" class="form-control" /></td>
-                                                                                                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeVariant(this)">Remove</button></td>
-                                                                                                                </tr>`;
+                                                                                                                    <tr>
+                                                                                                                        <td><input type="text" name="Variants[${variantIndex}].Color" class="form-control" /></td>
+                                                                                                                        <td>
+                                                                                                                            <select class="form-control" name="Variants[${variantIndex}].Size">
+                                                                                                                                <option value="S">S</option>
+                                                                                                                                <option value="M">M</option>
+                                                                                                                                <option value="L">L</option>
+                                                                                                                                <option value="XS">XS</option>
+                                                                                                                            </select>
+                                                                                                                        </td>
+                                                                                                                        <td><input type="number" name="Variants[${variantIndex}].Quantity" class="form-control" /></td>
+                                                                                                                        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeVariant(this)">Remove</button></td>
+                                                                                                                    </tr>`;
                 $('#variantsTable tbody').append(newVariantRow); // Append to tbody
             });
 
@@ -280,11 +280,11 @@
             $('#addProductDetail').click(function () {
                 var detailIndex = $('#productDetailsTable tbody tr').length;
                 var newDetailRow = `
-                                                                                                                <tr>
-                                                                                                                    <td><input type="text" name="ProductDetails[${detailIndex}].DetailsName" class="form-control" /></td>
-                                                                                                                    <td><input type="text" name="ProductDetails[${detailIndex}].DetailsValue" class="form-control" /></td>
-                                                                                                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeProductDetail(this)">Remove</button></td>
-                                                                                                                </tr>`;
+                                                                                                                    <tr>
+                                                                                                                        <td><input type="text" name="ProductDetails[${detailIndex}].DetailsName" class="form-control" /></td>
+                                                                                                                        <td><input type="text" name="ProductDetails[${detailIndex}].DetailsValue" class="form-control" /></td>
+                                                                                                                        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeProductDetail(this)">Remove</button></td>
+                                                                                                                    </tr>`;
                 $('#productDetailsTable tbody').append(newDetailRow); // Append to tbody
             });
         });

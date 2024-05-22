@@ -25,7 +25,9 @@ namespace XEDAPVIP.Areas.Admin.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
+        public ProductController(AppDbContext context, IWebHostEnvironment hostingEnvironment)
         public ProductController(AppDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
@@ -35,7 +37,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         // GET: Product
         public async Task<IActionResult> Index([FromQuery(Name = "p")] int currentPage, int pagesize)
         {
-            var products = _context.Products.OrderByDescending(p => p.DateUpdated);
+            var products = _context.Products.OrderByDescending(p => p.DateCreated);
             var productCount = products.Count();
             ViewBag.countproduct = productCount;
             int totalProduc = await products.CountAsync();

@@ -286,8 +286,9 @@ public class HomeController : Controller
         ViewBag.brandslug = brandslug;
         return View();
     }
-    
-    public IActionResult Address_shop(){
+
+    public IActionResult Address_shop()
+    {
         return View();
     }
 
