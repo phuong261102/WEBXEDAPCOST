@@ -1,82 +1,127 @@
-@model EditExtraProfileModel
+@model App.Areas.Identity.Models.ManageViewModels.EditExtraProfileModel
+
 @{
     ViewData["Title"] = "Hồ sơ cá nhân";
 }
 
-<h4>@ViewData["Title"]</h4>
+<style>
+    .gd {
+        padding-top: 50px;
+        padding-bottom: 200px;
+    }
 
-<partial name="_StatusMessage" />
+    .form-group label {
+        padding: 10px 0;
+    }
 
-<div class="row">
-    <div class="col-md-6">
-        <form id="profile-form" method="post">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UserName"></label>
-                <input asp-for="UserName" class="form-control" disabled />
-            </div>
-            <div class="form-group">
-                <label asp-for="UserEmail"></label>
-                <input asp-for="UserEmail" class="form-control" disabled />
-            </div>
+    .gd-1 {
+        width: 100%;
+    }
+</style>
 
-            <div class="form-group">
-                <label asp-for="PhoneNumber"></label>
-                <input asp-for="PhoneNumber" class="form-control" disabled />
-            </div>
-            <div id="existing-addresses">
-                <h5>Địa chỉ hiện có</h5>
-                @if (Model.Addresses != null && Model.Addresses.Count > 0)
-                {
-                    foreach (var address in Model.Addresses)
-                    {
-                        <p>@address.StreetNumber, @address.SelectedWard, @address.SelectedDistrict, @address.SelectedProvince
-                        </p>
-                    }
-                }
-                else
-                {
-                    <p>Không có địa chỉ được lưu.</p>
-                }
-            </div>
-            <button type="button" id="add-address" class="btn btn-secondary">Thêm Địa Chỉ Mới</button>
-            <div id="add-address-form" style="display:none;">
-                <div>
-                    <label asp-for="StreetNumber"></label>
-                    <input asp-for="StreetNumber" class="form-control mb-2" />
+<body>
+    <div class="gd">
+        <div class="grid">
+            <h4>@ViewData["Title"]</h4>
+
+            <partial name="_StatusMessage" />
+
+            <div style="display: flex; width: 100%;">
+                <div style="width: 50%;">
+                    <div class="col-md-6 gd-1">
+                        <form id="profile-form" method="post">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group">
+                                <label asp-for="UserName"></label>
+                                <input asp-for="UserName" class="form-control" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="UserEmail"></label>
+                                <input asp-for="UserEmail" class="form-control" disabled />
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="PhoneNumber"></label>
+                                <input asp-for="PhoneNumber" class="form-control" type="text" />
+                            </div>
+
+                            <div id="existing-addresses">
+                                <h5 style="padding-top: 20px;">Địa chỉ hiện có</h5>
+                                @if (Model.Addresses != null && Model.Addresses.Count > 0)
+                                {
+                                    foreach (var address in Model.Addresses.Select((value, index) => new { value, index }))
+                                    {
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <p>
+                                                    @address.value.StreetNumber, @address.value.SelectedWard,
+                                                    @address.value.SelectedDistrict, @address.value.SelectedProvince
+                                                </p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <input type="checkbox" class="set-default" name="DefaultAddressIndex"
+                                                    value="@address.index" @(address.value.IsDefault ? "checked" : "") />
+                                                <button type="button" class="btn btn-danger delete-address"
+                                                    data-index="@address.index">
+                                                    <i class="fa fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <p style="padding-top: 10px;">Không có địa chỉ được lưu.</p>
+                                }
+                            </div>
+                            <button type="button" id="add-address" class="btn btn-secondary">
+                                <i class="fa fa-plus"></i> Thêm Địa Chỉ Mới
+                            </button>
+                            <div id="add-address-form" style="display:none;">
+                                <div>
+                                    <label style="padding: 10px 0;" asp-for="StreetNumber"></label>
+                                    <input asp-for="StreetNumber" class="form-control mb-2" />
+                                </div>
+                                <div class="form-group d-flex">
+                                    <select asp-for="SelectedProvince" asp-items="Model.ProvinceOptions"
+                                        class="form-control me-2">
+                                        <option value="">Chọn Tỉnh/Thành phố</option>
+                                    </select>
+                                    <select asp-for="SelectedDistrict" asp-items="Model.DistrictOptions"
+                                        class="form-control me-2">
+                                        <option value="">Chọn Quận/Huyện</option>
+                                    </select>
+                                    <select asp-for="SelectedWard" asp-items="Model.WardOptions" class="form-control">
+                                        <option value="">Chọn Phường/Xã</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="BirthDate"></label>
+                                <input asp-for="BirthDate" class="form-control" type="date" />
+                                <span style="padding: 10px 0;" asp-validation-for="BirthDate"
+                                    class="text-danger"></span>
+                            </div>
+
+                            <div style="padding-top: 20px; width: 100%; text-align: center;" class="btn">
+                                <button id="update-profile-button" type="submit" class="btn btn-primary">
+                                    Lưu dữ liệu
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="form-group d-flex">
-                    <select asp-for="SelectedProvince" asp-items="Model.ProvinceOptions" class="form-control me-2">
-                        <option value="">Chọn Tỉnh/Thành phố</option>
-                    </select>
-                    <select asp-for="SelectedDistrict" asp-items="Model.DistrictOptions" class="form-control me-2">
-                        <option value="">Chọn Quận/Huyện</option>
-                    </select>
-                    <select asp-for="SelectedWard" asp-items="Model.WardOptions" class="form-control">
-                        <option value="">Chọn Phường/Xã</option>
-                    </select>
-                </div>
+                <div style="padding: 5%;"></div>
+                <div style="width: 50%;"></div>
             </div>
-            <div class="form-group">
-                <label asp-for="BirthDate"></label>
-                <input asp-for="BirthDate" class="form-control" />
-                <span asp-validation-for="BirthDate" class="text-danger"></span>
-            </div>
-
-            <button id="update-profile-button" type="submit" class="btn btn-primary">Lưu dữ liệu</button>
-        </form>
+        </div>
     </div>
-</div>
-
-
+</body>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-
-        //Lấy Quận Huyện
-        $('#SelectedProvince').change(function () {
-            var provinceId = $(this).val();
+        // Function to load districts based on selected province
+        function loadDistricts(provinceId) {
             if (provinceId) {
                 $.getJSON('/Member/GetDistrictsByProvinceId', { provinceId: provinceId }, function (districts) {
                     var districtSelect = $('#SelectedDistrict');
@@ -89,16 +134,13 @@
             } else {
                 $('#SelectedDistrict').empty().append($('<option/>', { value: '', text: 'Chọn Quận/Huyện' }));
             }
-            // Clear wards dropdown
             $('#SelectedWard').empty().append($('<option/>', { value: '', text: 'Chọn Phường/Xã' }));
-        });
+        }
 
-        // Lấy Phường Xã 
-        $('#SelectedDistrict').change(function () {
-            var districtId = $(this).val();
+        // Function to load wards based on selected district
+        function loadWards(districtId) {
             if (districtId) {
                 $.getJSON('/Member/GetWardsByDistrictId', { districtId: districtId }, function (wards) {
-                    console.log(wards)
                     var wardSelect = $('#SelectedWard');
                     wardSelect.empty();
                     wardSelect.append($('<option/>', { value: '', text: 'Chọn Phường/Xã' }));
@@ -109,55 +151,124 @@
             } else {
                 $('#SelectedWard').empty().append($('<option/>', { value: '', text: 'Chọn Phường/Xã' }));
             }
-        });
+        }
+
+
 
 
         $(document).ready(function () {
+            $('#SelectedProvince').change(function () {
+                var provinceId = $(this).val();
+                loadDistricts(provinceId);
+            });
+
+            $('#SelectedDistrict').change(function () {
+                var districtId = $(this).val();
+                loadWards(districtId);
+            });
+
             $('#add-address').click(function () {
-                // Only show the form if it's hidden
                 if ($('#add-address-form').is(':hidden')) {
                     $('#add-address-form').show();
                 } else {
-                    // Logic to handle when the form is already shown and the user wants to add an address
-                    // Collect data from the form
-                    var streetNumber = $('#StreetNumber').val();
-                    var selectedProvince = $('#SelectedProvince').val(); // Use .val() instead of .text()
-                    var selectedDistrict = $('#SelectedDistrict').val(); // Use .val() instead of .text()
-                    var selectedWard = $('#SelectedWard').val(); // Use .val() instead of .text()
-                    // Create a new address object
                     var newAddress = {
-                        StreetNumber: streetNumber,
-                        SelectedProvince: selectedProvince,
-                        SelectedDistrict: selectedDistrict,
-                        SelectedWard: selectedWard
+                        StreetNumber: $('#StreetNumber').val(),
+                        SelectedProvince: $('#SelectedProvince').val(),
+                        SelectedDistrict: $('#SelectedDistrict').val(),
+                        SelectedWard: $('#SelectedWard').val(),
+                        IsDefault: false
                     };
-                    // Send the new address object to the server via AJAX
                     $.post('/Member/AddAddress', newAddress, function (response) {
-                        // Handle the response from the server
-                        // Update UI or notify the user
-                        displayAddresses();
-
-                        $('#add-address-form').hide(); // Hide the form after adding
+                        location.reload();
+                        $('#add-address-form').hide();
                     });
                 }
+            });
+
+            $(document).on('click', '.delete-address', function () {
+                var addressIndex = $(this).data('index');
+                $.post('/Member/DeleteAddress', { index: addressIndex }, function (response) {
+                    if (response.success) {
+                        location.reload();
+                    }
+                });
+            });
+
+            $(document).on('change', '.set-default', function () {
+                var index = $(this).val();
+                var isChecked = $(this).is(':checked');
+
+                // Uncheck other checkboxes
+                $('.set-default').not(this).prop('checked', false);
+
+                // Update the IsDefault property of the addresses
+                $.post('/Member/SetDefaultAddress', { index: index, isDefault: isChecked }, function (response) {
+                });
+            });
+            $(document).ready(function () {
+                // Gọi action trong controller để lấy thông tin địa chỉ mặc định
+                $.get('/Member/GetDefaultAddress', function (data) {
+                    // Nếu có dữ liệu trả về từ controller
+                    if (data) {
+                        // Lấy thông tin địa chỉ mặc định
+                        var streetNumber = data.streetNumber;
+                        var selectedProvince = data.selectedProvince;
+                        var selectedDistrict = data.selectedDistrict;
+                        var selectedWard = data.selectedWard;
+
+                        // Tìm ô checkbox tương ứng với địa chỉ mặc định và tự động tích vào
+                        $('#existing-addresses').find('input[type="checkbox"]').each(function () {
+                            var addressInfo = $(this).closest('p').text();
+                            if (addressInfo.includes(streetNumber) && addressInfo.includes(selectedWard) && addressInfo.includes(selectedDistrict) && addressInfo.includes(selectedProvince)) {
+                                $(this).prop('checked', true);
+                            }
+                        });
+                    }
+                });
+            });
+
+
+            $('#update-profile-button').click(function (event) {
+                event.preventDefault();
+                $('#profile-form').submit();
+            });
+            $(document).ready(function () {
+                $('.set-default').change(function () {
+                    if ($(this).is(':checked')) {
+                        $('.set-default').not(this).prop('checked', false);
+                    }
+                });
             });
 
         });
-        function displayAddresses() {
-            $.getJSON('/Member/GetAddresses', function (addresses) {
-                var existingAddressesContainer = $('#existing-addresses');
-                existingAddressesContainer.empty(); // Clear existing addresses
-                if (addresses.length > 0) {
-                    // Iterate through addresses and display them
-                    $.each(addresses, function (index, address) {
-                        existingAddressesContainer.append($('<p>').text(address));
-                    });
-                } else {
-                    existingAddressesContainer.append('<p>No addresses found.</p>');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const phoneNumberInput = document.querySelector('input[name="PhoneNumber"]');
+
+            phoneNumberInput.addEventListener('input', () => {
+                const maxDigits = 10;
+                let value = phoneNumberInput.value;
+
+                if (value.length > maxDigits) {
+                    phoneNumberInput.value = value.slice(0, maxDigits);
                 }
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                console.error("Error fetching addresses:", textStatus, errorThrown);
             });
-        }
+
+            phoneNumberInput.addEventListener('blur', () => {
+                const maxDigits = 10;
+                let value = phoneNumberInput.value;
+
+                // Kiểm tra nếu số điện thoại có ít hơn 10 số
+                if (value.length < maxDigits) {
+                    // Hiển thị thông báo
+                    alert('Số điện thoại phải có đủ 10 số.');
+                    // Xóa nội dung của trường nhập liệu
+                    phoneNumberInput.value = '';
+                }
+            });
+        });
+
+
+
     </script>
 }

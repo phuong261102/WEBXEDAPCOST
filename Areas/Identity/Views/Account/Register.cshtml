@@ -11,43 +11,43 @@
 @{
     Layout = null;
 }
+
 <head>
-    <link rel="stylesheet" href="~/login/style.css" asp-append-version="true" />
-    <script src="~/login/showPassword.js" asp-append-version="true" ></script>
+    <link rel="stylesheet" href="~/Register/style.css" asp-append-version="true" />
+    <script src="~/login/showPassword.js" asp-append-version="true"></script>
     <script src="https://kit.fontawesome.com/e21f566ee8.js" crossorigin="anonymous"></script>
 
 </head>
 
-<div class="d-flex justify-content-center "> 
-    <img src="/image/logo.png" class="img shadow-2-strong" alt="LOGO" />
-</div>
+<div class="register">
+    <div class="logo-container">
+        <a asp-area="" asp-controller="Home" asp-action="Index">
+            <img src="/images/logo.png" alt="LOGO" />
+        </a>
 
-<h1 class="d-flex justify-content-center">@ViewData["Title"].</h1>
-
-<div class="row justify-content-center">
+    </div>
+    <div>
+        <h1 class="app-title">@ViewData["Title"].</h1>
+    </div>
     <div class="col-md-4">
-        <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
-            <hr />
+        <form asp-controller="Account" asp-action="Register" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post"
+            class="form-horizontal" role="form">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="UserName" class="control-label">Tên người dùng</label>
                 <input asp-for="UserName" class="form-control" />
-                <span asp-validation-for="UserName" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Email" class="control-label">Email</label>
                 <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Password" class="control-label">Mật khẩu</label>
                 <input asp-for="Password" type="password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="ConfirmPassword" class="control-label">Xác nhận mật khẩu</label>
                 <input asp-for="ConfirmPassword" type="password" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
             </div>
             <div class="row justify-content-center ">
                 <button type="submit" class="mt-2 btn btn-outline-primary btn-rounded btn-block">ĐĂNG KÝ</button>
@@ -67,21 +67,23 @@
                         }
                         else
                         {
-                            <form asp-controller="Account" asp-action="ExternalLogin" 
-                            asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
-                                 <div>
+                            <form asp-controller="Account" asp-action="ExternalLogin"
+                                asp-route-returnurl="@ViewData["ReturnUrl"]" method="post" class="form-horizontal" role="form">
+                                <div>
                                     <p class=" row justify-content-center">
                                         @foreach (var provider in loginProviders)
                                         {
-                                            <button type="submit" class="mt-2 btn btn-outline-primary btn-rounded" 
-                                            name="provider" value="@provider.Name" title="Log in using your @provider.Name account">
-                                                @switch(provider.Name)
+                                            <button type="submit" class="mt-2 btn btn-outline-primary btn-rounded" name="provider"
+                                                value="@provider.Name" title="Log in using your @provider.Name account">
+                                                @switch (provider.Name)
                                                 {
-                                                    case "Google":                                                            <i class="fab fa-google"></i> <!-- Sử dụng font awesome icon -->
-                                                          break;
+                                                    case "Google":
+                                                        <i class="fab fa-google"></i> <!-- Sử dụng font awesome icon -->
+                                                        break;
                                                     case "Facebook":
                                                         <i class="fa-brands fa-facebook-f"></i> <!-- Sử dụng font awesome icon -->
-                                                        break;                                                        default:
+                                                        break;
+                                                    default:
                                                         @provider.Name <!-- Hiển thị tên nhà cung cấp nếu không có icon -->
                                                         break;
                                                 }
@@ -99,6 +101,7 @@
 </div>
 
 @section Scripts {
-    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
-

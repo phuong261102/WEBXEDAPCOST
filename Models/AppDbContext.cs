@@ -44,12 +44,32 @@ namespace App.Models
             });
             modelBuilder.Entity<ProductCategory>()
            .HasKey(pc => new { pc.ProductId, pc.CategoryId });
+            modelBuilder.Entity<CartItem>()
+                           .HasOne(ci => ci.Cart)
+                           .WithMany(c => c.CartItems)
+                           .HasForeignKey(ci => ci.CartId);
 
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Product)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProductId);
 
+            modelBuilder.Entity<Cart>()
+            .HasOne(c => c.User)
+            .WithOne(u => u.Cart) // Mỗi User có một Cart
+            .HasForeignKey<Cart>(c => c.UserId) // Khóa ngoại ở phía Cart
+            .OnDelete(DeleteBehavior.Cascade);
 
+            // Tạo index cho SessionId để truy vấn nhanh hơn
+            modelBuilder.Entity<Cart>()
+                .HasIndex(c => c.SessionId)
+                .IsUnique(false);
 
         }
 
+        public DbSet<Cart> Carts { get; set; }
+
+        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Category> Categories { set; get; }
         public DbSet<Product> Products { set; get; }
         public DbSet<ProductCategory> ProductCategories { set; get; }

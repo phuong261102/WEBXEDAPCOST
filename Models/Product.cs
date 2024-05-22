@@ -22,16 +22,16 @@ namespace App.Models
 
         [Required(ErrorMessage = "Mô tả sản phẩm là bắt buộc")]
         [Display(Name = "Mô tả sản phẩm")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required(ErrorMessage = "Giá sản phẩm là bắt buộc")]
         [Display(Name = "Giá sản phẩm")]
         [DataType(DataType.Currency)]
-        public decimal Price { get; set; }
+        public double Price { get; set; }
 
         [Display(Name = "Giá giảm")]
         [DataType(DataType.Currency)]
-        public decimal? DiscountPrice { get; set; } // Giá sau khi giảm
+        public double? DiscountPrice { get; set; } // Giá sau khi giảm
 
         [Display(Name = "Chuỗi định danh (url)", Prompt = "Nhập hoặc để trống tự phát sinh theo Title")]
         [StringLength(160, MinimumLength = 5, ErrorMessage = "{0} dài {1} đến {2}")]
@@ -53,9 +53,9 @@ namespace App.Models
             get => JsonConvert.DeserializeObject<Dictionary<string, string>>(DetailsJson ?? "{}");
             set => DetailsJson = JsonConvert.SerializeObject(value);
         }
-
+        [JsonIgnore]
         public List<ProductCategory> ProductCategories { get; set; }
-
+        [JsonIgnore]
         public List<ProductVariant> Variants { get; set; }
 
         [Display(Name = "Ảnh sản phẩm")]
@@ -63,6 +63,7 @@ namespace App.Models
         public string MainImage { get; set; }
         public IList<string>? SubImages { get; set; }
         public int BrandId { get; set; }
+        [JsonIgnore]
         public Brand Brand { get; set; }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -11,6 +12,7 @@ namespace App.Areas.Identity.Models.ManageViewModels
 
     [Display(Name = "Địa chỉ email")]
     public string UserEmail { get; set; }
+
     [Display(Name = "Số điện thoại")]
     public string PhoneNumber { get; set; }
 
@@ -19,6 +21,7 @@ namespace App.Areas.Identity.Models.ManageViewModels
     public string HomeAddress { get; set; }
 
     [Display(Name = "Ngày sinh")]
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}", ApplyFormatInEditMode = true)]
     public DateTime? BirthDate { get; set; }
 
     [Display(Name = "Số nhà")]
@@ -33,15 +36,12 @@ namespace App.Areas.Identity.Models.ManageViewModels
     [Display(Name = "Phường/Xã")]
     public string SelectedWard { get; set; }
 
-    // Thêm thuộc tính để lưu trữ danh sách lựa chọn
-
     public IEnumerable<SelectListItem> ProvinceOptions { get; set; }
     public IEnumerable<SelectListItem> DistrictOptions { get; set; }
     public IEnumerable<SelectListItem> WardOptions { get; set; }
 
     public List<AddressModel> Addresses { get; set; }
 
-    // Phương thức để thêm một địa chỉ mới vào danh sách
     public void AddAddress(AddressModel address)
     {
       if (Addresses == null)
@@ -51,7 +51,6 @@ namespace App.Areas.Identity.Models.ManageViewModels
       Addresses.Add(address);
     }
 
-    // Phương thức để xóa một địa chỉ dựa trên chỉ mục
     public void RemoveAddress(int index)
     {
       if (Addresses != null && Addresses.Count > index)
@@ -60,7 +59,6 @@ namespace App.Areas.Identity.Models.ManageViewModels
       }
     }
 
-    // Phương thức để cập nhật một địa chỉ
     public void UpdateAddress(int index, AddressModel address)
     {
       if (Addresses != null && Addresses.Count > index)
@@ -68,35 +66,37 @@ namespace App.Areas.Identity.Models.ManageViewModels
         Addresses[index] = address;
       }
     }
+
+
   }
-}
 
-public class Province
-{
-  public string Id { get; set; }
-  public string Name { get; set; }
-  public List<District> Districts { get; set; }
-}
+  public class Province
+  {
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public List<District> Districts { get; set; }
+  }
 
-public class District
-{
-  public string Id { get; set; }
-  public string Name { get; set; }
-  public List<Ward> Wards { get; set; }
-}
+  public class District
+  {
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public List<Ward> Wards { get; set; }
+  }
 
-public class Ward
-{
-  public string Id { get; set; }
-  public string Name { get; set; }
-  public string Level { get; set; }
+  public class Ward
+  {
+    public string Id { get; set; }
+    public string Name { get; set; }
+    public string Level { get; set; }
+  }
 
-}
-public class AddressModel
-{
-  public string StreetNumber { get; set; }
-  public string SelectedProvince { get; set; }
-  public string SelectedDistrict { get; set; }
-  public string SelectedWard { get; set; }
-  // Các thuộc tính khác cần thiết cho địa chỉ
+  public class AddressModel
+  {
+    public string StreetNumber { get; set; }
+    public string SelectedProvince { get; set; }
+    public string SelectedDistrict { get; set; }
+    public string SelectedWard { get; set; }
+    public bool IsDefault { get; set; }
+  }
 }

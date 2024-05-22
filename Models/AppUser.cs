@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
+using XEDAPVIP.Models;
 
 namespace App.Models
 {
@@ -14,5 +15,7 @@ namespace App.Models
         // [Required]       
         [DataType(DataType.Date)]
         public DateTime? BirthDate { get; set; }
+
+        public Cart Cart { get; set; }
     }
 }

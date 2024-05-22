@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -49,7 +50,7 @@ namespace App.Areas.Identity.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(ManageMessageId? message = null)
         {
-            ViewData["StatusMessage"] =
+            ViewData["SuccessMessage"] =
                 message == ManageMessageId.ChangePasswordSuccess ? "Đã thay đổi mật khẩu."
                 : message == ManageMessageId.SetPasswordSuccess ? "Đã đặt lại mật khẩu."
                 : message == ManageMessageId.SetTwoFactorSuccess ? "Your two-factor authentication provider has been set."
@@ -377,6 +378,7 @@ namespace App.Areas.Identity.Controllers
             return View("Error");
         }
 
+        [HttpGet]
         public async Task<IActionResult> GetProvinceDistrictWard()
         {
             try
@@ -391,7 +393,7 @@ namespace App.Areas.Identity.Controllers
                 }
                 else
                 {
-                    // Xử lý trường hợp các status code khác ngoài 200 OK
+                    // Handle other status codes
                     return StatusCode((int)response.StatusCode);
                 }
             }
@@ -401,6 +403,7 @@ namespace App.Areas.Identity.Controllers
                 return StatusCode(500);
             }
         }
+
         public async Task<List<Province>> GetProvincesAsync()
         {
             var dataDiagioiResponse = await GetProvinceDistrictWard();
@@ -418,17 +421,14 @@ namespace App.Areas.Identity.Controllers
             }
         }
 
-
         public async Task<JsonResult> GetDistrictsByProvinceId(string provinceId)
         {
             var provinces = await GetProvincesAsync();
-
 
             var selectedProvince = provinces.FirstOrDefault(province => province.Id == provinceId);
 
             if (selectedProvince != null)
             {
-
                 return Json(selectedProvince.Districts);
             }
             else
@@ -437,14 +437,10 @@ namespace App.Areas.Identity.Controllers
             }
         }
 
-
-
-
         public async Task<JsonResult> GetWardsByDistrictId(string districtId)
         {
             var provinces = await GetProvincesAsync();
 
-            // Tìm kiếm quận/huyện dựa trên districtId
             District selectedDistrict = null;
             foreach (var province in provinces)
             {
@@ -470,34 +466,128 @@ namespace App.Areas.Identity.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Convert AddressModel to App.Models.Address
-                var address = new App.Models.Address
+                var address = new Address
                 {
                     StreetNumber = model.StreetNumber,
                     SelectedWard = model.SelectedWard,
                     SelectedDistrict = model.SelectedDistrict,
                     SelectedProvince = model.SelectedProvince,
-                    // Set other properties as needed
                 };
 
-                // Set the UserId property of the Address entity
                 var user = await _userManager.GetUserAsync(HttpContext.User);
                 address.UserId = user.Id;
 
-                // Add the Address object to the context
                 _context.Addresses.Add(address);
 
-                // Save changes to the database
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Thêm địa chỉ thành công";
 
-                // Return success message with the formatted new address
                 return Json(new { success = true, newAddressFormatted = $"{address.StreetNumber}, {address.SelectedWard}, {address.SelectedDistrict}, {address.SelectedProvince}" });
             }
             else
             {
-                // Return error message if the model state is not valid
                 return Json(new { success = false, errorMessage = "Thông tin địa chỉ không hợp lệ." });
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteAddress(int index)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var addresses = await _context.Addresses.Where(a => a.UserId == user.Id).ToListAsync();
+
+            if (index >= 0 && index < addresses.Count)
+            {
+                var addressToDelete = addresses[index];
+                _context.Addresses.Remove(addressToDelete);
+                await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Xoá địa chỉ thành công";
+
+                return Json(new { success = true });
+            }
+            return Json(new { success = false });
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAddresses()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            if (user == null)
+            {
+                return NotFound(); // Trả về lỗi nếu không tìm thấy người dùng
+            }
+
+            // Query the database to get the list of addresses
+            var addresses = await _context.Addresses.ToListAsync();
+
+            // Map the list of addresses to a new list containing only the address names
+            var addressNames = new List<string>();
+            foreach (var address in addresses)
+            {
+                var selectedProvince = await GetProvinceNameById(address.SelectedProvince);
+                var selectedDistrict = await GetDistrictNameById(address.SelectedDistrict);
+                var selectedWard = await GetWardNameById(address.SelectedWard);
+
+                var addressName = $"{address.StreetNumber}, {selectedWard}, {selectedDistrict}, {selectedProvince}";
+                addressNames.Add(addressName);
+            }
+
+            return Json(addressNames); // Return the list of address names as JSON
+        }
+
+
+        [HttpGet]
+        [Authorize] // Đảm bảo chỉ người dùng được xác thực mới có thể truy cập
+        public async Task<IActionResult> GetDefaultAddress()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+
+            if (user == null)
+            {
+                return NotFound(); // Trả về lỗi nếu không tìm thấy người dùng
+            }
+
+            var defaultAddress = await _context.Addresses.FirstOrDefaultAsync(a => a.UserId == user.Id && a.isDefault);
+
+            if (defaultAddress == null)
+            {
+                return NotFound(); // Trả về lỗi nếu không tìm thấy địa chỉ mặc định
+            }
+
+            // Lấy tên của tỉnh/thành phố, quận/huyện và phường/xã tương ứng với các ID lưu trong địa chỉ mặc định
+            var selectedProvince = await GetProvinceNameById(defaultAddress.SelectedProvince);
+            var selectedDistrict = await GetDistrictNameById(defaultAddress.SelectedDistrict);
+            var selectedWard = await GetWardNameById(defaultAddress.SelectedWard);
+
+            return Ok(new
+            {
+                streetNumber = defaultAddress.StreetNumber,
+                selectedProvince = selectedProvince,
+                selectedDistrict = selectedDistrict,
+                selectedWard = selectedWard
+            });
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> SetDefaultAddress(int index)
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            var addresses = await _context.Addresses.Where(a => a.UserId == user.Id).ToListAsync();
+
+            if (index >= 0 && index < addresses.Count)
+            {
+                var defaultAddress = addresses[index];
+                var provinceName = await GetProvinceNameById(defaultAddress.SelectedProvince);
+                var districtName = await GetDistrictNameById(defaultAddress.SelectedDistrict);
+                var wardName = await GetWardNameById(defaultAddress.SelectedWard);
+                user.HomeAddress = $"{defaultAddress.StreetNumber}, {wardName}, {districtName}, {provinceName}";
+                await _userManager.UpdateAsync(user);
+                await _signInManager.RefreshSignInAsync(user);
+
+                return Ok(new { success = true });
+            }
+            return Ok(new { success = false });
         }
 
         private async Task<string> GetProvinceNameById(string provinceId)
@@ -537,22 +627,20 @@ namespace App.Areas.Identity.Controllers
             }
             return "";
         }
+
         public async Task<IActionResult> EditProfileAsync()
         {
             var user = await GetCurrentUserAsync();
             var provinces = await GetProvincesAsync();
 
-            // Convert list of provinces to list of SelectListItem
             var provinceOptions = provinces.Select(p => new SelectListItem
             {
                 Value = p.Id.ToString(),
                 Text = p.Name
             }).ToList();
 
-            // Fetch the user's addresses from the database
-            var addresses = _context.Addresses.Where(a => a.UserId == user.Id).ToList();
+            var addresses = await _context.Addresses.Where(a => a.UserId == user.Id).ToListAsync();
 
-            // Create a List<AddressModel> instead of List<string>
             var addressModels = new List<AddressModel>();
             foreach (var address in addresses)
             {
@@ -560,7 +648,6 @@ namespace App.Areas.Identity.Controllers
                 var districtName = await GetDistrictNameById(address.SelectedDistrict);
                 var wardName = await GetWardNameById(address.SelectedWard);
 
-                // Create an AddressModel object for each address
                 var addressModel = new AddressModel
                 {
                     StreetNumber = address.StreetNumber,
@@ -571,7 +658,6 @@ namespace App.Areas.Identity.Controllers
                 addressModels.Add(addressModel);
             }
 
-            // Initialize model with necessary data
             var model = new EditExtraProfileModel()
             {
                 UserName = user.UserName,
@@ -579,26 +665,35 @@ namespace App.Areas.Identity.Controllers
                 PhoneNumber = user.PhoneNumber,
                 HomeAddress = user.HomeAddress,
                 BirthDate = user.BirthDate,
-                ProvinceOptions = provinceOptions, // Assign the list of SelectListItem
-                DistrictOptions = new List<SelectListItem>(), // Initialize with empty list
-                WardOptions = new List<SelectListItem>(), // Initialize with empty list
-                Addresses = addressModels // Assign the list of AddressModel objects
+                ProvinceOptions = provinceOptions,
+                DistrictOptions = new List<SelectListItem>(),
+                WardOptions = new List<SelectListItem>(),
+                Addresses = addressModels
             };
 
             return View(model);
         }
+
         [HttpPost]
-        public async Task<IActionResult> EditProfileAsync(EditExtraProfileModel model)
+        public async Task<IActionResult> EditProfile(EditExtraProfileModel model)
         {
             var user = await GetCurrentUserAsync();
 
-            user.HomeAddress = model.HomeAddress;
             user.BirthDate = model.BirthDate;
-            await _userManager.UpdateAsync(user);
+            user.PhoneNumber = model.PhoneNumber;
 
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(model);
+            }
+            TempData["SuccessMessage"] = "Lưu thông tin thành công";
             await _signInManager.RefreshSignInAsync(user);
-            return RedirectToAction(nameof(Index), "Manage");
-
+            return RedirectToAction(nameof(Index));
         }
 
     }
