@@ -17,7 +17,7 @@ namespace XEDAPVIP.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.4")
+                .HasAnnotation("ProductVersion", "8.0.5")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -439,6 +439,7 @@ namespace XEDAPVIP.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+<<<<<<< Updated upstream
             modelBuilder.Entity("XEDAPVIP.Models.Cart", b =>
                 {
                     b.Property<int>("Id")
@@ -471,6 +472,8 @@ namespace XEDAPVIP.Migrations
                     b.ToTable("Carts", (string)null);
                 });
 
+=======
+>>>>>>> Stashed changes
             modelBuilder.Entity("XEDAPVIP.Models.CartItem", b =>
                 {
                     b.Property<int>("Id")
@@ -479,6 +482,7 @@ namespace XEDAPVIP.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+<<<<<<< Updated upstream
                     b.Property<int>("CartId")
                         .HasColumnType("int");
 
@@ -492,15 +496,30 @@ namespace XEDAPVIP.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("productCode")
+=======
+                    b.Property<int>("Quantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VariantId")
+>>>>>>> Stashed changes
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
+<<<<<<< Updated upstream
                     b.HasIndex("CartId");
 
                     b.HasIndex("ProductId");
 
                     b.ToTable("CartItems", (string)null);
+=======
+                    b.HasIndex("VariantId");
+
+                    b.ToTable("CartItems");
+>>>>>>> Stashed changes
                 });
 
             modelBuilder.Entity("App.Models.Address", b =>
@@ -615,6 +634,7 @@ namespace XEDAPVIP.Migrations
                         .IsRequired();
                 });
 
+<<<<<<< Updated upstream
             modelBuilder.Entity("XEDAPVIP.Models.Cart", b =>
                 {
                     b.HasOne("App.Models.AppUser", "User")
@@ -648,6 +668,17 @@ namespace XEDAPVIP.Migrations
                 {
                     b.Navigation("Cart")
                         .IsRequired();
+=======
+            modelBuilder.Entity("XEDAPVIP.Models.CartItem", b =>
+                {
+                    b.HasOne("App.Models.ProductVariant", "Variant")
+                        .WithMany()
+                        .HasForeignKey("VariantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Variant");
+>>>>>>> Stashed changes
                 });
 
             modelBuilder.Entity("App.Models.Brand", b =>

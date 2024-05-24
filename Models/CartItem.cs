@@ -1,9 +1,14 @@
+<<<<<<< Updated upstream
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+=======
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+>>>>>>> Stashed changes
 using App.Models;
 
 namespace XEDAPVIP.Models
@@ -13,6 +18,7 @@ namespace XEDAPVIP.Models
     {
         public int Id { get; set; }
 
+<<<<<<< Updated upstream
         public int CartId { get; set; }
 
         [ForeignKey("CartId")]
@@ -29,3 +35,13 @@ namespace XEDAPVIP.Models
         public double Price { get; set; }
     }
 }
+=======
+        public string? UserId { get; set; }  // Optional
+        public int VariantId { get; set; }
+        [ForeignKey("VariantId")]
+        public ProductVariant? Variant { get; set; }
+        [Required]
+        public int Quantity { get; set; }
+    }
+}
+>>>>>>> Stashed changes

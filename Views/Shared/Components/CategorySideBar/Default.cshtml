@@ -20,7 +20,8 @@
                             @foreach (var itemchild in item.CategoryChildren)
                             {
                                 <li>
-                                    <a asp-controller="Home" asp-action="Product" asp-route-categoryslug="@itemchild.Slug">
+                                    <a asp-area="Home" asp-controller="ProductView" asp-action="Product"
+                                        asp-route-categoryslug="@itemchild.Slug">
                                         @itemchild.Title
                                     </a>
                                 </li>
@@ -39,7 +40,7 @@
                 @foreach (var brand in Model.brands)
                 {
                     <li>
-                        <a asp-controller="Home" asp-action="Product" asp-route-brandslug="@brand.Slug">
+                        <a asp-area="Home asp-controller=" ProductView" asp-action="Product" asp-route-brandslug="@brand.Slug">
                             <img src="@brand.Image" alt="@brand.Name" style="max-width: 100px;" />
                         </a>
                     </li>

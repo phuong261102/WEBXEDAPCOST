@@ -60,6 +60,7 @@ namespace App.Models
             .HasForeignKey<Cart>(c => c.UserId) // Khóa ngoại ở phía Cart
             .OnDelete(DeleteBehavior.Cascade);
 
+<<<<<<< Updated upstream
             // Tạo index cho SessionId để truy vấn nhanh hơn
             modelBuilder.Entity<Cart>()
                 .HasIndex(c => c.SessionId)
@@ -70,11 +71,18 @@ namespace App.Models
         public DbSet<Cart> Carts { get; set; }
 
         public DbSet<CartItem> CartItems { get; set; }
+=======
+        }
+
+
+>>>>>>> Stashed changes
         public DbSet<Category> Categories { set; get; }
         public DbSet<Product> Products { set; get; }
         public DbSet<ProductCategory> ProductCategories { set; get; }
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<ProductVariant> productVariants { set; get; }
+        public DbSet<CartItem> CartItems { get; set; }
+
     }
 }

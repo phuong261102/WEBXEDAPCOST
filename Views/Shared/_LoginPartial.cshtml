@@ -26,6 +26,7 @@
 }
 else
 {
+    @Html.AntiForgeryToken()
     <ul style="font-size: 18px;" class="nav navbar-nav navbar-right">
         <li class="nav-item">
             <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Login">

@@ -35,46 +35,30 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         }
 
         // GET: Product
-        public async Task<IActionResult> Index(string searchString, [FromQuery(Name = "p")] int currentPage, int pagesize, string priceRange)
+        public async Task<IActionResult> Index([FromQuery(Name = "p")] int currentPage, int pagesize)
         {
-            var products = _context.Products.AsQueryable();
-
-            // Filter products based on search string
-            if (!string.IsNullOrEmpty(searchString))
-            {
-                products = products.Where(p => p.Name.Contains(searchString));
-            }
-            // Lọc sản phẩm dựa trên giá tối thiểu và giá tối đa
-            switch (priceRange)
-            {
-                case "under100":
-                    products = products.Where(p => p.Price < 100000000);
-                    break;
-                case "100to500":
-                    products = products.Where(p => p.Price >= 100000000 && p.Price <= 500000000);
-                    break;
-                case "over500":
-                    products = products.Where(p => p.Price > 500000000);
-                    break;
-            }
-
-            var productCount = await products.CountAsync();
+            var products = _context.Products.OrderByDescending(p => p.DateUpdated);
+            var productCount = products.Count();
             ViewBag.countproduct = productCount;
+            int totalProduc = await products.CountAsync();
             if (pagesize <= 0) pagesize = 12;
-            int countPages = (int)Math.Ceiling((double)productCount / pagesize);
+            int countPages = (int)Math.Ceiling((double)totalProduc / pagesize);
             if (currentPage > countPages)
                 currentPage = countPages;
             if (currentPage < 1)
                 currentPage = 1;
-
             var pagingmodel = new PagingModel()
             {
                 countpages = countPages,
                 currentpage = currentPage,
-                generateUrl = (pageNumber) => Url.Action("Index", new { p = pageNumber, pagesize = pagesize, searchString = searchString })
+                generateUrl = (pageNumber) => Url.Action("Index", new
+                {
+                    p = pageNumber,
+                    pagesize = pagesize
+                })
             };
             ViewBag.pagingmodel = pagingmodel;
-            ViewBag.totalProduc = productCount;
+            ViewBag.totalProduc = totalProduc;
 
             var productinPage = await products.Skip((currentPage - 1) * pagesize)
                                               .Take(pagesize)
@@ -84,7 +68,6 @@ namespace XEDAPVIP.Areas.Admin.Controllers
 
             return View(productinPage);
         }
-
 
         // GET: Product/Details/5
         public async Task<IActionResult> Details(int? id)
