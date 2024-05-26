@@ -22,7 +22,7 @@ namespace App.Models
 
         [Required(ErrorMessage = "Mô tả sản phẩm là bắt buộc")]
         [Display(Name = "Mô tả sản phẩm")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required(ErrorMessage = "Giá sản phẩm là bắt buộc")]
         [Display(Name = "Giá sản phẩm")]
@@ -53,9 +53,9 @@ namespace App.Models
             get => JsonConvert.DeserializeObject<Dictionary<string, string>>(DetailsJson ?? "{}");
             set => DetailsJson = JsonConvert.SerializeObject(value);
         }
-
+        [JsonIgnore]
         public List<ProductCategory> ProductCategories { get; set; }
-
+        [JsonIgnore]
         public List<ProductVariant> Variants { get; set; }
 
         [Display(Name = "Ảnh sản phẩm")]
@@ -63,6 +63,8 @@ namespace App.Models
         public string MainImage { get; set; }
         public IList<string>? SubImages { get; set; }
         public int BrandId { get; set; }
+        [JsonIgnore]
         public Brand Brand { get; set; }
+
     }
 }

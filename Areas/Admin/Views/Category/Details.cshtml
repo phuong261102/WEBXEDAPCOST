@@ -1,65 +1,128 @@
-@model App.Models.Category
-
+@using App.Components
+@model App.Components.CategorySideBar.CategorySideBarData
 @{
-    ViewData["Title"] = "Chi Tiết Danh Mục";
+    int level = Model.level;
 }
-<style>
-    dl.row {
-        border: 2px solid #000;
-    }
 
-    dl.row dt {
-        border-right: 2px solid #000;
-        border-bottom: 2px solid #000;
-        padding-top: 20px;
-        padding-bottom: 20px;
-    }
+<!DOCTYPE html>
+<html lang="en">
 
-    dl.row dd {
-        margin-top: 25px;
-        padding-bottom: 10px;
-    }
-</style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category Sidebar</title>
+    
+</head>
 
 <body>
-    <div>
-        <dl class="row">
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Title)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Title)
-            </dd>
-            <dt class="col-sm-2">
-                Mô tả
-            </dt>
-            <dd class="col-sm-10">
-                @Html.Raw(Model.Content)
-            </dd>
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.Slug)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Slug)
-            </dd>
-            <dt style="border-bottom: none;" class="col-sm-2">
-                @Html.DisplayNameFor(model => model.ParentCategory)
-            </dt>
-            <dd class="col-sm-10">
-                @if (Model.ParentCategory != null)
+    @if (Model.Categories.Count > 0)
+    {
+        <div class="category-container d-flex justify-content-start">
+            @foreach (var item in Model.Categories)
+            {
+                @if (item.ParentCategory == null)
                 {
-                    @Html.DisplayFor(model => model.ParentCategory.Slug)
+                    <div class="column">
+                        <h6>@item.Title</h6>
+                        <hr />
+                        @if (item.CategoryChildren?.Count > 0)
+                        {
+                            <ul class="category-popup">
+                                @foreach (var itemchild in item.CategoryChildren)
+                                {
+                                    <li>
+                                        <a asp-controller="Home" asp-action="Product" asp-route-categoryslug="@itemchild.Slug">
+                                            @itemchild.Title
+                                        </a>
+                                    </li>
+                                    <hr />
+                                }
+                            </ul>
+                        }
+                    </div>
                 }
-                else
-                {
-                    <text>No Parent Category</text>
-                }
-            </dd>
-        </dl>
-    </div>
+            }
+            @if (Model.brands.Count > 0)
+            {
+                <ul class="column">
+                    <h6>Thương hiệu</h6>
+                    <hr />
+                    @foreach (var brand in Model.brands)
+                    {
+                        <li>
+                            <a asp-controller="Home" asp-action="Product" asp-route-brandslug="@brand.Slug">
+                                <img src="@brand.Image" alt="@brand.Name" style="max-width: 100px;" />
+                            </a>
+                        </li>
+                        <hr />
+                    }
+                </ul>
+            }
+        </div>
+    }
 
-    <div>
-        <a asp-action="Edit" asp-route-id="@Model?.Id">Sửa</a> |
-        <a asp-action="Index">Quay lại danh sách</a>
-    </div>
+    <style>
+        .category-container {
+            display: flex;
+            text-align: left;
+            justify-content: center;
+            gap: 80px;
+        }
+
+        .column {
+            position: relative;
+            width: 200px;
+            margin-right: 20px;
+        }
+
+        .collum h5 {
+            margin-bottom: 10px;
+        }
+
+        .categorypopup {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            display: none;
+            background-color: white;
+            padding: 10px;
+            max-height: calc(100vh - 103px);
+            overflow-y: auto;
+        }
+
+        .category-product {
+            position: relative;
+        }
+
+        .categorypopup ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+.category-popup li {
+            padding: 10px 16px;
+            margin-bottom: 5px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .category-popup li a {
+            text-decoration: none;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .category-popup li a:hover {
+            color: #007bff;
+        }
+
+        .category-popup li:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+
 </body>
+
+</html>

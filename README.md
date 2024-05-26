@@ -31,6 +31,9 @@ dotnet add package Microsoft.AspNetCore.Authentication.OpenIDConnect
 dotnet add package Microsoft.AspNetCore.Authentication.Twitter
 dotnet add package MailKit
 dotnet add package MimeKit
+dotnet add package Newtonsoft.Json
+dotnet add package Microsoft.AspNetCore.Session
+dotnet add package Microsoft.Extensions.Caching.Memory
 
 # Generate Database
 

@@ -1,0 +1,266 @@
+@model List<App.Models.Product>
+@using App.Components
+
+@{
+    List<Category> categories = ViewBag.categories as List<Category>;
+    List<Brand> brands = ViewBag.brands as List<Brand>;
+    Category category = ViewBag.category as Category;
+
+    ViewData["Title"] = "Sản phẩm";
+}
+
+@section Popup {
+    @await Component.InvokeAsync(CategorySideBar.COMPONENTNAME,
+        new CategorySideBar.CategorySideBarData
+{
+    level = 0,
+    Categories = categories,
+    slugCategory = ViewBag.categoryslug as string,
+    brands = brands,
+    slugBrand = ViewBag.brandslug as string
+})
+}
+
+<style>
+    .product-item {
+        margin-bottom: 10px;
+        border: 3px solid #ddd;
+        border-radius: 10px;
+    }
+
+    .col-01 {
+        text-decoration: none;
+        color: rgba(102, 102, 102, .7);
+    }
+</style>
+
+<body style="padding-bottom: 50px;">
+    <div class="main_bicycle_shop">
+        <div class="grid">
+            <div class="is-large">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb" style="background-color: transparent; padding: 0;">
+                        <li class="breadcrumb-item"><a class="col-01" href="~/">Home</a></li>
+                        <li class="breadcrumb-item"><a class="col-01" asp-action="Product">Shop</a></li>
+
+                        @if (category != null)
+                        {
+                            var li = category.ListParentsAndSelf();
+                            foreach (var i in li)
+                            {
+                                <li class="breadcrumb-item">
+                                    <a class="col-01" asp-action="Product" asp-route-categoryslug="@i.Slug">
+                                        @i.Title
+                                    </a>
+                                </li>
+                            }
+                        }
+                        else if (!string.IsNullOrEmpty(ViewBag.brandslug))
+                        {
+                            var brand = brands.FirstOrDefault(b => b.Slug == ViewBag.brandslug);
+                            <li class="breadcrumb-item"><a style="col-01" href="">Thương hiệu</a></li>
+                            if (brand != null)
+                            {
+                                <li class="breadcrumb-item">
+                                    <a class="col-01" asp-action="Product" asp-route-brandslug="@brand.Slug">
+                                        @brand.Name
+                                    </a>
+                                </li>
+                            }
+                        }
+                    </ol>
+                </nav>
+                <div class="medium-text-center">
+                    <form action="@Url.Action("Product", "ProductView")" class="woocommerce-ordering" method="get"
+                        id="filterForm">
+                        <select name="orderby" id="orderby" aria-label="Shop order">
+                            <option value="">Sắp Xếp</option>
+                            <option value="date">Sản phẩm mới nhất</option>
+                            <option value="priceT">Thứ tự theo giá: thấp đến cao</option>
+                            <option value="priceG">Thứ tự theo giá: cao xuống thấp</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+            <div class="main_bicycle">
+                <div class="sidebar">
+                    <div class="side-bar">
+                        <div class="menu">
+                            <div class="item">
+                                <a class="sub-btn">
+                                    DANH MỤC SẢN PHẨM
+                                    <i class="fa-solid fa-bicycle dropdown"></i>
+                                </a>
+                                <div class="sub-menu">
+                                    <label><input type="checkbox" name="categories" value="Xe Đạp Trẻ Em"
+                                            class="sub-item"> Xe Đạp Trẻ Em</label>
+                                    <label><input type="checkbox" name="categories" value="Xe Đạp Địa Hình"
+                                            class="sub-item"> Xe Đạp Địa Hình</label>
+                                    <label><input type="checkbox" name="categories" value="Xe Đạp Đường Phố"
+                                            class="sub-item"> Xe Đạp Đường Phố</label>
+                                    <label><input type="checkbox" name="categories" value="Xe Đạp Phụ Nữ"
+                                            class="sub-item"> Xe Đạp Phụ Nữ</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="side-bar">
+                        <div class="menu">
+                            <div class="item">
+                                <a class="sub-btn">
+                                    KHUYẾN MÃI
+                                    <i class="fa-solid fa-bicycle dropdown"></i>
+                                </a>
+                                <div class="sub-menu">
+                                    <label><input type="checkbox" name="promotions" value="Giờ Vàng Giá Sốc"
+                                            class="sub-item"> Giờ Vàng Giá Sốc</label>
+                                    <label><input type="checkbox" name="promotions" value="Giảm Giá Cao Nhất"
+                                            class="sub-item"> Giảm Giá Cao Nhất</label>
+                                    <label><input type="checkbox" name="promotions" value="Xe Đạp Trẻ Em Sale"
+                                            class="sub-item"> Xe Đạp Trẻ Em Sale</label>
+                                    <label><input type="checkbox" name="promotions" value="Xe Đạp Địa Hình Sale"
+                                            class="sub-item"> Xe Đạp Địa Hình Sale</label>
+                                    <label><input type="checkbox" name="promotions" value="Xe Đạp Đường Phố Sale"
+                                            class="sub-item"> Xe Đạp Đường Phố Sale</label>
+                                    <label><input type="checkbox" name="promotions" value="Xe Đạp Phụ Nữ Sale"
+                                            class="sub-item"> Xe Đạp Phụ Nữ Sale</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="side-bar">
+                        <div class="menu">
+                            <div class="item">
+                                <a class="sub-btn">
+                                    THƯƠNG HIỆU
+                                    <i class="fa-solid fa-bicycle dropdown"></i>
+                                </a>
+                                <div class="sub-menu">
+                                    <label><input type="checkbox" name="brands" value="shimano" class="sub-item">
+                                        SHIMANO</label>
+                                    <label><input type="checkbox" name="brands" value="royalbaby" class="sub-item">
+                                        ROYALBABY</label>
+                                    <label><input type="checkbox" name="brands" value="miamor" class="sub-item">
+                                        MIAMOR</label>
+                                    <label><input type="checkbox" name="brands" value="liv" class="sub-item">
+                                        LIV</label>
+                                    <label><input type="checkbox" name="brands" value="trinx" class="sub-item">
+                                        TRINX</label>
+                                    <label><input type="checkbox" name="brands" value="max" class="sub-item">
+                                        MAX</label>
+                                    <label><input type="checkbox" name="brands" value="momentum" class="sub-item">
+                                        MOMENTUM</label>
+                                    <label><input type="checkbox" name="brands" value="vinbike" class="sub-item">
+                                        VINBIKE</label>
+                                    <label><input type="checkbox" name="brands" value="giant" class="sub-item">
+                                        GIANT</label>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="side-bar">
+                        <div class="menu">
+                            <div class="item">
+                                <a class="sub-btn">
+                                    SIZE XE
+                                    <i class="fa-solid fa-bicycle dropdown"></i>
+                                </a>
+                                <div class="sub-menu">
+                                    <label><input type="checkbox" name="sizes" value="M" class="sub-item"> M</label>
+                                    <label><input type="checkbox" name="sizes" value="XS" class="sub-item"> XS</label>
+                                    <label><input type="checkbox" name="sizes" value="XXS" class="sub-item"> XXS</label>
+                                    <label><input type="checkbox" name="sizes" value="M/L" class="sub-item"> M/L</label>
+                                    <label><input type="checkbox" name="sizes" value="L" class="sub-item"> L</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="side-bar">
+                        <div class="menu">
+                            <div class="item">
+                                <a class="sub-btn">
+                                    GIÁ
+                                    <i class="fa-solid fa-bicycle dropdown"></i>
+                                </a>
+                                <div class="sub-menu">
+                                    <label><input type="checkbox" name="prices" value="under100" class="sub-item"> Dưới
+                                        1.000.000</label>
+                                    <label><input type="checkbox" name="prices" value="100to299" class="sub-item">
+                                        1.000.000 VND - 2.999.999 VND</label>
+                                    <label><input type="checkbox" name="prices" value="300to499" class="sub-item">
+                                        3.000.000 VND - 4.999.999 VND</label>
+                                    <label><input type="checkbox" name="prices" value="500to699" class="sub-item">
+                                        5.000.000 VND - 6.999.999 VND</label>
+                                    <label><input type="checkbox" name="prices" value="700to999" class="sub-item">
+                                        7.000.000 VND - 9.999.999 VND</label>
+                                    <label><input type="checkbox" name="prices" value="above1000" class="sub-item"> Trên
+                                        10.000.000 VND</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mainshop" id="wrapper_mainshop">
+                    <div class="headline headline_mainshop" style="padding-top: 0; padding-left: 5%;">Shop</div>
+                    <div class="content_shop">
+                        <ul class="products">
+                            @foreach (var product in Model)
+                            {
+                                var categoryOrBrandSlug = product.Brand?.Slug ??
+                                product.ProductCategories.FirstOrDefault()?.Category.Slug;
+
+                                <li class="product-item">
+                                    <div class="product-top">
+                                        <a asp-action="DetailProduct" asp-controller="ProductView"
+                                            asp-route-categoryslug="@categoryOrBrandSlug"
+                                            asp-route-productslug="@product.Slug" class="product-thumb">
+                                            <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
+                                                alt="@product.Name">
+                                        </a>
+                                    </div>
+                                    <div class="product-info">
+                                        <a asp-action="DetailProduct" asp-controller="ProductView"
+                                            asp-route-categoryslug="@categoryOrBrandSlug"
+                                            asp-route-productslug="@product.Slug" class="product-name">@product.Name</a>
+                                        <div class="product-price">
+                                            @if (product.DiscountPrice.HasValue)
+                                            {
+                                                <span style="text-decoration: line-through;">@product.Price.ToString("N0")
+                                                    VND</span>
+                                                <br />
+                                                <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
+                                            }
+                                            else
+                                            {
+                                                <span>@product.Price.ToString("N0") VND</span>
+                                            }
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                        <div class="justify-content-center d-flex flex-wrap ps-3 pe-3 z-3 mb-5">
+                            <partial name="_PagingXTL" model="@ViewBag.pagingmodel" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById("orderby").addEventListener("change", function () {
+            document.getElementById("filterForm").submit();
+        });
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.sidebar').on('click', '.sub-btn', function () {
+                $(this).next('.sub-menu').stop(true, true).slideToggle(300);
+                $(this).find('.dropdown').toggleClass('fa-bicycle fa-person-biking');
+            });
+        });
+    </script>
+    <script src="~/js/productsider.js" asp-append-version="true"></script>
+</body>

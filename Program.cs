@@ -4,6 +4,7 @@ using App.Models;
 using App.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,7 @@ builder.Services.Configure<RouteOptions>(options =>
     options.LowercaseUrls = true;
     options.LowercaseQueryStrings = false;
 });
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
 
@@ -27,51 +29,54 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectString);
 });
 
+builder.Services.AddMemoryCache();
+builder.Services.AddScoped<CacheService>();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(cfg =>
+{
+    cfg.Cookie.Name = "appxedap";
+    cfg.IdleTimeout = new TimeSpan(0, 30, 0);
+});
 
-
-// add mail service
+// Add mail service
 builder.Services.AddOptions();
 var mailsetting = appConfiguration.GetSection("MailSettings");
 builder.Services.Configure<MailSettings>(mailsetting);
 builder.Services.AddSingleton<IEmailSender, SendMailService>();
 
+// Register HttpContextAccessor
+builder.Services.AddHttpContextAccessor();
 
-
-// Dang ky Identity
+// Register Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
 
-
-// Truy cập IdentityOptions
+// Configure IdentityOptions
 builder.Services.Configure<IdentityOptions>(options =>
 {
-    // Thiết lập về Password
-    options.Password.RequireDigit = false; // Không bắt phải có số
-    options.Password.RequireLowercase = false; // Không bắt phải có chữ thường
-    options.Password.RequireNonAlphanumeric = false; // Không bắt ký tự đặc biệt
-    options.Password.RequireUppercase = false; // Không bắt buộc chữ in
-    options.Password.RequiredLength = 3; // Số ký tự tối thiểu của password
-    options.Password.RequiredUniqueChars = 1; // Số ký tự riêng biệt
+    options.Password.RequireDigit = false; // No digit required
+    options.Password.RequireLowercase = false; // No lowercase letter required
+    options.Password.RequireNonAlphanumeric = false; // No special character required
+    options.Password.RequireUppercase = false; // No uppercase letter required
+    options.Password.RequiredLength = 3; // Minimum length of password
+    options.Password.RequiredUniqueChars = 1; // Minimum unique chars
 
-    // Cấu hình Lockout - khóa user
-    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Khóa 5 phút
-    options.Lockout.MaxFailedAccessAttempts = 3; // Thất bại 3 lầ thì khóa
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5); // Lockout for 5 minutes
+    options.Lockout.MaxFailedAccessAttempts = 3; // 3 failed attempts to lockout
     options.Lockout.AllowedForNewUsers = true;
 
-    // Cấu hình về User.
-    options.User.AllowedUserNameCharacters = // các ký tự đặt tên user
+    options.User.AllowedUserNameCharacters = // User name allowed characters
         "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-    options.User.RequireUniqueEmail = true;  // Email là duy nhất
+    options.User.RequireUniqueEmail = true;  // Unique email
 
-    // Cấu hình đăng nhập.
-    options.SignIn.RequireConfirmedEmail = true;            // Cấu hình xác thực địa chỉ email (email phải tồn tại)
-    options.SignIn.RequireConfirmedPhoneNumber = false;     // Xác thực số điện thoại
+    options.SignIn.RequireConfirmedEmail = true;            // Require email confirmation
+    options.SignIn.RequireConfirmedPhoneNumber = false;     // Require phone number confirmation
     options.SignIn.RequireConfirmedAccount = true;
 });
 
-
+// Configure ApplicationCookie
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/login/";
@@ -86,13 +91,13 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+// Configure Authentication
 builder.Services.AddAuthentication()
         .AddGoogle(options =>
         {
             var gconfig = builder.Configuration.GetSection("Authentication:Google");
             options.ClientId = gconfig["ClientId"];
             options.ClientSecret = gconfig["ClientSecret"];
-            // https://localhost:5001/signin-google
             options.CallbackPath = "/dang-nhap-tu-google";
         })
         .AddFacebook(options =>
@@ -105,26 +110,32 @@ builder.Services.AddAuthentication()
 
 builder.Services.Configure<SecurityStampValidatorOptions>(options =>
 {
-    // Trên 5 giây truy cập lại sẽ nạp lại thông tin User (Role)
-    // SecurityStamp trong bảng User đổi -> nạp lại thông tinn Security
     options.ValidationInterval = TimeSpan.FromSeconds(5);
+});
+
+builder.Services.AddAntiforgery(options =>
+{
+    options.HeaderName = "X-CSRF-TOKEN";
 });
 
 builder.Services.AddControllers(
     options => options.SuppressImplicitRequiredAttributeForNonNullableReferenceTypes = true);
 
-//add dich vu thay the thong bao loi mac định của identity
+// Replace the default Identity error describer
 builder.Services.AddSingleton<IdentityErrorDescriber, AppIdentityErrorDescriber>();
 
+// Configure authorization policies
 builder.Services.AddAuthorization(option =>
 {
-
     option.AddPolicy("ViewManageMenu", builder =>
     {
         builder.RequireAuthenticatedUser();
         builder.RequireRole(RoleName.Administrator);
     });
 });
+
+// Register CartService
+builder.Services.AddTransient<CartService>();
 
 var app = builder.Build();
 
@@ -135,8 +146,6 @@ if (!app.Environment.IsDevelopment())
 }
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-app.AddStatucCodePage();
 
 app.UseRouting();
 app.UseSession();
@@ -153,7 +162,7 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
-// Khởi tạo cơ sở dữ liệu
+// Initialize the database
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
@@ -161,10 +170,10 @@ using (var scope = app.Services.CreateScope())
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-    // Đảm bảo cơ sở dữ liệu đã được tạo và cập nhật
+    // Ensure the database is created and updated
     await dbContext.Database.MigrateAsync();
 
-    // Seed dữ liệu nếu cần
+    // Seed data if necessary
     await SeedDataAsync(dbContext, userManager, roleManager);
 }
 
@@ -202,7 +211,7 @@ static async Task SeedDataAsync(AppDbContext dbContext, UserManager<AppUser> use
     }
     catch (Exception ex)
     {
-        // Xử lý ngoại lệ ở đây, ví dụ: ghi log, thông báo lỗi, v.v.
+        // Handle exceptions here, e.g., log errors, show error messages, etc.
         Console.WriteLine($"Error while seeding data: {ex.Message}");
     }
 }

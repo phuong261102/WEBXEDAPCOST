@@ -47,8 +47,8 @@ namespace App.Models
 
 
 
-
         }
+
 
         public DbSet<Category> Categories { set; get; }
         public DbSet<Product> Products { set; get; }
@@ -56,5 +56,7 @@ namespace App.Models
         public DbSet<Address> Addresses { get; set; }
         public DbSet<Brand> Brands { get; set; }
         public DbSet<ProductVariant> productVariants { set; get; }
+        public DbSet<CartItem> CartItems { get; set; }
+
     }
 }
