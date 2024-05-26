@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using XEDAPVIP.Models;
 using Microsoft.AspNetCore.Identity;
+using Newtonsoft.Json;
 
 namespace App.Areas.Home.Controllers
 {
@@ -34,7 +35,7 @@ namespace App.Areas.Home.Controllers
 
 
         [Route("/product/{categoryslug?}")]
-        public async Task<IActionResult> Product(string categoryslug, string brandslug, [FromQuery(Name = "p")] int currentPage, int pagesize)
+        public async Task<IActionResult> Product(string searchString, string categoryslug, string brandslug, [FromQuery(Name = "p")] int currentPage, int pagesize, string orderby = null)
         {
             var categories = await _cacheService.GetCategoriesAsync();
             var brands = await _cacheService.GetBrandsAsync();
@@ -46,25 +47,28 @@ namespace App.Areas.Home.Controllers
 
             Category category = null;
 
+            var products = _context.Products
+                               .Include(p => p.Brand)
+                               .Include(p => p.Variants)
+                               .Include(p => p.ProductCategories)
+                               .ThenInclude(pc => pc.Category)
+                               .AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(p => p.Name.Contains(searchString));
+            }
             if (!string.IsNullOrEmpty(categoryslug))
             {
-                category = await _context.Categories
-                    .Where(c => c.Slug == categoryslug)
-                    .Include(c => c.CategoryChildren)
-                    .FirstOrDefaultAsync();
+                category = _context.Categories.Where(c => c.Slug == categoryslug)
+                                              .Include(c => c.CategoryChildren)
+                                              .FirstOrDefault();
 
                 if (category == null)
                 {
                     return NotFound("Không tìm thấy");
                 }
             }
-
-            var products = _context.Products
-                .Include(p => p.Brand)
-                .Include(p => p.Variants)
-                .Include(p => p.ProductCategories)
-                    .ThenInclude(pc => pc.Category)
-                .AsQueryable();
 
             if (!string.IsNullOrEmpty(brandslug))
             {
@@ -76,11 +80,25 @@ namespace App.Areas.Home.Controllers
                 products = products.Where(p => p.ProductCategories.Any(pc => pc.CategoryId == category.Id));
             }
 
-            products = products.OrderByDescending(p => p.DateCreated);
+            switch (orderby)
+            {
+                case "date":
+                    products = products.OrderByDescending(p => p.DateCreated);
+                    break;
+                case "priceT":
+                    products = products.OrderBy(p => p.Price);
+                    break;
+                case "priceG":
+                    products = products.OrderByDescending(p => p.Price);
+                    break;
+                default:
+                    products = products.OrderByDescending(p => p.DateCreated);
+                    break;
+            }
 
-            int totalProducts = await products.CountAsync();
+            int totalProduc = products.Count();
             if (pagesize <= 0) pagesize = 9;
-            int countPages = (int)Math.Ceiling((double)totalProducts / pagesize);
+            int countPages = (int)Math.Ceiling((double)totalProduc / pagesize);
             if (currentPage > countPages)
                 currentPage = countPages;
             if (currentPage < 1)
@@ -92,19 +110,18 @@ namespace App.Areas.Home.Controllers
                 currentpage = currentPage,
                 generateUrl = (pageNumber) => Url.Action("Product", new
                 {
-                    categoryslug,
-                    brandslug,
+                    categoryslug = categoryslug,
+                    brandslug = brandslug,
                     p = pageNumber,
-                    pagesize
+                    pagesize = pagesize
                 })
             };
 
-            var productinPage = await products.Skip((currentPage - 1) * pagesize)
+            var productinPage = products.Skip((currentPage - 1) * pagesize)
                                         .Take(pagesize)
-                                        .ToListAsync();
-
+                                        .ToList();
             ViewBag.pagingmodel = pagingmodel;
-            ViewBag.totalProduc = totalProducts;
+            ViewBag.totalProduc = totalProduc;
             ViewBag.category = category;
             return View(productinPage);
         }
@@ -140,8 +157,9 @@ namespace App.Areas.Home.Controllers
         [Route("addcart/{productId:int}")]
         public async Task<IActionResult> AddToCart(int productId, [FromQuery] int productCode, [FromBody] CartItem cartItem)
         {
-            var productVariant = _context.productVariants
-                .FirstOrDefault(p => p.Id == productCode && p.ProductId == productId);
+            var productVariant = await _context.productVariants
+                .Include(v => v.Product)
+                .FirstOrDefaultAsync(p => p.Id == productCode && p.ProductId == productId);
 
             if (productVariant == null)
             {
@@ -180,6 +198,7 @@ namespace App.Areas.Home.Controllers
         }
 
 
+
         // Hiện thị giỏ hàng
         [Route("/cart", Name = "cart")]
         public async Task<IActionResult> Cart()
@@ -202,8 +221,49 @@ namespace App.Areas.Home.Controllers
             {
                 cart = _cartService.GetCartItems();
             }
+
+            // Generate the anti-forgery token and pass it to the view
+            var tokens = HttpContext.RequestServices.GetService<Microsoft.AspNetCore.Antiforgery.IAntiforgery>();
+            var tokenSet = tokens.GetAndStoreTokens(HttpContext);
+            ViewBag.AntiForgeryToken = tokenSet.RequestToken;
+
             return View(cart);
         }
+        [Route("/removecart/{itemId?}")]
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteItem(int itemId)
+        {
+            var user = await GetCurrentUserAsync();
+            string userId = user?.Id;  // Get the user ID if authenticated
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var item = await _context.CartItems.FindAsync(itemId);
+                if (item != null && item.UserId == userId)
+                {
+                    _context.CartItems.Remove(item);
+                    await _context.SaveChangesAsync();
+                }
+            }
+            else
+            {
+                var session = HttpContext.Session;
+                string jsonCart = session.GetString(CartService.CARTKEY);
+                if (jsonCart != null)
+                {
+                    var cartItems = JsonConvert.DeserializeObject<List<CartItem>>(jsonCart);
+                    var item = cartItems.FirstOrDefault(ci => ci.Id == itemId);
+                    if (item != null)
+                    {
+                        cartItems.Remove(item);
+                        session.SetString(CartService.CARTKEY, JsonConvert.SerializeObject(cartItems));
+                    }
+                }
+            }
+            return Json(new { success = true });
+        }
+
 
 
 

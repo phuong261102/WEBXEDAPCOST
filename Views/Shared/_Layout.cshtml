@@ -43,11 +43,7 @@
         </div>
         <hr>
         <div>
-<<<<<<< Updated upstream
-            <a style="text-align: center;" asp-area="" asp-controller="Home" asp-action="Cart">
-=======
             <a style="text-align: center;" asp-area="Home" asp-controller="ProductView" asp-action="Cart">
->>>>>>> Stashed changes
                 <i class="fa-solid fa-cart-shopping"></i>
             </a>
         </div>
@@ -115,14 +111,15 @@
                             </li>
                         </ul>
                         <div style="width: 40%;" class="header__search">
-                            <div style="position: relative; top: 10px;">
-                                <input style="padding: 3px 10px;" type="text" class="header__search__input"
-                                    placeholder="Tìm Kiếm">
-                                <button class="header__search-btn">
-                                    <i style="top: 3%; right: -3%;"
+                            <form style="padding-top: 20px; position: relative;" method="get"
+                                action="@Url.Action("Product", "ProductView", new { area = "Home" })">
+                                <input style="padding: 3px 10px;" type="text" name="searchString"
+                                    class="header__search__input" placeholder="Tìm Kiếm">
+                                <button type="submit" class="header__search-btn">
+                                    <i style="top: 30%;right:-3%;"
                                         class="header__search-icon fa-solid fa-magnifying-glass"></i>
                                 </button>
-                            </div>
+                            </form>
                         </div>
                         <partial name="_LoginPartial" />
                         <partial name="_MenuManagePartial" />
@@ -197,7 +194,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="~/js/kc.js" asp-append-version="true"></script>
-
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     <script>
         $(document).ready(function () {
             $(".category-product").hover(

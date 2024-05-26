@@ -247,8 +247,15 @@
                 reader.readAsDataURL(file);
             }
         }
-    </script>
-    <script>
+
+        function removeVariant(button) {
+            $(button).closest('tr').remove();
+        }
+
+        function removeProductDetail(button) {
+            $(button).closest('tr').remove();
+        }
+
         $(document).ready(function () {
             $("#selectedCategories").multipleSelect({
                 selectAll: false,
@@ -260,95 +267,44 @@
             $('#addVariant').click(function () {
                 var variantIndex = $('#variantsTable tbody tr').length;
                 var newVariantRow = `
-<<<<<<< Updated upstream
-                                                                                                                    <tr>
-                                                                                                                        <td><input type="text" name="Variants[${variantIndex}].Color" class="form-control" /></td>
-                                                                                                                        <td>
-                                                                                                                            <select class="form-control" name="Variants[${variantIndex}].Size">
-                                                                                                                                <option value="S">S</option>
-                                                                                                                                <option value="M">M</option>
-                                                                                                                                <option value="L">L</option>
-                                                                                                                                <option value="XS">XS</option>
-                                                                                                                            </select>
-                                                                                                                        </td>
-                                                                                                                        <td><input type="number" name="Variants[${variantIndex}].Quantity" class="form-control" /></td>
-                                                                                                                        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeVariant(this)">Remove</button></td>
-                                                                                                                    </tr>`;
-=======
-                                                                                                                <tr>
-                                                                                                                    <td><input type="text" name="Variants[${variantIndex}].Color" class="form-control" /></td>
-                                                                                                                    <td>
-                                                                                                                        <select class="form-control" name="Variants[${variantIndex}].Size">
-                                                                                                                            <option value="S">S</option>
-                                                                                                                            <option value="M">M</option>
-                                                                                                                            <option value="L">L</option>
-                                                                                                                            <option value="XS">XS</option>
-                                                                                                                        </select>
-                                                                                                                    </td>
-                                                                                                                    <td><input type="number" name="Variants[${variantIndex}].Quantity" class="form-control" /></td>
-                                                                                                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeVariant(this)">Remove</button></td>
-                                                                                                                </tr>`;
->>>>>>> Stashed changes
-                $('#variantsTable tbody').append(newVariantRow); // Append to tbody
+                            <tr>
+                                <td><input type="text" name="Variants[${variantIndex}].Color" class="form-control" /></td>
+                                <td>
+                                    <select class="form-control" name="Variants[${variantIndex}].Size">
+                                        <option value="S">S</option>
+                                        <option value="M">M</option>
+                                        <option value="L">L</option>
+                                        <option value="XS">XS</option>
+                                    </select>
+                                </td>
+                                <td><input type="number" name="Variants[${variantIndex}].Quantity" class="form-control" /></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="removeVariant(this)">Remove</button></td>
+                            </tr>`;
+                $('#variantsTable tbody').append(newVariantRow);
             });
 
             // Add Product Detail
             $('#addProductDetail').click(function () {
                 var detailIndex = $('#productDetailsTable tbody tr').length;
                 var newDetailRow = `
-<<<<<<< Updated upstream
-                                                                                                                    <tr>
-                                                                                                                        <td><input type="text" name="ProductDetails[${detailIndex}].DetailsName" class="form-control" /></td>
-                                                                                                                        <td><input type="text" name="ProductDetails[${detailIndex}].DetailsValue" class="form-control" /></td>
-                                                                                                                        <td><button type="button" class="btn btn-sm btn-danger" onclick="removeProductDetail(this)">Remove</button></td>
-                                                                                                                    </tr>`;
-=======
-                                                                                                                <tr>
-                                                                                                                    <td><input type="text" name="ProductDetails[${detailIndex}].DetailsName" class="form-control" /></td>
-                                                                                                                    <td><input type="text" name="ProductDetails[${detailIndex}].DetailsValue" class="form-control" /></td>
-                                                                                                                    <td><button type="button" class="btn btn-sm btn-danger" onclick="removeProductDetail(this)">Remove</button></td>
-                                                                                                                </tr>`;
->>>>>>> Stashed changes
-                $('#productDetailsTable tbody').append(newDetailRow); // Append to tbody
+                            <tr>
+                                <td><input type="text" name="ProductDetails[${detailIndex}].DetailsName" class="form-control" /></td>
+                                <td><input type="text" name="ProductDetails[${detailIndex}].DetailsValue" class="form-control" /></td>
+                                <td><button type="button" class="btn btn-sm btn-danger" onclick="removeProductDetail(this)">Remove</button></td>
+                            </tr>`;
+                $('#productDetailsTable tbody').append(newDetailRow);
             });
-        });
 
-
-    </script>
-
-    <script>
-        $(document).ready(function () {
             $('#mainImageInput').change(function () {
                 var reader = new FileReader();
-
                 reader.onload = function (e) {
-                    // Create a new image element
-                    var img = document.createElement("img");
-
-                    // Set the image source to the result of FileReader
-                    img.src = e.target.result;
-
-                    // Optional: Add styles to the image
-                    img.style.maxWidth = "200px";
-                    img.style.marginBottom = "10px";
-
-                    // Remove old image preview if it exists
-                    $('#mainImagePreviewContainer').empty();
-
-                    // Assign an ID to the image element
-                    img.id = "mainImagePreview";
-
-                    // Append the new image preview to the container
-                    $('#mainImagePreviewContainer').append(img);
+                    var img = $('<img>').attr('src', e.target.result).css('max-width', '200px').css('margin-bottom', '10px');
+                    $('#mainImagePreviewContainer').empty().append(img);
                 };
-
-                // Read the selected file
                 reader.readAsDataURL(this.files[0]);
             });
         });
-
     </script>
-
 
     <script>
         tinymce.init({

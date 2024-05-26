@@ -36,71 +36,10 @@ public class HomeController : Controller
     {
         _logger = logger;
         _context = context;
-        // _cache = cache;
         _cacheService = cacheService;
     }
 
 
-    // [NonAction]
-    // List<Category> GetCategories()
-    // {
-
-    //     List<Category> categories;
-
-    //     string keycacheCategories = "_listallcategories";
-
-    //     // Phục hồi categories từ Memory cache, không có thì truy vấn Db
-    //     if (!_cache.TryGetValue(keycacheCategories, out categories))
-    //     {
-
-    //         categories = _context.Categories
-    //             .Include(c => c.CategoryChildren)
-    //             .AsEnumerable()
-    //             .Where(c => c.ParentCategory == null)
-    //             .ToList();
-
-    //         // Thiết lập cache - lưu vào cache
-    //         var cacheEntryOptions = new MemoryCacheEntryOptions()
-    //             .SetSlidingExpiration(TimeSpan.FromMinutes(300));
-    //         _cache.Set("_GetCategories", categories, cacheEntryOptions);
-    //     }
-
-    //     return categories;
-    // }
-
-
-    // // Tìm (đệ quy) trong cây, một Category theo Slug
-    // [NonAction]
-    // Category FindCategoryBySlug(List<Category> categories, string Slug)
-    // {
-
-    //     foreach (var c in categories)
-    //     {
-    //         if (c.Slug == Slug) return c;
-    //         var c1 = FindCategoryBySlug(c.CategoryChildren.ToList(), Slug);
-    //         if (c1 != null)
-    //             return c1;
-    //     }
-
-    //     return null;
-    // }
-
-    // [NonAction]
-    // List<Brand> GetBrands()
-    // {
-    //     List<Brand> brands;
-    //     string keyCacheBrands = "_listAllBrands";
-
-    //     if (!_cache.TryGetValue(keyCacheBrands, out brands))
-    //     {
-    //         brands = _context.Brands.ToList();
-    //         var cacheEntryOptions = new MemoryCacheEntryOptions()
-    //             .SetSlidingExpiration(TimeSpan.FromMinutes(300));
-    //         _cache.Set(keyCacheBrands, brands, cacheEntryOptions);
-    //     }
-
-    //     return brands;
-    // }
 
 
     public async Task<IActionResult> Index(string categoryslug, string brandslug)
@@ -113,10 +52,10 @@ public class HomeController : Controller
         ViewBag.brands = brands;
         ViewBag.brandslug = brandslug;
 
+
+
         return View();
     }
-
-
 
 
     public async Task<IActionResult> Privacy(string categoryslug, string brandslug)
@@ -185,11 +124,6 @@ public class HomeController : Controller
         ViewBag.categoryslug = categoryslug;
         ViewBag.brands = brands;
         ViewBag.brandslug = brandslug;
-        return View();
-    }
-
-    public IActionResult Address_shop()
-    {
         return View();
     }
 

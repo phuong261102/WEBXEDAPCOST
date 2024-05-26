@@ -25,9 +25,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
     {
         private readonly AppDbContext _context;
         private readonly IWebHostEnvironment _hostingEnvironment;
-        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public ProductController(AppDbContext context, IWebHostEnvironment hostingEnvironment)
         public ProductController(AppDbContext context, IWebHostEnvironment hostingEnvironment)
         {
             _context = context;
@@ -35,37 +33,51 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         }
 
         // GET: Product
-        public async Task<IActionResult> Index([FromQuery(Name = "p")] int currentPage, int pagesize)
+        // GET: Product
+        public async Task<IActionResult> Index(string searchString, [FromQuery(Name = "p")] int currentPage = 1, int pagesize = 12, string priceRange = null)
         {
-            var products = _context.Products.OrderByDescending(p => p.DateUpdated);
-            var productCount = products.Count();
+            var products = _context.Products.AsQueryable();
+            var productCount = await products.CountAsync();
             ViewBag.countproduct = productCount;
-            int totalProduc = await products.CountAsync();
+
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                products = products.Where(p => p.Name.Contains(searchString));
+            }
+
+            switch (priceRange)
+            {
+                case "under100":
+                    products = products.Where(p => p.Price < 1000000);
+                    break;
+                case "100to500":
+                    products = products.Where(p => p.Price >= 1000000 && p.Price <= 5000000);
+                    break;
+                case "over500":
+                    products = products.Where(p => p.Price > 5000000);
+                    break;
+            }
+
+
             if (pagesize <= 0) pagesize = 12;
-            int countPages = (int)Math.Ceiling((double)totalProduc / pagesize);
-            if (currentPage > countPages)
-                currentPage = countPages;
-            if (currentPage < 1)
-                currentPage = 1;
-            var pagingmodel = new PagingModel()
+            int countPages = (int)Math.Ceiling((double)productCount / pagesize);
+            if (currentPage > countPages) currentPage = countPages;
+            if (currentPage < 1) currentPage = 1;
+
+            var pagingmodel = new PagingModel
             {
                 countpages = countPages,
                 currentpage = currentPage,
-                generateUrl = (pageNumber) => Url.Action("Index", new
-                {
-                    p = pageNumber,
-                    pagesize = pagesize
-                })
+                generateUrl = (pageNumber) => Url.Action("Index", new { p = pageNumber, pagesize, searchString })
             };
             ViewBag.pagingmodel = pagingmodel;
-            ViewBag.totalProduc = totalProduc;
+            ViewBag.totalProduc = productCount;
 
             var productinPage = await products.Skip((currentPage - 1) * pagesize)
                                               .Take(pagesize)
                                               .Include(p => p.ProductCategories)
                                               .ThenInclude(pc => pc.Category)
                                               .ToListAsync();
-
             return View(productinPage);
         }
 

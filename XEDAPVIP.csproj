@@ -21,10 +21,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.5" />
-<<<<<<< Updated upstream
-=======
     <PackageReference Include="Microsoft.AspNetCore.Session" Version="2.2.0" />
->>>>>>> Stashed changes
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.5">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -41,10 +38,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.2" />
     <PackageReference Include="MimeKit" Version="4.6.0" />
     <PackageReference Include="MySql.Data.EntityFramework" Version="8.4.0" />
-<<<<<<< Updated upstream
-=======
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
->>>>>>> Stashed changes
     <PackageReference Include="System.Data.SqlClient" Version="4.8.6" />
   </ItemGroup>
 

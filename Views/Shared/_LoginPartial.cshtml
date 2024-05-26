@@ -1,6 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using App.Models
-
 @inject SignInManager<AppUser> SignInManager
 @inject UserManager<AppUser> UserManager
 
@@ -9,25 +8,31 @@
     <form asp-area="Identity" asp-controller="Account" asp-action="LogOff" method="post" id="logoutForm"
         class="navbar-right">
         <ul class="nav navbar-nav navbar-right">
-            <li class="nav-item">
-                <a class="nav-link text-white" asp-area="Identity" asp-controller="Manage" asp-action="Index"
-                    title="Manage">
+            <li class="nav-item dropdown">
+                <a class="nav-link text-white dropdown-toggle" href="#" id="manageDropdown" role="button"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Manage">
                     <i class="fa-solid fa-user text-white"></i>
                     @UserManager.GetUserName(User)
                 </a>
-            </li>
-            <li style="display: flex; justify-content: center;" class="nav-item">
-                <button type="submit" class="btn btn-link text-white navbar-btn navbar-link">
-                    <i style="font-size: 18px;" class="fa-solid fa-right-to-bracket"></i>
-                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="manageDropdown">
+                    <a class="dropdown-item" asp-area="Identity" asp-controller="Manage" asp-action="Index">
+                        <i class="fa-solid fa-info-circle"></i> Thông Tin Cá Nhân
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <form asp-area="Identity" asp-controller="Account" asp-action="LogOff" method="post"
+                        id="logoutFormDropdown">
+                        <button type="submit" class="dropdown-item">
+                            <i class="fa-solid fa-sign-out-alt"></i> Đăng Xuất
+                        </button>
+                    </form>
+                </div>
             </li>
         </ul>
     </form>
 }
 else
 {
-    @Html.AntiForgeryToken()
-    <ul style="font-size: 18px;" class="nav navbar-nav navbar-right">
+    <ul class="nav navbar-nav navbar-right" style="font-size: 18px;">
         <li class="nav-item">
             <a class="nav-link" asp-area="Identity" asp-controller="Account" asp-action="Login">
                 <i class="fa-solid fa-user text-white"></i>

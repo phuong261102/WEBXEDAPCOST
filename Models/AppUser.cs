@@ -15,7 +15,5 @@ namespace App.Models
         // [Required]       
         [DataType(DataType.Date)]
         public DateTime? BirthDate { get; set; }
-
-        public Cart Cart { get; set; }
     }
 }

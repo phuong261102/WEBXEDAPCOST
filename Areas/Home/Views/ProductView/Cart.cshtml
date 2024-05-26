@@ -5,114 +5,152 @@
     ViewData["Title"] = "Cart Page";
     var categories = ViewBag.categories as List<Category>;
     var brands = ViewBag.brands as List<Brand>;
+    var antiForgeryToken = ViewBag.AntiForgeryToken as string;
 }
+
+<input type="hidden" id="antiForgeryToken" value="@antiForgeryToken" />
 
 @section Popup {
     @await Component.InvokeAsync(CategorySideBar.COMPONENTNAME,
         new CategorySideBar.CategorySideBarData
-{
-    level = 0,
-    Categories = categories,
-    slugCategory = ViewBag.categoryslug,
-    brands = brands,
-    slugBrand = ViewBag.brandslug
-})
+        {
+            level = 0,
+            Categories = categories,
+            slugCategory = ViewBag.categoryslug,
+            brands = brands,
+            slugBrand = ViewBag.brandslug
+        })
 }
 
 @if (Model.Count > 0)
 {
     double total = 0;
+<body>
+    <div style="padding-bottom: 200px;" class="cart_shop">
+        <div class="grid">
+            <div class="is-large">
+                <nav style="text-align: center; width: 100%;" class="woocommerce-breadcrumb breadcrumbs">
+                    <a style="color: black;">SHOPPING CART</a>
+                    <span style="font-weight: 100;" class="divider">></span>
+                    <a href="home_shop.html">CHECKOUT DETAILS</a>
+                    <span style="font-weight: 100;" class="divider">></span>
+                    <a>ORDER COMPLETE</a>
+                </nav>
+            </div>
+            <div class="product_cart_shops">
+                <div class="cart_products">
+                    <table class="address_cart_product">
+                        <tbody>
+                            <tr class="product_cart">
+                                <td class="product_name">Tên sản phẩm</td>
+                                <td class="product_img">Hình ảnh sản phẩm</td>
+                                <td class="product_address ">Thông Tin Sản phẩm</td>
+                                <td class="product_price ">Giá</td>
+                                <td style="width: 10%;" class="product_quantity">Số lượng</td>
+                                <td class="product_total text ">Tổng</td>
+                                <td style="width: 10%;" class="product_delete text">Hủy SP</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    @foreach (var cartitem in Model)
+                    {
+                        var thanhtien = cartitem.Quantity * cartitem.Variant.Product.Price;
+                        total += thanhtien;
 
-    <body>
-        <div style="padding-bottom: 200px;" class="cart_shop">
-            <div class="grid">
-                <div class="is-large">
-                    <nav style="text-align: center; width: 100%;" class="woocommerce-breadcrumb breadcrumbs">
-                        <a style="color: black;">SHOPPING CART</a>
-                        <span style="font-weight: 100;" class="divider">></span>
-                        <a href="home_shop.html">CHECKOUT DETAILS</a>
-                        <span style="font-weight: 100;" class="divider">></span>
-                        <a>ORDER COMPLETE</a>
-                    </nav>
-                </div>
-                <div class="product_cart_shops">
-                    <div class="cart_products">
-                        <table class="address_cart_product">
+                        <table class="cart_product_buy">
                             <tbody>
-                                <tr class="product_cart">
-                                    <td class="product_name">Tên sản phẩm</td>
-                                    <td class="product_img">Hình ảnh sản phẩm</td>
-                                    <td class="product_address ">Thông Tin Sản phẩm</td>
-                                    <td class="product_price ">Giá</td>
-                                    <td style="width: 10%;" class="product_quantity">Số lượng</td>
-                                    <td class="product_total text ">Tổng</td>
-                                    <td style="width: 10%;" class="product_delete text">Hủy SP</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        @foreach (var cartitem in Model)
-                        {
-                            var thanhtien = cartitem.Quantity * cartitem.Variant.Product.Price;
-                            total = total + thanhtien;
-
-                            <!--products-giohang-->
-                            <table class="cart_product_buy">
-                                <tbody>
-                                    <tr class="product_cart_buy">
-                                        <td class="product_name">@cartitem.Variant.Product.Name</td>
-
-                                        <td class="product_img">
-                                            <img src="@Url.Content("~/images/products/" + cartitem.Variant.Product.Slug +
-                                    "/" + cartitem.Variant.Product.MainImage)" alt="@cartitem.Variant.Product.Name">
-                                        </td>
-                                        <td class="product_address text">Màu: @cartitem.Variant.Color, Size:
-                                            @cartitem.Variant.Size</td>
-                                        <td class="product_price text">@cartitem.Variant.Product.Price.ToString("N0")VND</td>
-                                        <td style="width: 10%;" class="product_quantity">
-                                            <div class="quantity">
-                                                <input type="button" value="-" class="minus button is-form">
-                                                <label class="screen-reader-text" for="quantity_6635973865498"></label>
-                                                <input type="number" id="quantity_6635973865498"
-                                                    class="input-text qty text hiden" step="1" min="1" max="58" name="quantity"
-                                                    value="@cartitem.Quantity" title="Qty" size="4" inputmode="numeric">
-                                                <input type="button" value="+" class="plus button is-form">
-                                            </div>
-                                        </td>
-                                        <td class="product_total text">@thanhtien.ToString("N0")VND</td>
-                                        <td style="width: 10%;" class="product_detele text">
-                                            <button class="delete-button">x</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        }
-                    </div>
-                    <div class="cart_products_total">
-                        <table class="cart_product_buy total">
-                            <tbody>
-                                <tr class="product_cart_buys buy_products">
-                                    <th>@total.ToString("N0")VND</th>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <table class="cart_product_buy total check">
-                            <tbody>
-                                <tr class="product_cart_buys check" colspan="2">
-                                    <td class="title_product">
-                                        <a style="text-decoration: none; color: #fff;" asp-area="" asp-controller="Home"
-                                            asp-action="Check_out"><span>TIẾN HÀNH THANH TOÁN</span> </a>
+                                <tr class="product_cart_buy" data-item-id="@cartitem.Id"
+                                    data-max-quantity="@cartitem.Variant.Quantity">
+                                    <td class="product_name">@cartitem.Variant.Product.Name</td>
+                                    <td class="product_img">
+                                        <img src="@Url.Content("~/images/products/" + cartitem.Variant.Product.Slug + "/" + cartitem.Variant.Product.MainImage)"
+                                            alt="@cartitem.Variant.Product.Name">
+                                    </td>
+                                    <td class="product_address text">Màu: @cartitem.Variant.Color, Size: @cartitem.Variant.Size
+                                    </td>
+                                    <td class="product_price text">@cartitem.Variant.Product.Price.ToString("N0")VND</td>
+                                    <td style="width: 10%;" class="product_quantity">
+                                        <div class="quantity">
+                                            <input type="button" value="-" class="minus button is-form">
+                                            <label class="screen-reader-text" for="quantity_@cartitem.Id"></label>
+                                            <input type="number" id="quantity_@cartitem.Id" class="input-text qty text" step="1"
+                                                min="1" max="@cartitem.Variant.Quantity" name="quantity" value="@cartitem.Quantity"
+                                                title="Qty" size="4" inputmode="numeric">
+                                            <input type="button" value="+" class="plus button is-form">
+                                        </div>
+                                    </td>
+                                    <td class="product_total text">@thanhtien.ToString("N0")VND</td>
+                                    <td style="width: 10%;" class="product_delete text">
+                                        <button class="delete-button" data-item-id="@cartitem.Id">x</button>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
+                    }
+                </div>
+                <div class="cart_products_total">
+                    <table class="cart_product_buy total">
+                        <tbody>
+                            <tr class="product_cart_buys buy_products">
+                                <th id="totalAmount">@total.ToString("N0")VND</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="cart_product_buy total check">
+                        <tbody>
+                            <tr class="product_cart_buys check" colspan="2">
+                                <td>
+                                    <button id="updateCartButton">Cập nhật giỏ hàng</button>
+                                </td>
+                                <td class="title_product">
+                                    <a style="text-decoration: none; color: #fff;" asp-area="" asp-controller="Home"
+                                        asp-action="Check_out"><span>TIẾN HÀNH THANH TOÁN</span></a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-    </body>
-
+    </div>
+</body>
 }
 else
 {
     <p class="alert alert-danger">Giỏ hàng trống</p>
 }
+<script>
+ document.addEventListener("DOMContentLoaded", function () {
+    var antiForgeryToken = document.getElementById('antiForgeryToken').value;
+
+    // Handle delete button click
+    document.querySelectorAll(".delete-button").forEach(button => {
+        button.addEventListener("click", function () {
+            var itemId = this.getAttribute("data-item-id");
+
+            if (confirm("Are you sure you want to remove this item from the cart?")) {
+                fetch('/removecart/' + itemId, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': antiForgeryToken
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert("Failed to remove item from cart.");
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("An error occurred while removing the item.");
+                });
+            }
+        });
+    });
+
+ 
+    </script>
