@@ -1,41 +1,81 @@
-// Hàm khởi tạo slider cho mỗi .slider-product
 function initSliderForProductSlider(sliderProductElement) {
     let slider = sliderProductElement.querySelector('.list');
-    let items = sliderProductElement.querySelectorAll('.list .item');
+    let items = Array.from(sliderProductElement.querySelectorAll('.list .item'));
     let next = sliderProductElement.querySelector('.buttons .next');
     let prev = sliderProductElement.querySelector('.buttons .prev');
 
-    let lengthItems = items.length - 1;
+    let lengthItems = items.length;
     let active = 0;
-    let refreshInterval = setInterval(nextSlide, 3000);
+    let refreshInterval = setInterval(nextSlide, 1000); // Điều chỉnh khoảng thời gian theo nhu cầu
+
+    // Sao chép các mục và thêm vào slider để tạo hiệu ứng vô tận
+    items.forEach(item => {
+        let clone = item.cloneNode(true);
+        slider.appendChild(clone);
+    });
+
+    items.forEach(item => {
+        let clone = item.cloneNode(true);
+        slider.insertBefore(clone, items[0]);
+    });
+
+    // Cập nhật danh sách các mục
+    items = Array.from(sliderProductElement.querySelectorAll('.list .item'));
+
+    let visibleItemsCount = 14; // Số lượng mục hiển thị cùng một lúc
+    // Điều chỉnh kích thước slider để chứa tất cả các mục
+    slider.style.width = `${visibleItemsCount * items[0].offsetWidth}px`;
 
     function nextSlide() {
-        active = active + 1 <= lengthItems ? active + 1 : 0;
+        active++;
         reloadSlider();
     }
 
     function prevSlide() {
-        active = active - 1 >= 0 ? active - 1 : lengthItems;
+        active--;
         reloadSlider();
     }
 
     function reloadSlider() {
-        slider.style.left = -items[active].offsetLeft + 'px';
+        slider.style.transition = 'left 0.5s ease'; // Điều chỉnh hiệu ứng chuyển tiếp theo nhu cầu
+
+        if (active >= items.length / 2) {
+            slider.style.transition = 'none';
+            active = 0;
+            slider.style.left = -items[active].offsetLeft + 'px';
+            setTimeout(() => {
+                slider.style.transition = 'left 0.5s ease'; // Điều chỉnh hiệu ứng chuyển tiếp theo nhu cầu
+                active++;
+                slider.style.left = -items[active].offsetLeft + 'px';
+            }, 20);
+        } else if (active < 0) {
+            slider.style.transition = 'none';
+            active = items.length / 2 - 1;
+            slider.style.left = -items[active].offsetLeft + 'px';
+            setTimeout(() => {
+                slider.style.transition = 'left 0.5s ease'; // Điều chỉnh hiệu ứng chuyển tiếp theo nhu cầu
+                active--;
+                slider.style.left = -items[active].offsetLeft + 'px';
+            }, 20);
+        } else {
+            slider.style.left = -items[active].offsetLeft + 'px';
+        }
 
         clearInterval(refreshInterval);
-        refreshInterval = setInterval(nextSlide, 3000);
+        refreshInterval = setInterval(nextSlide, 1000); // Điều chỉnh khoảng thời gian theo nhu cầu
     }
 
     next.onclick = nextSlide;
     prev.onclick = prevSlide;
 
     window.onresize = function(event) {
-        reloadSlider();
+        slider.style.transition = 'none';
+        slider.style.left = -items[active].offsetLeft + 'px';
     };
 
     // Khởi chạy slider
     reloadSlider();
 }
 
-// Lặp qua mỗi thẻ .slider-product và khởi tạo slider cho nó
+// Khởi tạo slider cho mỗi .slider-product
 document.querySelectorAll('.slider-product').forEach(initSliderForProductSlider);

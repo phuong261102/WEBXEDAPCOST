@@ -1,0 +1,383 @@
+@model XEDAPVIP.Areas.Home.Models.CheckOut.ProfileCheckoutModel
+@using App.Components
+
+@{
+    ViewData["Title"] = "Check Out Page";
+
+    List<Category> categories = ViewBag.categories as List<Category>;
+    List<Brand> brands = ViewBag.brands as List<Brand>;
+    var antiForgeryToken = ViewBag.AntiForgeryToken as string;
+    double? totalPrice = 0;
+    var totalQuantity = 0;
+}
+@section Popup {
+    @await Component.InvokeAsync(CategorySideBar.COMPONENTNAME, new CategorySideBar.CategorySideBarData()
+{
+    level = 0,
+    Categories = ViewBag.categories,
+    slugCategory = ViewBag.categoryslug,
+    brands = ViewBag.brands,
+    slugBrand = ViewBag.brandslug
+})
+}
+@{
+    var cartItemIds = Model.cartItems.Select(item => item.Id).ToList();
+    var cartItemIdsJson = Newtonsoft.Json.JsonConvert.SerializeObject(cartItemIds);
+}
+
+<body>
+    <input type="hidden" id="antiForgeryToken" value="@antiForgeryToken" />
+
+    <div style="padding-bottom: 200px;" class="cart_shop">
+        <div class="grid">
+            <div class="is-large">
+                <nav style="text-align: center; width: 100%;" class="woocommerce-breadcrumb breadcrumbs">
+                    <a asp-area="Home" asp-controller="ProductView" asp-action="Cart">SHOPPING CART</a>
+                    <span style="font-weight: 100;" class="divider">></span>
+                    <a style="color: black;" href="#">CHECKOUT DETAILS</a>
+                    <span style="font-weight: 100;" class="divider">></span>
+                    <a style="color: rgba(102, 102, 102, .7);">ORDER COMPLETE</a>
+                </nav>
+            </div>
+            <h4 style="margin-top: 20px;">Thông tin nhận hàng</h4>
+
+            <div class="product_cart_shops">
+                <div class="cart_products_address">
+                    <div class="orn"></div>
+
+                    <div class="text text-information">
+                        <p>Họ Và Tên *</p>
+                    </div>
+                    <div class="text_box">
+                        <input type="text" id="fullName" placeholder="Nhập Thông Tin Tại Đây">
+                    </div>
+                    <div id="addressSelection">
+                        <div class="text text-information">
+                            <p>Địa Chỉ *</p>
+                        </div>
+                        @if (Model.HomeAddress != null)
+                        {
+                            <div class="text_box">
+                                Địa chỉ mặc định
+                                <input type="text" id="defaultAddress" value="@Model.HomeAddress" disabled>
+                            </div>
+                            <div style="text-align: right;">
+                                <label style="width: 30%; padding-top: 20px;">
+                                    <input type="checkbox" id="toggle-address" checked="true"> Dùng Địa Chỉ Mặc Định
+                                </label>
+                            </div>
+                        }
+                        <div class="text_box" id="add-address-form"
+                            style="@(Model.HomeAddress != null ? "display: show;" : "")">
+                            <div>
+                                <label style="padding: 2px;"></label>
+                                <input type="text" id="streetNumber" class="form-control mb-2"
+                                    placeholder="Nhập số nhà">
+                            </div>
+                            <div class="form-group d-flex">
+                                <select id="SelectedProvince" class="form-control me-2">
+                                    <option value="">Chọn Tỉnh/Thành phố</option>
+                                    @foreach (var province in Model.ProvinceOptions)
+                                    {
+                                        <option value="@province.Value">@province.Text</option>
+                                    }
+                                </select>
+                                <select id="SelectedDistrict" class="form-control me-2">
+                                    <option value="">Chọn Quận/Huyện</option>
+                                </select>
+                                <select id="SelectedWard" class="form-control">
+                                    <option value="">Chọn Phường/Xã</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text text-information">
+                        <p>Số Điện Thoại *</p>
+                    </div>
+                    <div class="text_box">
+                        <input type="text" id="phoneNumber"
+                            value="@(Model.PhoneNumber != null ? Model.PhoneNumber : string.Empty)"
+                            placeholder="Nhập Số Điện Thoại">
+                    </div>
+                    <div class="text text-information">
+                        <p>Địa Chỉ Email *</p>
+                    </div>
+                    <div class="text_box">
+                        <input type="text" id="emailAddress"
+                            value="@(Model.UserEmail != null ? Model.UserEmail : string.Empty)"
+                            placeholder="Nhập Email">
+                    </div>
+                    <div class="text text-information">
+                        <p>Ghi Chú Đơn Hàng</p>
+                    </div>
+                    <div class="text_box text_box_block">
+                        <textarea id="orderNote" placeholder="Nhập Thông Tin Tại Đây"></textarea>
+                    </div>
+                </div>
+                <div class="cart_products_oder">
+                    <div class="oder_address">
+                        <h3 style="font-size: 13px; padding-bottom: 20px;">ĐƠN HÀNG CỦA BẠN</h3>
+                        <table class="oder_product-col">
+                            <tbody>
+                                <tr class="checkcart col-oder">
+                                    <th>SẢN PHẨM</th>
+                                    <td style="font-weight: bolder;">Số lượng</td>
+                                    <td style="font-weight: bolder;">TỔNG</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        @foreach (var cartItem in Model.cartItems)
+                        {
+                            var codePrice = cartItem.Variant.Product.Price;
+                            var discPrice = cartItem.Variant.Product?.DiscountPrice;
+                            var unitPrice = (discPrice != null) ? discPrice : codePrice;
+                            var price = cartItem.Quantity * unitPrice;
+                            totalPrice += price;
+                            totalQuantity += cartItem.Quantity;
+                            <table class="oder_product-col address-col">
+                                <tbody>
+                                    <tr class="checkcart col-oder">
+                                        <th class="text-sm-left">
+                                            @cartItem.Variant.Product.Name
+                                            (@cartItem.Variant.Color | @cartItem.Variant.Size)
+                                        </th>
+                                        <td>@cartItem.Quantity</td>
+                                        <td>@price?.ToString("N0") VND</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        }
+                        <table class="oder_product-col address-col">
+                            <tbody>
+                                <tr class="checkcart col-oder">
+                                    <th>Tổng</th>
+                                    <td>@totalQuantity</td>
+                                    <td id="total-order">@totalPrice?.ToString("N0") VND</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table style="margin-bottom: 20px;" class="cart_product_buy total check">
+                            <tbody>
+                                <tr colspan="2">
+                                    <th>
+                                        Giao Hàng
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="oder_product-col address-col">
+                            <tbody>
+                                <tr class="product_cart_buys check" colspan="2">
+                                    <div class="radio-buttons">
+                                        <label class="radio-container" id="homeDelivery">Giao Hàng Tận Nhà
+                                            <input type="radio" name="check_GH" value="Home Delivery" checked>
+                                            <span class="radio-checkmark"></span>
+                                        </label>
+                                        <label class="radio-container">Nhận Tại Cửa hàng
+                                            <input type="radio" name="check_GH" id="pickupInStore"
+                                                value="Pickup In Store">
+                                            <span class="radio-checkmark"></span>
+                                        </label>
+                                    </div>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table style="margin-bottom: 20px;" class="cart_product_buy total check">
+                            <tbody>
+                                <tr colspan="2">
+                                    <th>
+                                        Phương Thức Thanh Toán
+                                    </th>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="">
+                            <tbody>
+                                <tr class="product_cart_buys check" colspan="2">
+                                    <div class="radio-buttons">
+                                        <label class="radio-container">Thanh Toán Qua Ngân Hàng/VNPay
+                                            <input type="radio" name="checkTT" value="Bank/VNPay" checked>
+                                            <span class="radio-checkmark"></span>
+                                        </label>
+                                        <label class="radio-container">Thanh Toán Trực Tiếp(COD)
+                                            <input type="radio" name="checkTT" value="COD">
+                                            <span class="radio-checkmark"></span>
+                                        </label>
+                                    </div>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="cart_product_buy total check">
+                            <tbody>
+                                <tr class="product_cart_buys check" colspan="2">
+                                    <td class="title_product">
+                                        <a id="placeOrderBtn" style="text-decoration: none; color: #fff;">
+                                            <h4>Đặt</h4>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<partial name="_StatusMessage" />
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            function loadDistricts(provinceId) {
+                if (provinceId) {
+                    $.getJSON('/Member/GetDistrictsByProvinceId', { provinceId: provinceId }, function (districts) {
+                        var districtSelect = $('#SelectedDistrict');
+                        districtSelect.empty();
+                        districtSelect.append($('<option/>', { value: '', text: 'Chọn Quận/Huyện' }));
+                        $.each(districts, function (index, district) {
+                            districtSelect.append($('<option/>', { value: district.id, text: district.name }));
+                        });
+                    });
+                } else {
+                    $('#SelectedDistrict').empty().append($('<option/>', { value: '', text: 'Chọn Quận/Huyện' }));
+                }
+                $('#SelectedWard').empty().append($('<option/>', { value: '', text: 'Chọn Phường/Xã' }));
+            }
+
+            function loadWards(districtId) {
+                if (districtId) {
+                    $.getJSON('/Member/GetWardsByDistrictId', { districtId: districtId }, function (wards) {
+                        var wardSelect = $('#SelectedWard');
+                        wardSelect.empty();
+                        wardSelect.append($('<option/>', { value: '', text: 'Chọn Phường/Xã' }));
+                        $.each(wards, function (index, ward) {
+                            wardSelect.append($('<option/>', { value: ward.id, text: ward.name }));
+                        });
+                    });
+                } else {
+                    $('#SelectedWard').empty().append($('<option/>', { value: '', text: 'Chọn Phường/Xã' }));
+                }
+            }
+
+            $('#SelectedProvince').change(function () {
+                var provinceId = $(this).val();
+                loadDistricts(provinceId);
+            });
+
+            $('#SelectedDistrict').change(function () {
+                var districtId = $(this).val();
+                loadWards(districtId);
+            });
+
+            $('#toggle-address').change(function () {
+                if (this.checked) {
+                    $('#add-address-form').hide();
+                } else {
+                    $('#add-address-form').show();
+                }
+            });
+
+            $('input[name="check_GH"]').change(function () {
+                if ($('#pickupInStore').is(':checked')) {
+                    $('#addressSelection').hide();
+                    setStoreAddress();
+                } else {
+                    $('#addressSelection').show();
+                    resetAddress();
+                }
+            });
+
+            if ($('#pickupInStore').is(':checked')) {
+                $('#addressSelection').hide();
+                setStoreAddress();
+            } else {
+                resetAddress();
+            }
+
+            function getSelectedText(elementId) {
+                var element = document.getElementById(elementId);
+                return element.options[element.selectedIndex].text;
+            }
+
+            function setStoreAddress() {
+                // Set these values according to your store's address
+                const storeAddress = '123 Store St, Store City, Store Province';
+                $('#defaultAddress').val(storeAddress);
+                $('#defaultAddress').show();
+            }
+
+            function resetAddress() {
+                var address = '@Html.Raw(Model.HomeAddress)'
+                $('#defaultAddress').val(address);
+                $('#defaultAddress').show();
+            }
+
+            var isLoggedIn = '@User.Identity.IsAuthenticated'.toLowerCase();
+            $('#placeOrderBtn').click(function () {
+                var selectedProvinceText = getSelectedText('SelectedProvince');
+                var selectedDistrictText = getSelectedText('SelectedDistrict');
+                var selectedWardText = getSelectedText('SelectedWard');
+                var streetNumber = $('#streetNumber').val();
+                var homeAddress = $('#defaultAddress').val();
+                var total = $('#total-order').text().replace(/\D/g, '');
+                var isOtherAddressChecked = $('#toggle-address').is(':checked');
+                var fullName = $('#fullName').val();
+                var phoneNumber = $('#phoneNumber').val();
+                var emailAddress = $('#emailAddress').val();
+                var orderNote = $('#orderNote').val();
+                var shippingMethod = $('input[name="check_GH"]:checked').val();
+                var paymentMethod = $('input[name="checkTT"]:checked').val();
+                var cartItemIdsJson = '@Html.Raw(cartItemIdsJson)';
+                var antiForgeryToken = $('#antiForgeryToken').val();
+
+                var shippingAddress = !isOtherAddressChecked ?
+                    `${streetNumber}, ${selectedWardText}, ${selectedDistrictText}, ${selectedProvinceText}` :
+                    homeAddress || `${streetNumber}, ${selectedWardText}, ${selectedDistrictText}, ${selectedProvinceText}`;
+
+                var data = {
+                    FullName: fullName,
+                    PhoneNumber: phoneNumber,
+                    EmailAddress: emailAddress,
+                    OrderNote: orderNote,
+                    ShippingAddress: shippingAddress,
+                    ShippingMethod: shippingMethod,
+                    TotalAmount: total,
+                    PaymentMethod: paymentMethod,
+                    Status: "Pending",
+                    CartItemIds: JSON.parse(cartItemIdsJson)
+                };
+
+                // Check if the user is logged in and include UserId if true
+                if (isLoggedIn === "true") {
+                    data.UserId = '@Model.UserId';
+                }
+
+                $.ajax({
+                    type: 'POST',
+                    url: '/PlaceOrder',
+                    headers: {
+                        'RequestVerificationToken': antiForgeryToken
+                    },
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function (response) {
+                        // Handle success, e.g., show a success message or redirect to a thank you page
+                        location.reload();
+                        console.log('Order placed successfully:', response);
+                        // Example redirect:
+                        // window.location.href = '/Order/ThankYou';
+                    },
+                    error: function (error) {
+                        // Handle error, e.g., show an error message
+                        console.error('Error placing order:', error);
+                        // Example error message display:
+                        // $('#errorMessage').text('Error placing order. Please try again later.');
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -18,7 +18,6 @@ using Newtonsoft.Json;
 namespace App.Areas.Identity.Controllers
 {
 
-    [Authorize]
     [Area("Identity")]
     [Route("/Member/[action]")]
     public class ManageController : Controller
@@ -536,37 +535,7 @@ namespace App.Areas.Identity.Controllers
         }
 
 
-        [HttpGet]
-        [Authorize] // Đảm bảo chỉ người dùng được xác thực mới có thể truy cập
-        public async Task<IActionResult> GetDefaultAddress()
-        {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
 
-            if (user == null)
-            {
-                return NotFound(); // Trả về lỗi nếu không tìm thấy người dùng
-            }
-
-            var defaultAddress = await _context.Addresses.FirstOrDefaultAsync(a => a.UserId == user.Id && a.isDefault);
-
-            if (defaultAddress == null)
-            {
-                return NotFound(); // Trả về lỗi nếu không tìm thấy địa chỉ mặc định
-            }
-
-            // Lấy tên của tỉnh/thành phố, quận/huyện và phường/xã tương ứng với các ID lưu trong địa chỉ mặc định
-            var selectedProvince = await GetProvinceNameById(defaultAddress.SelectedProvince);
-            var selectedDistrict = await GetDistrictNameById(defaultAddress.SelectedDistrict);
-            var selectedWard = await GetWardNameById(defaultAddress.SelectedWard);
-
-            return Ok(new
-            {
-                streetNumber = defaultAddress.StreetNumber,
-                selectedProvince = selectedProvince,
-                selectedDistrict = selectedDistrict,
-                selectedWard = selectedWard
-            });
-        }
 
 
         [HttpPost]
@@ -693,6 +662,24 @@ namespace App.Areas.Identity.Controllers
             }
             TempData["SuccessMessage"] = "Lưu thông tin thành công";
             await _signInManager.RefreshSignInAsync(user);
+            return RedirectToAction(nameof(Index));
+        }
+        public async Task<IActionResult> RemoveHomeAddress()
+        {
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            if (user != null && user.HomeAddress != null)
+            {
+                user.HomeAddress = null;
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
+                {
+                    TempData["SuccessMessage"] = "Xoá địa chỉ mặc định thành công";
+                }
+                else
+                {
+                    TempData["ErrorMessage"] = "Có lỗi xảy ra khi xoá địa chỉ mặc định";
+                }
+            }
             return RedirectToAction(nameof(Index));
         }
 

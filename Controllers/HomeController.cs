@@ -103,29 +103,8 @@ public class HomeController : Controller
         return View();
     }
 
-    public async Task<IActionResult> Check_out(string categoryslug, string brandslug)
-    {
-        var categories = await _cacheService.GetCategoriesAsync();
-        var brands = await _cacheService.GetBrandsAsync();
 
-        ViewBag.categories = categories;
-        ViewBag.categoryslug = categoryslug;
-        ViewBag.brands = brands;
-        ViewBag.brandslug = brandslug;
-        return View();
-    }
 
-    public async Task<IActionResult> Product_select(string categoryslug, string brandslug)
-    {
-        var categories = await _cacheService.GetCategoriesAsync();
-        var brands = await _cacheService.GetBrandsAsync();
-
-        ViewBag.categories = categories;
-        ViewBag.categoryslug = categoryslug;
-        ViewBag.brands = brands;
-        ViewBag.brandslug = brandslug;
-        return View();
-    }
 
     public IActionResult Address_shop()
     {

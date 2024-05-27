@@ -34,6 +34,13 @@
 })
 }
 
+<style>
+    .single_add_to_cart_button.button.alt:hover{
+        background-color: #817eff;
+    }
+</style>
+<partial name="_StatusMessage" />
+
 <div class="content_main_bicycle">
     <!-- Content -->
     <div class="grid">
@@ -169,7 +176,7 @@
                             <input type="button" value="-" class="minus button is-form" onclick="updateQuantity(-1)">
                             <input type="number" id="quantity_6635973865498" class="input-text qty text" step="1"
                                 min="1" name="quantity" value="1" title="Qty" size="4" inputmode="numeric">
-                            <input type="button" value="+" class="plus button is-form" onclick="updateQuantity(1)">
+                            <input type="button" value="+" class="plus button is-form">
                             <button id="addtoCart" class="single_add_to_cart_button button alt">THÊM VÀO GIỎ
                                 HÀNG</button>
                         </div>
@@ -188,9 +195,6 @@
                                 </div>
                             </div>
                         </div>
-
-                        <button style="width: 100%; margin: 10px 0 10px 0;" type="submit"
-                            class="single_add_to_cart_button button alt">MUA NGAY</button>
                     </div>
                 </div>
             </div>
@@ -325,14 +329,9 @@
         }
     }
 
-    function updateQuantity(change) {
-        let quantityInput = document.getElementById('quantity_6635973865498');
-        let newValue = parseInt(quantityInput.value) + change;
-        if (newValue >= parseInt(quantityInput.min) && newValue <= parseInt(quantityInput.max)) {
-            quantityInput.value = newValue;
-        }
-    }
 
+
+    // nút thêm giỏ hàng
     document.getElementById('addtoCart').addEventListener('click', function () {
         let selectedVariant = variants.find(variant => variant.Color === selectedColor && variant.Size === selectedSize);
 
@@ -358,14 +357,49 @@
                 .then(response => {
                     if (response.ok) {
                         console.log('Thêm thành công');
+                        location.reload()
                     } else {
                         console.error('Error adding item to cart:', response.statusText);
+                        location.reload()
+
                     }
                 })
                 .catch(error => console.error('Error adding item to cart:', error));
         } else {
             console.error('No variant selected.');
         }
+    });
+    document.querySelectorAll(".input-text.qty").forEach(element => {
+        element.addEventListener("input", function () {
+            var currentValue = parseInt(this.value);
+            var maxQuantity = parseInt(this.max);
+
+            if (isNaN(currentValue) || currentValue < 1) {
+                this.value = 1;
+            } else if (currentValue > maxQuantity) {
+                this.value = maxQuantity;
+            }
+
+        });
+        // Ensure the value is updated when input loses focus (blur event)
+        element.addEventListener("blur", function () {
+        });
+    });
+    document.querySelectorAll(".plus, .minus").forEach(element => {
+        element.addEventListener("click", function () {
+            var inputField = this.closest(".quantity").querySelector(".input-text.qty");
+            var currentValue = parseInt(inputField.value);
+            var maxQuantity = parseInt(inputField.max);
+            var newValue;
+
+            if (this.classList.contains("plus")) {
+                newValue = currentValue < maxQuantity ? currentValue + 1 : maxQuantity;
+            } else {
+                newValue = currentValue > 1 ? currentValue - 1 : 1;
+            }
+
+            inputField.value = newValue;
+        });
     });
 
 </script>

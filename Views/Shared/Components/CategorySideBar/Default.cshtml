@@ -40,7 +40,7 @@
                 @foreach (var brand in Model.brands)
                 {
                     <li>
-                        <a asp-area="Home asp-controller=" ProductView" asp-action="Product" asp-route-brandslug="@brand.Slug">
+                        <a asp-area="Home" asp-controller="ProductView" asp-action="Product" asp-route-brandslug="@brand.Slug">
                             <img src="@brand.Image" alt="@brand.Name" style="max-width: 100px;" />
                         </a>
                     </li>

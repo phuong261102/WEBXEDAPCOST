@@ -1,10 +1,7 @@
+using App.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using XEDAPVIP.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Linq;
-using App.Models;
 
 public class CartService
 {
@@ -18,14 +15,12 @@ public class CartService
         _context = context;
         _contextAccessor = contextAccessor;
         _httpContext = contextAccessor.HttpContext;
-
     }
 
     public List<CartItem> GetCartItems(string userId = null)
     {
         if (!string.IsNullOrEmpty(userId))
         {
-
             return _context.CartItems
                 .Where(ci => ci.UserId == userId)
                 .Include(ci => ci.Variant)
@@ -39,7 +34,6 @@ public class CartService
             if (jsonCart != null)
             {
                 var cartItems = JsonConvert.DeserializeObject<List<CartItem>>(jsonCart);
-
                 return cartItems;
             }
             return new List<CartItem>();
@@ -103,6 +97,4 @@ public class CartService
             session.SetString(CARTKEY, jsonCart);
         }
     }
-
-
 }

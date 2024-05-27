@@ -58,7 +58,7 @@
                         else if (!string.IsNullOrEmpty(ViewBag.brandslug))
                         {
                             var brand = brands.FirstOrDefault(b => b.Slug == ViewBag.brandslug);
-                            <li class="breadcrumb-item"><a style="col-01" href="">Thương hiệu</a></li>
+                            <li class="breadcrumb-item"><a class="col-01" href="#">Thương hiệu</a></li>
                             if (brand != null)
                             {
                                 <li class="breadcrumb-item">

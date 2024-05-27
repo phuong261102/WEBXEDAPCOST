@@ -28,7 +28,7 @@
 }
 
 .cart_products_oder{
-    width: 33%;
+    width: 40%;
     padding-left: 1%;
     
 }
@@ -45,17 +45,17 @@
 .oder_product-col.address-col{
     margin-top: 20px;
 }
-th{
-    text-align: left;
+.checkcart.col-oder th{
+    width: 50%;
     font-size: 14px;
 }
 
-td{
-    font-size: 14px;
-}
+
 
 .checkcart.col-oder td{
-    text-align: right;
+    font-size: 14px;
+    text-align: center;
+    width: 25%;
 }
 
 

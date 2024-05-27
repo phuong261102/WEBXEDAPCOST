@@ -36,7 +36,7 @@ builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(cfg =>
 {
     cfg.Cookie.Name = "appxedap";
-    cfg.IdleTimeout = new TimeSpan(0, 30, 0);
+    cfg.IdleTimeout = new TimeSpan(24, 0, 0);
 });
 
 // Add mail service
@@ -47,7 +47,7 @@ builder.Services.AddSingleton<IEmailSender, SendMailService>();
 
 // Register HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddHttpClient();
 // Register Identity
 builder.Services.AddIdentity<AppUser, IdentityRole>()
             .AddEntityFrameworkStores<AppDbContext>()
@@ -136,6 +136,7 @@ builder.Services.AddAuthorization(option =>
 
 // Register CartService
 builder.Services.AddTransient<CartService>();
+builder.Services.AddTransient<OrderService>();
 
 var app = builder.Build();
 

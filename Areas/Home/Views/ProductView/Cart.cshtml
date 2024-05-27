@@ -21,19 +21,21 @@
             slugBrand = ViewBag.brandslug
         })
 }
+    <partial name="_StatusMessage" />
 
 @if (Model.Count > 0)
 {
-    double total = 0;
-<body>
+    double? total = 0;
+    <body>
     <div style="padding-bottom: 200px;" class="cart_shop">
         <div class="grid">
             <div class="is-large">
                 <nav style="text-align: center; width: 100%;" class="woocommerce-breadcrumb breadcrumbs">
                     <a style="color: black;">SHOPPING CART</a>
                     <span style="font-weight: 100;" class="divider">></span>
-                    <a href="home_shop.html">CHECKOUT DETAILS</a>
-                    <span style="font-weight: 100;" class="divider">></span>
+                    <a asp-area="Home" asp-controller="CheckOut"
+                                        asp-action="Check_out">CHECKOUT DETAILS</a>
+                    <span style="font-weight: 50;" class="divider">></span>
                     <a>ORDER COMPLETE</a>
                 </nav>
             </div>
@@ -52,23 +54,27 @@
                             </tr>
                         </tbody>
                     </table>
-                    @foreach (var cartitem in Model)
-                    {
-                        var thanhtien = cartitem.Quantity * cartitem.Variant.Product.Price;
+                    @foreach (var cartitem in Model){
+
+                            var codePrice = cartitem.Variant.Product.Price;
+                            var discPrice = cartitem.Variant.Product.DiscountPrice;
+                            var unitPrice = (discPrice != null) ? discPrice : codePrice;
+                            var thanhtien = cartitem.Quantity * unitPrice;
                         total += thanhtien;
 
                         <table class="cart_product_buy">
                             <tbody>
                                 <tr class="product_cart_buy" data-item-id="@cartitem.Id"
-                                    data-max-quantity="@cartitem.Variant.Quantity">
-                                    <td class="product_name">@cartitem.Variant.Product.Name</td>
+                                    data-max-quantity="@cartitem?.Variant.Quantity"
+                                    data-unit-price="@unitPrice" data-variant-id="@cartitem.Variant.Id">
+                                    <td class="product_name">@cartitem?.Variant.Product.Name</td>
                                     <td class="product_img">
                                         <img src="@Url.Content("~/images/products/" + cartitem.Variant.Product.Slug + "/" + cartitem.Variant.Product.MainImage)"
                                             alt="@cartitem.Variant.Product.Name">
                                     </td>
                                     <td class="product_address text">Màu: @cartitem.Variant.Color, Size: @cartitem.Variant.Size
                                     </td>
-                                    <td class="product_price text">@cartitem.Variant.Product.Price.ToString("N0")VND</td>
+                                    <td class="product_price text">@((unitPrice ?? 0).ToString("N0")) VND</td>
                                     <td style="width: 10%;" class="product_quantity">
                                         <div class="quantity">
                                             <input type="button" value="-" class="minus button is-form">
@@ -79,7 +85,7 @@
                                             <input type="button" value="+" class="plus button is-form">
                                         </div>
                                     </td>
-                                    <td class="product_total text">@thanhtien.ToString("N0")VND</td>
+                                    <td class="product_total text">@thanhtien?.ToString("N0") VND</td>
                                     <td style="width: 10%;" class="product_delete text">
                                         <button class="delete-button" data-item-id="@cartitem.Id">x</button>
                                     </td>
@@ -92,7 +98,7 @@
                     <table class="cart_product_buy total">
                         <tbody>
                             <tr class="product_cart_buys buy_products">
-                                <th id="totalAmount">@total.ToString("N0")VND</th>
+                                <th id="totalAmount">@total?.ToString("N0") VND</th>
                             </tr>
                         </tbody>
                     </table>
@@ -103,7 +109,7 @@
                                     <button id="updateCartButton">Cập nhật giỏ hàng</button>
                                 </td>
                                 <td class="title_product">
-                                    <a style="text-decoration: none; color: #fff;" asp-area="" asp-controller="Home"
+                                    <a style="text-decoration: none; color: #fff;" asp-area="Home" asp-controller="CheckOut"
                                         asp-action="Check_out"><span>TIẾN HÀNH THANH TOÁN</span></a>
                                 </td>
                             </tr>
@@ -113,14 +119,15 @@
             </div>
         </div>
     </div>
-</body>
+    </body>
 }
 else
 {
     <p class="alert alert-danger">Giỏ hàng trống</p>
 }
+
 <script>
- document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", function () {
     var antiForgeryToken = document.getElementById('antiForgeryToken').value;
 
     // Handle delete button click
@@ -152,5 +159,104 @@ else
         });
     });
 
- 
-    </script>
+    // Update total price for an item
+    function updateTotalPrice(inputField) {
+        var row = inputField.closest(".product_cart_buy");
+        var quantity = parseInt(inputField.value);
+        var unitPrice = parseFloat(row.getAttribute("data-unit-price"));
+        var totalPriceElement = row.querySelector(".product_total");
+        var newTotalPrice = unitPrice * quantity;
+        totalPriceElement.textContent = newTotalPrice.toLocaleString('vi-VN') + " VND";
+
+        // Update the overall total price
+        updateOverallTotal();
+    }
+
+    // Update the overall total price
+    function updateOverallTotal() {
+        var total = 0;
+        document.querySelectorAll(".product_cart_buy").forEach(row => {
+            var quantity = parseInt(row.querySelector(".input-text.qty").value);
+            var unitPrice = parseFloat(row.getAttribute("data-unit-price"));
+            total += unitPrice * quantity;
+        });
+        document.getElementById("totalAmount").textContent = total.toLocaleString('vi-VN') + " VND";
+    }
+
+    // Handle quantity change via buttons and input field
+    document.querySelectorAll(".plus, .minus").forEach(element => {
+        element.addEventListener("click", function () {
+            var inputField = this.closest(".quantity").querySelector(".input-text.qty");
+            var currentValue = parseInt(inputField.value);
+            var maxQuantity = parseInt(inputField.max);
+            var newValue;
+
+            if (this.classList.contains("plus")) {
+                newValue = currentValue < maxQuantity ? currentValue + 1 : maxQuantity;
+            } else {
+                newValue = currentValue > 1 ? currentValue - 1 : 1;
+            }
+
+            inputField.value = newValue;
+            updateTotalPrice(inputField);
+        });
+    });
+
+    // Handle direct input in quantity field
+    document.querySelectorAll(".input-text.qty").forEach(element => {
+        element.addEventListener("input", function () {
+            var currentValue = parseInt(this.value);
+            var maxQuantity = parseInt(this.max);
+
+            if (isNaN(currentValue) || currentValue < 1) {
+                this.value = 1;
+            } else if (currentValue > maxQuantity) {
+                this.value = maxQuantity;
+            }
+
+            updateTotalPrice(this);
+        });
+
+        // Ensure the value is updated when input loses focus (blur event)
+        element.addEventListener("blur", function () {
+            updateTotalPrice(this);
+        });
+    });
+ document.getElementById("updateCartButton").addEventListener("click", function () {
+        var cartItems = [];
+
+        document.querySelectorAll(".product_cart_buy").forEach(row => {
+            var itemId = parseInt(row.getAttribute("data-item-id"));
+            var variantId = parseInt(row.getAttribute("data-variant-id"));
+            var quantity = parseInt(row.querySelector(".input-text.qty").value);
+
+            cartItems.push({
+                Id: itemId,
+                VariantId: variantId,
+                Quantity: quantity
+            });
+        });
+
+        fetch('/updatecart', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': antiForgeryToken
+            },
+            body: JSON.stringify(cartItems)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert("Failed to update cart.");
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert("An error occurred while updating the cart.");
+        });
+    });
+});
+</script>

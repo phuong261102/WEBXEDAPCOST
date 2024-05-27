@@ -45,11 +45,16 @@ namespace App.Models
             modelBuilder.Entity<ProductCategory>()
            .HasKey(pc => new { pc.ProductId, pc.CategoryId });
 
+            modelBuilder.Entity<Order>()
+          .HasMany(o => o.OrderDetails)
+          .WithOne(oi => oi.Order)
+          .HasForeignKey(oi => oi.OrderId);
 
 
         }
 
-
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderDetail> OrderDetails { get; set; }
         public DbSet<Category> Categories { set; get; }
         public DbSet<Product> Products { set; get; }
         public DbSet<ProductCategory> ProductCategories { set; get; }

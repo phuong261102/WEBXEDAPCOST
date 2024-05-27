@@ -34,7 +34,7 @@ namespace App.Areas.Home.Controllers
 
 
 
-        [Route("/product/{categoryslug?}")]
+        [Route("/product/{slug?}")]
         public async Task<IActionResult> Product(string searchString, string categoryslug, string brandslug, [FromQuery(Name = "p")] int currentPage, int pagesize, string orderby = null)
         {
             var categories = await _cacheService.GetCategoriesAsync();
@@ -183,17 +183,27 @@ namespace App.Areas.Home.Controllers
 
             if (existingCartItem != null)
             {
+                // Check if adding the new quantity exceeds the maximum allowed quantity
+                if (existingCartItem.Quantity + cartItem.Quantity > productVariant.Quantity)
+                {
+                    TempData["ErrorMessage"] = "Số lượng thêm vào giỏ hàng hiện có đã vượt quá số lượng hiện có.";
+                    return BadRequest(new { message = "Cannot add more of this product. Maximum quantity reached." });
+                }
                 existingCartItem.Quantity += cartItem.Quantity;
             }
             else
             {
+                if (cartItem.Quantity >= productVariant.Quantity)
+                {
+                    TempData["ErrorMessage"] = "Số lượng hiện có trong giỏ hàng đã tối đa.";
+                    return BadRequest(new { message = "Cannot add more of this product. Maximum quantity reached." });
+                }
                 cartItem.Variant = productVariant;
                 cartItem.UserId = userId; // Assign userId (may be null for guests)
                 cart.Add(cartItem);
             }
-
             _cartService.SaveCartItems(userId, cart);
-
+            TempData["SuccessMessage"] = "Thêm vào giỏ hàng thành công.";
             return Ok(new { message = "Item added to cart successfully." });
         }
 
@@ -261,8 +271,25 @@ namespace App.Areas.Home.Controllers
                     }
                 }
             }
+            TempData["SuccessMessage"] = "Xoá sản phẩm trong giỏ hàng thành công.";
+
             return Json(new { success = true });
         }
+
+        [HttpPost]
+        [Route("/updatecart")]
+        public async Task<IActionResult> UpdateCart([FromBody] List<CartItem> updatedCart)
+        {
+            var user = await GetCurrentUserAsync();
+            string userId = user?.Id;  // Get the user ID if authenticated
+
+            // Update cart items in the cart service
+            _cartService.SaveCartItems(userId, updatedCart);
+            TempData["SuccessMessage"] = "Cập nhập giỏ hàng thành công.";
+
+            return Ok(new { success = true });
+        }
+
 
 
 
