@@ -1,0 +1,79 @@
+@using Microsoft.AspNetCore.Identity
+@using App.Models
+
+@inject SignInManager<AppUser> SignInManager
+@inject UserManager<AppUser> UserManager
+
+
+
+<style>
+    .kow li {
+        font-size: 1rem;
+        padding: 5px 0;
+    }
+
+    .lip:hover,
+    .kow li:hover {
+        background: #262627;
+        /* Màu xám nhạt */
+        color: #343a40;
+        /* Màu xám đậm */
+    }
+</style>
+
+<body>
+    <div class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse">
+        <div class="sidebar-sticky pt-3">
+            <a style="border-bottom: 2px solid #fff; width: 100%;" class="navbar-brand" asp-area=""
+                asp-controller="Home" asp-action="Index">
+                <img style="width: 200px;" src="/images/logo.png" alt="" class="img-fluid">
+            </a>
+            <a style="padding-top: 20px;" class="nav-link text-white">
+                <i style="font-size: 24px;" class="fas fa-user-shield"></i>
+                <span style="margin-left: 5px;"> @UserManager.GetUserName(User) </span>
+            </a>
+            <ul class="kow nav flex-column">
+                <li>
+                    <a class="nav-link text-light" asp-area="" asp-controller="Admin" asp-action="Index">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" asp-action="index" asp-controller="User" asp-area="Identity">
+                        Người dùng
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" asp-action="index" asp-controller="Category" asp-area="Admin">
+                        Danh mục
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" asp-area="Admin" asp-controller="Brand" asp-action="Index">
+                        Thương hiệu
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-light" asp-action="index" asp-controller="Product" asp-area="Admin">
+                        Sản phẩm
+                    </a>
+                </li>
+                @* <li class="nav-item">
+                <a class="nav-link text-light" asp-action="index" asp-controller="Dbmanage" asp-area="Database">
+                Database
+                </a>
+                </li> *@
+                @* <li class="nav-item">
+                <a class="nav-link text-light" asp-action="index" asp-controller="Role" asp-area="Identity">
+                Quản lý Roles
+                </a>
+                </li> *@
+
+
+            </ul>
+            <div class="lip" style="margin-top: 5px; font-size: 1rem;">
+                <partial name="_LoginAdminPartial" />
+            </div>
+        </div>
+    </div>
+</body>
