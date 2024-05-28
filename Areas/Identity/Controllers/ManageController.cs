@@ -46,7 +46,6 @@ namespace App.Areas.Identity.Controllers
 
         //
         // GET: /Manage/Index
-        [HttpGet]
         public async Task<IActionResult> Index(ManageMessageId? message = null)
         {
             ViewData["SuccessMessage"] =
@@ -59,6 +58,45 @@ namespace App.Areas.Identity.Controllers
                 : "";
 
             var user = await GetCurrentUserAsync();
+
+            // Lấy thông tin đơn hàng từ cơ sở dữ liệu
+            var orders = await _context.Orders
+                .Where(o => o.UserId == user.Id)
+                .Include(o => o.OrderDetails) // Bao gồm chi tiết đơn hàng
+                .ThenInclude(od => od.Variant)
+                .ThenInclude(v => v.Product)
+                 .OrderByDescending(o => o.OrderDate)
+                .Select(o => new OrderViewModel
+                {
+                    OrderId = o.Id,
+                    UserName = o.UserName,
+                    UserEmail = o.UserEmail,
+                    PhoneNumber = o.PhoneNumber,
+                    OrderNote = o.OrderNote,
+                    OrderDate = o.OrderDate,
+                    ShippedDate = o.ShippedDate,
+                    TotalAmount = o.TotalAmount,
+                    Status = o.Status,
+                    ShippingAddress = o.ShippingAddress,
+                    ShippingMethod = o.ShippingMethod,
+                    PaymentMethod = o.PaymentMethod,
+                    OrderDetails = o.OrderDetails.Select(d => new OrderDetailViewModel
+                    {
+                        ProductName = d.ProductName,
+                        ProductDescription = d.ProductDescription,
+                        ProductImage = d.ProductImage,
+                        Quantity = d.Quantity,
+                        VariantId = d.VariantId,
+                        Variant = d.Variant,
+                        OrderId = d.OrderId,
+                        UnitPrice = d.UnitPrice,
+                        TotalPrice = d.TotalPrice
+                    })
+                    .ToList()
+
+                })
+                .ToListAsync();
+
             var model = new IndexViewModel
             {
                 HasPassword = await _userManager.HasPasswordAsync(user),
@@ -67,17 +105,20 @@ namespace App.Areas.Identity.Controllers
                 Logins = await _userManager.GetLoginsAsync(user),
                 BrowserRemembered = await _signInManager.IsTwoFactorClientRememberedAsync(user),
                 AuthenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user),
-                profile = new EditExtraProfileModel()
+                profile = new EditExtraProfileModel
                 {
                     BirthDate = user.BirthDate,
                     HomeAddress = user.HomeAddress,
                     UserName = user.UserName,
                     UserEmail = user.Email,
                     PhoneNumber = user.PhoneNumber,
-                }
+                },
+                Orders = orders
             };
+
             return View(model);
         }
+
         public enum ManageMessageId
         {
             AddPhoneSuccess,
@@ -681,6 +722,46 @@ namespace App.Areas.Identity.Controllers
                 }
             }
             return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOrder(int orderId)
+        {
+            try
+            {
+                // Fetch the order from the database
+                var order = await _context.Orders
+                    .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+                    .FirstOrDefaultAsync(o => o.Id == orderId);
+
+                if (order == null)
+                {
+                    TempData["ErrorMessage"] = "Order not found.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                if (order.Status == "Paid" || order.Status == "Delivering")
+                {
+                    TempData["ErrorMessage"] = "Cannot cancel a paid or delivering order.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                // Perform the cancellation logic (e.g., update order status)
+                order.Status = "Canceled";
+                await _context.SaveChangesAsync();
+
+                TempData["SuccessMessage"] = "Order canceled successfully.";
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                // Log the exception (assuming you have a logging framework in place)
+                //_logger.LogError(ex, "Error cancelling order with ID {OrderId}", id);
+                TempData["ErrorMessage"] = "An error occurred while canceling the order.";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
     }

@@ -177,6 +177,19 @@ namespace App.Areas.Home.Controllers
             else
             {
                 cart = _cartService.GetCartItems();
+                foreach (var c in cart)
+                {
+                    if (c.VariantId == 0)
+                    {
+                        c.VariantId = c.Variant.Id;
+
+                    }
+                    if (c.Variant == null)
+                    {
+                        c.Variant = await _context.productVariants.Include(v => v.Product)
+                .FirstOrDefaultAsync(p => p.Id == c.VariantId);
+                    }
+                }
             }
 
             var existingCartItem = cart.FirstOrDefault(ci => ci.Variant.Id == productCode);
@@ -230,6 +243,19 @@ namespace App.Areas.Home.Controllers
             else
             {
                 cart = _cartService.GetCartItems();
+                foreach (var c in cart)
+                {
+                    if (c.VariantId == 0)
+                    {
+                        c.VariantId = c.Variant.Id;
+
+                    }
+                    if (c.Variant == null)
+                    {
+                        c.Variant = await _context.productVariants.Include(v => v.Product)
+                .FirstOrDefaultAsync(p => p.Id == c.VariantId);
+                    }
+                }
             }
 
             // Generate the anti-forgery token and pass it to the view

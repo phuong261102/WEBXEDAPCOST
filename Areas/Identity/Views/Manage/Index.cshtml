@@ -144,7 +144,7 @@
                                     </th>
                                     <td style="font-size: 0.9rem;" class="col-sm-6">
                                         @Html.DisplayFor(m => Model.profile.HomeAddress)
-                                        
+
                                     </td>
                                     <td>
                                         <a style="padding: 5px 15px;" asp-action="RemoveHomeAddress">Xoá</a>
@@ -164,7 +164,7 @@
                                         <a style="padding: 5px 15px;" asp-action="EditProfile"
                                             class="btn btn-primary btn-sm">Sửa</a>
                                     </td>
-                                    
+
                                 </tr>
                             </table>
 
@@ -253,17 +253,136 @@
                     <div style="display: flex;">
                         <div style="width: 100%;" class="infomation_user">
                             <dt
-                                style="border-radius: 5px; font-weight: 600; color: #fff; background:  rgb(13 110 253) !important; text-align: center; border-bottom: 1px solid #000;">
-                                <span> Thông Tin Sản Phẩm</span>
+                                style="border-radius: 5px; font-weight: 600; color: #fff; background: rgb(13 110 253) !important; text-align: center; border-bottom: 1px solid #000;">
+                                <span>Thông Tin Đơn Hàng</span>
                             </dt>
-                            <div style="height: 500px;"></div>
+                            <div style="height: 500px; overflow-y: auto;">
+                                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                    <thead>
+                                        <tr style="background-color: #f2f2f2;">
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Mã đơn
+                                                hàng</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Số Lượng
+                                            </th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Giá</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Trạng
+                                                Thái</th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Ngày Mua
+                                            </th>
+                                            <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Chi Tiết
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var order in Model.Orders)
+                                        {
+                                            <tr>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">@order.OrderId</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">@order.OrderDetails.Sum(od
+                                                => od.Quantity)</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    @if (decimal.TryParse(order.TotalAmount, out var totalAmount))
+                                                    {
+                                                        @totalAmount.ToString("N0")
+                                                    }
+                                                    else
+                                                    {
+                                                        @order.TotalAmount
+                                                    } VND
+                                                </td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">@order.Status</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    @order.OrderDate.ToString("dd/MM/yyyy")</td>
+                                                <td style="border: 1px solid #ddd; padding: 8px;">
+                                                    <button type="button" onclick="toggleDetails(@order.OrderId)">Xem Chi
+                                                        Tiết</button>
+                                                    @if (order.Status == "Pending")
+                                                    {
+                                                        <form asp-action="CancelOrder" asp-controller="Manage"
+                                                            asp-route-orderId="@order.OrderId" method="post">
+                                                            <input type="hidden" name="__RequestVerificationToken"
+                                                                value="@Html.AntiForgeryToken()">
+                                                            <button type="submit">Huỷ đơn</button>
+                                                        </form>
+
+                                                    }
+                                                </td>
+                                            </tr>
+                                            <tr id="order-details-@order.OrderId" style="display: none;">
+                                                <td colspan="6" style="border: 1px solid #ddd; padding: 8px;">
+                                                    <table style="width: 100%; border-collapse: collapse;">
+                                                        <thead>
+                                                            <tr style="background-color: #f2f2f2;">
+                                                                <th
+                                                                    style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                                                    Tên Sản Phẩm</th>
+                                                                <th
+                                                                    style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                                                    Mô Tả</th>
+                                                                <th
+                                                                    style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                                                    Hình Ảnh</th>
+                                                                <th
+                                                                    style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                                                    Số Lượng</th>
+                                                                <th
+                                                                    style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                                                    Đơn Giá</th>
+                                                                <th
+                                                                    style="border: 1px solid #ddd; padding: 8px; text-align: left;">
+                                                                    Tổng Giá</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var detail in order.OrderDetails)
+                                                            {
+                                                                <tr>
+                                                                    <td style="border: 1px solid #ddd; padding: 8px;">
+                                                                        @detail.ProductName</td>
+                                                                    <td style="border: 1px solid #ddd; padding: 8px;">
+                                                                        @detail.ProductDescription</td>
+                                                                    <td style="border: 1px solid #ddd; padding: 8px;">
+                                                                        @{
+                                                                            var productSlug = detail.Variant.Product.Slug;
+                                                                            var imagePath = Url.Content(detail.ProductImage);
+                                                                            var fullImagePath = $"~{imagePath}";
+                                                                        }
+                                                                        <img src="@Url.Content(fullImagePath)"
+                                                                            alt="@detail.ProductImage"
+                                                                            style="width: 50px; height: 50px;">
+                                                                    </td>
+                                                                    <td style="border: 1px solid #ddd; padding: 8px;">
+                                                                        @detail.Quantity</td>
+                                                                    <td style="border: 1px solid #ddd; padding: 8px;">
+                                                                        @detail.UnitPrice.ToString("N0") VND</td>
+                                                                    <td style="border: 1px solid #ddd; padding: 8px;">
+                                                                        @detail.TotalPrice.ToString("N0") VND</td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                        <!--<p>
-                There are no two-factor authentication providers configured. See <a href="http://go.microsoft.com/fwlink/?LinkID=532713">this article</a>
-                for setting up this application to support two-factor authentication.
-            </p>-->
+                    </div>
                 </dl>
             </div>
         </div>
+
     </div>
 </body>
+
+<script>
+    function toggleDetails(orderId) {
+        var detailsRow = document.getElementById('order-details-' + orderId);
+        if (detailsRow.style.display === 'none') {
+            detailsRow.style.display = 'table-row';
+        } else {
+            detailsRow.style.display = 'none';
+        }
+    }
+</script>

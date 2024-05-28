@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using XEDAPVIP.Areas.Home.Models.CheckOut;
 using XEDAPVIP.Models;
+using XEDAPVIP.Services;
 using static XEDAPVIP.Areas.Home.Models.CheckOut.ProfileCheckoutModel;
 namespace App.Areas.Home.Controllers
 {
@@ -16,13 +17,14 @@ namespace App.Areas.Home.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ILogger<ProductViewController> _logger;
+        private readonly IVnPayService _vnPayService;
         private readonly UserManager<AppUser> _userManager;
         private readonly CacheService _cacheService;
         private readonly CartService _cartService;
         private readonly HttpClient _httpClient;
         private readonly OrderService _orderService;
         public CheckOutController(AppDbContext context, ILogger<ProductViewController> logger, UserManager<AppUser> userManager, CacheService cacheService,
-        CartService cartService, OrderService orderService)
+        CartService cartService, OrderService orderService, IVnPayService vnPayService)
         {
             _context = context;
             _logger = logger;
@@ -30,9 +32,28 @@ namespace App.Areas.Home.Controllers
             _cacheService = cacheService;
             _cartService = cartService;
             _orderService = orderService;
+            _vnPayService = vnPayService;
             _httpClient = new HttpClient();
         }
+        [HttpPost("CreatePayment")]
+        public IActionResult CreatePayment([FromBody] Order order)
+        {
+            var paymentUrl = _vnPayService.CreatePaymentUrl(order, HttpContext);
+            return Ok(new { url = paymentUrl });
+        }
 
+        [HttpGet("VnPayReturn")]
+        public IActionResult VnPayReturn()
+        {
+            if (_vnPayService.ValidateResponse(Request.Query))
+            {
+                return Ok("Payment successful");
+            }
+            else
+            {
+                return BadRequest("Payment failed");
+            }
+        }
         [Route("/Checkout", Name = "Checkout")]
         public async Task<IActionResult> Check_out()
         {
@@ -132,7 +153,31 @@ namespace App.Areas.Home.Controllers
                     return BadRequest("No valid cart item IDs found.");
                 }
 
-                var order = await _orderService.CreateOrderAsync(
+                var order = new Order
+                {
+                    UserId = orderRequest.UserId,
+                    UserName = orderRequest.FullName,
+                    PhoneNumber = orderRequest.PhoneNumber,
+                    UserEmail = orderRequest.EmailAddress,
+                    OrderNote = orderRequest.OrderNote,
+                    OrderDate = DateTime.Now,
+                    Status = orderRequest.Status,
+                    ShippingAddress = orderRequest.ShippingAddress,
+                    ShippingMethod = orderRequest.ShippingMethod,
+                    PaymentMethod = orderRequest.PaymentMethod,
+                    TotalAmount = orderRequest.TotalAmount
+                };
+
+                if (orderRequest.PaymentMethod == "VNPAY")
+                {
+                    // Create VNPay payment URL
+                    var paymentUrl = _vnPayService.CreatePaymentUrl(order, HttpContext);
+
+                    return Ok(new { url = paymentUrl });
+
+                }
+
+                var createdOrder = await _orderService.CreateOrderAsync(
                     orderRequest.UserId,
                     orderRequest.FullName,
                     orderRequest.PhoneNumber,
@@ -146,7 +191,14 @@ namespace App.Areas.Home.Controllers
                     orderRequest.Status
                 );
 
-                TempData["SuccessMessage"] = "Đặt hàng thành công.";
+                if (order.UserId == null)
+                {
+                    TempData["SuccessMessage"] = "Đặt hàng thành công. Vui lòng kiểm tra Email để xem chi tiết đơn hàng";
+                }
+                else
+                {
+                    TempData["SuccessMessage"] = "Đặt hàng thành công. Vui lòng kiểm tra Email hoặc vào Thông tin cá nhân để xem chi tiết đơn hàng";
+                }
 
                 return Ok(new { success = true });
             }
@@ -156,6 +208,26 @@ namespace App.Areas.Home.Controllers
                 return StatusCode(500, "An error occurred while placing the order.");
             }
         }
+
+
+        public bool PaymentCallback()
+        {
+            var query = HttpContext.Request.Query;
+
+            if (_vnPayService.ValidateResponse(query))
+            {
+                _logger.LogInformation("VNPAY response is valid.");
+                // Handle successful validation, e.g., update order status
+                return true;
+            }
+            else
+            {
+                _logger.LogWarning("VNPAY response is invalid.");
+                // Handle failed validation
+                return false;
+            }
+        }
+
 
         [HttpGet]
 

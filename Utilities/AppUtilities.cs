@@ -1,5 +1,7 @@
 using System;
 using System.Globalization;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace App.Utilities
@@ -111,6 +113,23 @@ namespace App.Utilities
       if (slug.StartsWith("-"))
         slug = slug.Substring(Math.Min(slug.IndexOf("-") + 1, slug.Length));
       return slug;
+    }
+
+    public static String HmacSHA512(string key, String inputData)
+    {
+      var hash = new StringBuilder();
+      byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+      byte[] inputBytes = Encoding.UTF8.GetBytes(inputData);
+      using (var hmac = new HMACSHA512(keyBytes))
+      {
+        byte[] hashValue = hmac.ComputeHash(inputBytes);
+        foreach (var theByte in hashValue)
+        {
+          hash.Append(theByte.ToString("x2"));
+        }
+      }
+
+      return hash.ToString();
     }
   }
 }

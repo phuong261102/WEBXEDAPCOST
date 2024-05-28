@@ -63,7 +63,7 @@
                             </div>
                             <div style="text-align: right;">
                                 <label style="width: 30%; padding-top: 20px;">
-                                    <input type="checkbox" id="toggle-address" checked="true"> Dùng Địa Chỉ Mặc Định
+                                    <input type="checkbox" id="toggle-address"> Dùng Địa Chỉ Mặc Định
                                 </label>
                             </div>
                         }
@@ -196,7 +196,7 @@
                                 <tr class="product_cart_buys check" colspan="2">
                                     <div class="radio-buttons">
                                         <label class="radio-container">Thanh Toán Qua Ngân Hàng/VNPay
-                                            <input type="radio" name="checkTT" value="Bank/VNPay" checked>
+                                            <input type="radio" name="checkTT" value="VNPAY" checked>
                                             <span class="radio-checkmark"></span>
                                         </label>
                                         <label class="radio-container">Thanh Toán Trực Tiếp(COD)
@@ -315,8 +315,14 @@
                 $('#defaultAddress').show();
             }
 
-            var isLoggedIn = '@User.Identity.IsAuthenticated'.toLowerCase();
+
+
+
             $('#placeOrderBtn').click(function () {
+                if (!isvalidateForm()) {
+                    return;
+                }
+
                 var selectedProvinceText = getSelectedText('SelectedProvince');
                 var selectedDistrictText = getSelectedText('SelectedDistrict');
                 var selectedWardText = getSelectedText('SelectedWard');
@@ -330,12 +336,12 @@
                 var orderNote = $('#orderNote').val();
                 var shippingMethod = $('input[name="check_GH"]:checked').val();
                 var paymentMethod = $('input[name="checkTT"]:checked').val();
-                var cartItemIdsJson = '@Html.Raw(cartItemIdsJson)';
+                var cartItemIdsJson = "@Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.cartItems.Select(item => item.Id).ToList()))";
                 var antiForgeryToken = $('#antiForgeryToken').val();
 
                 var shippingAddress = !isOtherAddressChecked ?
                     `${streetNumber}, ${selectedWardText}, ${selectedDistrictText}, ${selectedProvinceText}` :
-                    homeAddress || `${streetNumber}, ${selectedWardText}, ${selectedDistrictText}, ${selectedProvinceText}`;
+                    homeAddress;
 
                 var data = {
                     FullName: fullName,
@@ -351,6 +357,7 @@
                 };
 
                 // Check if the user is logged in and include UserId if true
+                var isLoggedIn = '@User.Identity.IsAuthenticated'.toLowerCase();
                 if (isLoggedIn === "true") {
                     data.UserId = '@Model.UserId';
                 }
@@ -364,20 +371,77 @@
                     contentType: 'application/json',
                     data: JSON.stringify(data),
                     success: function (response) {
-                        // Handle success, e.g., show a success message or redirect to a thank you page
-                        location.reload();
-                        console.log('Order placed successfully:', response);
-                        // Example redirect:
-                        // window.location.href = '/Order/ThankYou';
+                        if (response && response.url) {
+                            window.location.href = response.url; // Đây là dòng quan trọng
+                        } else {
+                            // Nếu không có URL, có thể tải lại trang hoặc hiển thị thông báo
+                            location.reload();
+                        }
                     },
                     error: function (error) {
                         // Handle error, e.g., show an error message
                         console.error('Error placing order:', error);
-                        // Example error message display:
-                        // $('#errorMessage').text('Error placing order. Please try again later.');
                     }
                 });
             });
+
+            function isvalidateForm() {
+                var fullName = $('#fullName').val().trim();
+                var phoneNumber = $('#phoneNumber').val().trim();
+                var emailAddress = $('#emailAddress').val().trim();
+                var isOtherAddressChecked = $('#toggle-address').is(':checked');
+                var streetNumber = $('#streetNumber').val().trim();
+                var selectedProvince = $('#SelectedProvince').val();
+                var selectedDistrict = $('#SelectedDistrict').val();
+                var selectedWard = $('#SelectedWard').val();
+
+                function validateEmail(emailAddress) {
+                    var regex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                    return regex.test(emailAddress);
+                }
+
+                var errors = [];
+
+                if (!fullName) {
+                    errors.push("Họ Và Tên is required.");
+                }
+                if (!phoneNumber) {
+                    errors.push("Số Điện Thoại is required.");
+                } else if (!/^\d{10}$/.test(phoneNumber)) {
+                    errors.push("Số Điện Thoại must be a 10-digit number.");
+                }
+                if (!emailAddress) {
+                    errors.push("Địa Chỉ Email is required.");
+                } else if (!validateEmail(emailAddress)) {
+                    errors.push("Địa Chỉ Email must be a valid email address.");
+                }
+                if (!isOtherAddressChecked) {
+                    if (!streetNumber || streetNumber == "") {
+                        errors.push("Số nhà is required.");
+                    }
+                    if (!selectedProvince || selectedProvince == "Chọn Tỉnh/Thành phố") {
+                        errors.push("Tỉnh/Thành phố is required.");
+                    }
+                    if (!selectedDistrict || selectedDistrict == "Chọn Quận/Huyện") {
+                        errors.push("Quận/Huyện is required.");
+                    }
+                    if (!selectedWard || selectedWard == "Chọn Phường/Xã") {
+                        errors.push("Phường/Xã is required.");
+                    }
+                }
+
+                if (errors.length > 0) {
+                    alert("Please correct the following errors:\n" + errors.join("\n"));
+                    return false;
+                }
+
+                return true;
+            }
         });
     </script>
 }
+<script>
+
+
+
+</script>
