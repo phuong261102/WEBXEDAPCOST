@@ -133,6 +133,10 @@ namespace XEDAPVIP.Areas.Admin.Controllers
                     }
                 }
             }
+            if (status == "Delivering")
+            {
+                order.ShippedDate = DateTime.Now;
+            }
 
             order.Status = status;
             _context.Update(order);
