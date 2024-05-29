@@ -3,15 +3,14 @@
     List<App.Models.Category> categories = Model.categories;
     int level = Model.level;
     string prefix = String.Concat(Enumerable.Repeat("&nbsp;&nbsp;&nbsp;&nbsp;", level));
-
 }
+
 @if (categories.Count > 0)
 {
     @foreach (var item in categories)
     {
         <tr>
             <td>
-                @* @Html.DisplayFor(modelItem => item.Title) *@
                 @Html.Raw(@prefix)
                 <a asp-action="Details" asp-route-id="@item.Id">@item.Title</a>
             </td>
@@ -19,11 +18,11 @@
                 @Html.DisplayFor(modelItem => item.Content)
             </td>
             <td>
-
                 <a style="padding: 5px 25px;" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Edit</a>
-                <a style="padding: 5px 15px;" href="#" onclick="showPopup('warning-popup')"
-                    class="btn btn-sm btn-warning">Delete</a>
-                <form id="delete-form" style="display: none;" asp-action="Delete" asp-route-id="@item.Id">
+                <a style="padding: 5px 15px;" href="#" onclick="showPopup('warning-popup-@item.Id')"
+                    class="btn btn-sm btn-danger">Delete</a>
+                <form id="delete-form-@item.Id" style="display: none;" asp-action="Delete" asp-route-id="@item.Id"
+                    method="post">
                     <input type="submit" value="Confirm">
                 </form>
             </td>
@@ -34,18 +33,15 @@
             @await Component.InvokeAsync("RowTreeCategory", new { categories = item.CategoryChildren.ToList(), level = level + 1 })
         }
 
+        <div id="warning-popup-@item.Id" class="popup-0">
+            <div class="popup-content">
+                <p>Are you sure you want to delete this item?</p>
+                <button onclick="document.getElementById('delete-form-@item.Id').submit()">Yes</button>
+                <button onclick="hidePopup('warning-popup-@item.Id')">Hủy</button>
+            </div>
+        </div>
     }
-
 }
-<div id="warning-popup" class="popup-0">
-    <div class="popup-content">
-        <p>Are you sure you want to delete this item?</p>
-        <button onclick="document.getElementById('delete-form').submit()">Yes</button>
-        <button onclick="hidePopup('warning-popup')">
-            Hủy
-        </button>
-    </div>
-</div>
 <script>
     function showPopup(id) {
         document.getElementById(id).classList.add('show');
@@ -55,6 +51,3 @@
         document.getElementById(id).classList.remove('show');
     }
 </script>
-<style>
-
-</style>
