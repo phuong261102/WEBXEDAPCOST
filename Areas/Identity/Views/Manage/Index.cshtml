@@ -90,7 +90,7 @@
                     <div class="mol-1">
                         @Html.DisplayFor(m => Model.profile.BirthDate)
                     </div>
-                    <a style="margin: 0; color: #000;" asp-area="" asp-controller="Home" asp-action="Cart"
+                    <a style="margin: 0; color: #000;" asp-area="Home" asp-controller="ProductView" asp-action="Cart"
                         class="header-item header__item__cart">
                         <i style="color: #000;" class="fa-solid fa-cart-shopping"></i>
                         Giỏ Hàng
@@ -257,7 +257,7 @@
                                 <span>Thông Tin Đơn Hàng</span>
                             </dt>
                             <div style="height: 500px; overflow-y: auto;">
-                                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                <table style="width: 100%; border-collapse: collapse;">
                                     <thead>
                                         <tr style="background-color: #f2f2f2;">
                                             <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Mã đơn
@@ -294,15 +294,15 @@
                                                 <td style="border: 1px solid #ddd; padding: 8px;">
                                                     @order.OrderDate.ToString("dd/MM/yyyy")</td>
                                                 <td style="border: 1px solid #ddd; padding: 8px;">
-                                                    <button type="button" onclick="toggleDetails(@order.OrderId)">Xem Chi
+                                                    <button style="width: 100px;" type="button" onclick="toggleDetails(@order.OrderId)">Xem Chi
                                                         Tiết</button>
                                                     @if (order.Status == "Pending")
                                                     {
-                                                        <form asp-action="CancelOrder" asp-controller="Manage"
+                                                        <form style="    padding-top: 5px;" asp-action="CancelOrder" asp-controller="Manage"
                                                             asp-route-orderId="@order.OrderId" method="post">
                                                             <input type="hidden" name="__RequestVerificationToken"
                                                                 value="@Html.AntiForgeryToken()">
-                                                            <button type="submit">Huỷ đơn</button>
+                                                            <button style="width: 100px;" type="submit">Huỷ đơn</button>
                                                         </form>
 
                                                     }

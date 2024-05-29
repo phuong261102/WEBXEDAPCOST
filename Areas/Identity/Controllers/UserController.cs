@@ -337,5 +337,77 @@ namespace App.Areas.Identity.Controllers
                                              select c).ToListAsync();
 
         }
+        [HttpGet("{id}")]
+        public async Task<IActionResult> UserDetail(string id)
+        {
+            if (string.IsNullOrEmpty(id))
+            {
+                return NotFound("Không có user");
+            }
+
+            // Tìm người dùng theo id
+            var user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound("Người dùng không tồn tại");
+            }
+
+            // Lấy thông tin đơn hàng từ cơ sở dữ liệu
+            var orders = await _context.Orders
+                .Where(o => o.UserId == user.Id)
+                .Include(o => o.OrderDetails) // Bao gồm chi tiết đơn hàng
+                    .ThenInclude(od => od.Variant)
+                    .ThenInclude(v => v.Product)
+                .OrderByDescending(o => o.OrderDate)
+                .Select(o => new OrderViewModel
+                {
+                    OrderId = o.Id,
+                    UserName = o.UserName,
+                    UserEmail = o.UserEmail,
+                    PhoneNumber = o.PhoneNumber,
+                    OrderNote = o.OrderNote,
+                    OrderDate = o.OrderDate,
+                    ShippedDate = o.ShippedDate,
+                    TotalAmount = o.TotalAmount,
+                    Status = o.Status,
+                    ShippingAddress = o.ShippingAddress,
+                    ShippingMethod = o.ShippingMethod,
+                    PaymentMethod = o.PaymentMethod,
+                    OrderDetails = o.OrderDetails.Select(d => new OrderDetailViewModel
+                    {
+                        ProductName = d.ProductName,
+                        ProductDescription = d.ProductDescription,
+                        ProductImage = d.ProductImage,
+                        Quantity = d.Quantity,
+                        VariantId = d.VariantId,
+                        Variant = d.Variant,
+                        OrderId = d.OrderId,
+                        UnitPrice = d.UnitPrice,
+                        TotalPrice = d.TotalPrice
+                    }).ToList()
+                })
+                .ToListAsync();
+
+            var model = new UserDetailViewModel
+            {
+                UserName = user.UserName,
+                UserEmail = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                BirthDate = user.BirthDate,
+                HomeAddress = user.HomeAddress,
+                Orders = orders
+            };
+
+            return View(model);
+        }
+        public class UserDetailViewModel
+        {
+            public string UserName { get; set; }
+            public string UserEmail { get; set; }
+            public string PhoneNumber { get; set; }
+            public DateTime? BirthDate { get; set; }
+            public string HomeAddress { get; set; }
+            public List<OrderViewModel> Orders { get; set; }
+        }
     }
 }

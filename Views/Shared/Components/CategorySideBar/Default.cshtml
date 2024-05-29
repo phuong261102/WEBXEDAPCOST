@@ -11,7 +11,7 @@
         {
             @if (item.ParentCategory == null)
             {
-                <div class="column">
+                <div style="width: 20%;" class="column">
                     <h6>@item.Title</h6>
                     <hr />
                     @if (item.CategoryChildren?.Count > 0)
@@ -73,13 +73,14 @@
 
     .categorypopup {
         position: fixed;
-        top: 103px;
+        top: 100px;
         left: 50%;
         transform: translateX(-50%);
         z-index: 1000;
         display: none;
         background-color: white;
         padding: 10px;
+        border: 2px solid #ddd;
     }
 
     .category-product {
@@ -90,10 +91,12 @@
         list-style: none;
         padding: 0;
         margin: 0;
+        
     }
 
     .categorypopup li {
-        padding: 8px 16px;
+        
+        padding: 8px 10px;
     }
 
     .categorypopup li a {

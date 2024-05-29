@@ -91,9 +91,9 @@
                     </div>
 
                     <!-- Buttons and Dots -->
-                    <div class="buttons">
-                        <button id="prev">&lt;</button>
-                        <button id="next">&gt;</button>
+                    <div style="width: 95%;" class="buttons">
+                        <button  style="background-color: transparent;" id="prev">&lt;</button>
+                        <button style="background-color: transparent;" id="next">&gt;</button>
                     </div>
                     <div class="dots">
                         @foreach (var subImage in Model.SubImages)
@@ -174,7 +174,7 @@
                         <!-- Quantity and Add to Cart -->
                         <div class="quantity" id="quantityContainer" style="display:none;">
                             <input type="button" value="-" class="minus button is-form" onclick="updateQuantity(-1)">
-                            <input type="number" id="quantity_6635973865498" class="input-text qty text" step="1"
+                            <input style="width: 60px;" type="number" id="quantity_6635973865498" class="input-text qty text" step="1"
                                 min="1" name="quantity" value="1" title="Qty" size="4" inputmode="numeric">
                             <input type="button" value="+" class="plus button is-form">
                             <button id="addtoCart" class="single_add_to_cart_button button alt">THÊM VÀO GIỎ

@@ -1,0 +1,306 @@
+@model IEnumerable<App.Models.Order>
+
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+<div class="container mt-4">
+    <h2>Quản lý đơn hàng</h2>
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="statusFilter">Lọc theo trạng thái:</label>
+                <select id="statusFilter" class="form-control" onchange="filterOrders()">
+                    <option value="all">Tất cả</option>
+                    <option value="Pending">Chờ xử lý</option>
+                    <option value="Paid">Đã Thanh Toán</option>
+                    <option value="Delivering">Đang Giao</option>
+                    <option value="Completed">Hoàn thành</option>
+                    <option value="Canceled">Hủy bỏ</option>
+                    <option value="Failed">Thất bại</option>
+                </select>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <label for="searchInput">Tìm kiếm:</label>
+                <input type="text" id="searchInput" class="form-control" onkeyup="searchOrders()"
+                    placeholder="Tìm theo tên hoặc email khách hàng">
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead style="position: sticky; top: 0; background: white;">
+                <tr>
+                    <th><a href="#" onclick="sortTable(0)">Mã Đơn</a></th>
+                    <th><a href="#" onclick="sortTable(1)">Tên khách hàng</a></th>
+                    <th><a href="#" onclick="sortTable(2)">Email</a></th>
+                    <th><a href="#" onclick="sortTable(3)">Ngày đặt</a></th>
+                    <th><a href="#" onclick="sortTable(4)">Ngày giao</a></th>
+                    <th><a href="#" onclick="sortTable(5)">Tổng đơn giá</a></th>
+                    <th><a href="#" onclick="sortTable(6)">Trạng thái</a></th>
+                    <th><a href="#" onclick="sortTable(7)">Địa chỉ giao hàng</a></th>
+                    <th><a href="#" onclick="sortTable(8)">Phương thức vận chuyển</a></th>
+                    <th><a href="#" onclick="sortTable(9)">Phương thức thanh toán</a></th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody id="orderTable">
+                @foreach (var order in Model)
+                {
+                    <tr class="order-row" data-status="@order.Status" data-customer="@order.UserName @order.UserEmail"
+                        data-order-id="@order.Id">
+                        <td>@order.Id</td>
+                        <td>@order.UserName</td>
+                        <td>@order.UserEmail</td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                        <td>@order.ShippedDate?.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @if (decimal.TryParse(order.TotalAmount, out var totalAmount))
+                            {
+                                @totalAmount.ToString("N0")
+                            }
+                            else
+                            {
+                                @order.TotalAmount
+                            }
+                        </td>
+                        <td>@order.Status</td>
+                        <td>@order.ShippingAddress</td>
+                        <td>@order.ShippingMethod</td>
+                        <td>@order.PaymentMethod</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                @if (order.Status != "Completed" && order.Status != "Canceled" && order.Status != "Failed")
+                                {
+                                    <button class="btn btn-primary btn-sm"
+                                        onclick="openEditModal(@order.Id, '@order.Status')">Sửa</button>
+                                }
+                                <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@order.Id">Chi tiết</a>
+                                @if (order.Status == "Canceled" || order.Status == "Failed")
+                                {
+                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(@order.Id)">Xóa</button>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Chỉnh sửa trạng thái đơn hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="editModalBody">
+                <form id="editForm">
+                    <input type="hidden" id="editOrderId" name="Id" value="">
+                    <div class="form-group">
+                        <label for="Status">Trạng thái đơn hàng</label>
+                        <select class="form-control" id="editStatus" name="Status">
+                            <option value="Pending">Chờ xử lý</option>
+                            <option value="Paid">Đã Thanh Toán</option>
+                            <option value="Delivering">Đang Giao</option>
+                            <option value="Completed">Hoàn thành</option>
+                            <option value="Canceled">Hủy bỏ</option>
+                            <option value="Failed">Thất bại</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn btn-primary" onclick="submitEditForm()">Lưu thay đổi</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-group .btn {
+        margin-right: 5px;
+    }
+
+    th a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .table-sm th,
+    .table-sm td {
+        padding: .4rem;
+    }
+
+    .btn-info {
+        width: 100px;
+    }
+
+    .table-responsive {
+        max-height: 500px;
+        overflow: auto;
+    }
+
+    .container,
+    .container-lg,
+    .container-md,
+    .container-sm,
+    .container-xl {
+        max-width: 2000px;
+    }
+</style>
+
+<script>
+    var jq = $.noConflict(true);
+
+    let sortDirection = {
+        0: true,
+        1: true,
+        2: true,
+        3: true,
+        4: true,
+        5: true,
+        6: true,
+        7: true,
+        8: true,
+        9: true
+    };
+
+    function sortTable(columnIndex) {
+        var table = document.getElementById('orderTable');
+        var rows = Array.from(table.getElementsByClassName('order-row'));
+        var ascending = sortDirection[columnIndex];
+
+        var sortedRows = rows.sort(function (a, b) {
+            var aText = a.getElementsByTagName('td')[columnIndex].innerText;
+            var bText = b.getElementsByTagName('td')[columnIndex].innerText;
+
+            if (columnIndex === 4) { // Sort by total amount
+                return (parseFloat(aText.replace(/[^0-9.-]+/g, "")) - parseFloat(bText.replace(/[^0-9.-]+/g, ""))) * (ascending ? 1 : -1);
+            } else if (columnIndex === 2 || columnIndex === 3) { // Sort by date
+                var aDate = new Date(aText.split('/').reverse().join('/'));
+                var bDate = new Date(bText.split('/').reverse().join('/'));
+                return (aDate - bDate) * (ascending ? 1 : -1);
+            } else {
+                return aText.localeCompare(bText, undefined, { numeric: true }) * (ascending ? 1 : -1);
+            }
+        });
+
+        sortDirection[columnIndex] = !sortDirection[columnIndex];
+
+        table.innerHTML = "";
+        sortedRows.forEach(function (row) {
+            table.appendChild(row);
+        });
+    }
+
+    function filterOrders() {
+        var filter = document.getElementById('statusFilter').value;
+        var rows = document.getElementsByClassName('order-row');
+
+        Array.from(rows).forEach(function (row) {
+            if (filter === 'all' || row.getAttribute('data-status') === filter) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function searchOrders() {
+        var searchInput = document.getElementById('searchInput').value.toLowerCase();
+        var rows = document.getElementsByClassName('order-row');
+
+        Array.from(rows).forEach(function (row) {
+            var customer = row.getAttribute('data-customer').toLowerCase();
+            var orderId = row.getAttribute('data-order-id').toLowerCase();
+            if (customer.includes(searchInput) || orderId.includes(searchInput)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    const validStatusTransitions = {
+        "Pending": ["Paid", "Canceled"],
+        "Paid": ["Delivering"],
+        "Delivering": ["Completed", "Failed"],
+        "Completed": [],
+        "Canceled": [],
+        "Failed": []
+    };
+
+    function openEditModal(orderId, currentStatus) {
+        jq('#editOrderId').val(orderId);
+        jq('#editStatus').val(currentStatus);
+
+        // Disable invalid status options
+        jq('#editStatus option').each(function () {
+            const optionValue = jq(this).val();
+            if (validStatusTransitions[currentStatus].includes(optionValue) || optionValue === currentStatus) {
+                jq(this).prop('disabled', false);
+            } else {
+                jq(this).prop('disabled', true);
+            }
+        });
+
+        jq('#editModal').modal('show');
+    }
+
+    function submitEditForm() {
+        var orderId = jq('#editOrderId').val();
+        var status = jq('#editStatus').val();
+
+        jq.ajax({
+            url: '@Url.Action("Edit", "Order")',
+            type: 'POST',
+            data: {
+                Id: orderId,
+                Status: status,
+                __RequestVerificationToken: jq('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function () {
+                jq('#editModal').modal('hide');
+                location.reload();
+            },
+            error: function () {
+                alert('Cập nhật thất bại.');
+            }
+        });
+    }
+
+    function confirmDelete(orderId) {
+        if (confirm('Bạn có chắc chắn muốn xoá đơn hàng này không?')) {
+            jq.ajax({
+                url: '@Url.Action("Delete", "Order")',
+                type: 'POST',
+                data: {
+                    id: orderId,
+                    __RequestVerificationToken: jq('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function (response) {
+                    if (response.success) {
+                        alert('Đơn hàng đã được xoá thành công.');
+                        location.reload();
+                    } else {
+                        alert('Không thể xoá đơn hàng.');
+                    }
+                },
+                error: function () {
+                    alert('Xoá đơn hàng thất bại.');
+                }
+            });
+        }
+    }
+</script>

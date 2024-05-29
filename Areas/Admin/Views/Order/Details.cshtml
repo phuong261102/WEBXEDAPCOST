@@ -1,0 +1,175 @@
+@model App.Areas.Identity.Models.ManageViewModels.OrderViewModel;
+
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+
+
+
+<body>
+
+    <div class="container">
+        <h4>Order Details</h4>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-2">Mã Đơn Hàng</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.OrderId)</dd>
+
+            <dt class="col-sm-2">Tên Người Đặt</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.UserName)</dd>
+
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.UserEmail)</dd>
+
+            <dt class="col-sm-2">Số Điện Thoại</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.PhoneNumber)</dd>
+
+            <dt class="col-sm-2">Ghi chú</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.OrderNote)</dd>
+
+            <dt class="col-sm-2">Ngày Đặt Hàng</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.OrderDate)</dd>
+
+            <dt class="col-sm-2">Ngày Giao Hàng</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.ShippedDate)</dd>
+
+            <dt class="col-sm-2">Tổng Giá Đơn Hàng</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.TotalAmount)</dd>
+
+            <dt class="col-sm-2">Trạng Thái Đơn Hàng</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.Status)</dd>
+
+            <dt class="col-sm-2">Phương Thức Nhận Hàng</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.ShippingMethod)</dd>
+
+            <dt class="col-sm-2">Địa Chỉ Giao Hàng</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.ShippingAddress)</dd>
+
+            <dt class="col-sm-2">Phương Thức Thanh Toán</dt>
+            <dd class="col-sm-10">@Html.DisplayFor(model => model.PaymentMethod)</dd>
+        </dl>
+
+        <h4>Products in Order</h4>
+        <hr />
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Tên Sản Phẩm</th>
+                    <th>Mô Tả</th>
+                    <th>Hình Ảnh</th>
+                    <th>Số Lượng</th>
+                    <th>Đơn Giá</th>
+                    <th>Tổng Giá</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detail in Model.OrderDetails)
+                {
+                    <tr>
+                        <td>@detail.ProductName</td>
+                        <td>@detail.ProductDescription</td>
+                        <td>
+                            @{
+                                var imagePath = Url.Content(detail.ProductImage);
+                            }
+                            <img src="@imagePath" alt="@detail.ProductName" class="img-thumbnail"
+                                style="width: 50px; height: 50px;">
+                        </td>
+                        <td>@detail.Quantity</td>
+                        <td>@detail.UnitPrice.ToString("N0") VND</td>
+                        <td>@detail.TotalPrice.ToString("N0") VND</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="container">
+        <button class="btn btn-primary btn-sm" onclick="openEditModal(@Model.OrderId, '@Model.Status')">Sửa</button>
+        <a class="btn btn-secondary" asp-action="Index">Back to List</a>
+    </div>
+
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabel">Chỉnh sửa trạng thái đơn hàng</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="editModalBody">
+                    <form id="editForm">
+                        <input type="hidden" id="editOrderId" name="Id" value="">
+                        <div class="form-group">
+                            <label for="Status">Trạng thái đơn hàng</label>
+                            <select class="form-control" id="editStatus" name="Status">
+                                <option value="Pending">Chờ xử lý</option>
+                                <option value="Paid">Đã Thanh Toán</option>
+                                <option value="Delivering">Đang Giao</option>
+                                <option value="Completed">Hoàn thành</option>
+                                <option value="Canceled">Hủy bỏ</option>
+                                <option value="Failed">Thất bại</option>
+                            </select>
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="submitEditForm()">Lưu thay đổi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    var jq = $.noConflict(true);
+    const validStatusTransitions = {
+        "Pending": ["Paid", "Canceled"],
+        "Paid": ["Delivering"],
+        "Delivering": ["Completed", "Failed"],
+        "Completed": [],
+        "Canceled": [],
+        "Failed": []
+    };
+
+    function openEditModal(orderId, currentStatus) {
+        jq('#editOrderId').val(orderId);
+        jq('#editStatus').val(currentStatus);
+
+        // Disable invalid status options
+        jq('#editStatus option').each(function () {
+            const optionValue = jq(this).val();
+            if (validStatusTransitions[currentStatus].includes(optionValue) || optionValue === currentStatus) {
+                jq(this).prop('disabled', false);
+            } else {
+                jq(this).prop('disabled', true);
+            }
+        });
+
+        jq('#editModal').modal('show');
+    }
+
+    function submitEditForm() {
+        var orderId = jq('#editOrderId').val();
+        var status = jq('#editStatus').val();
+
+        jq.ajax({
+            url: '@Url.Action("Edit", "Order")',
+            type: 'POST',
+            data: {
+                Id: orderId,
+                Status: status,
+                __RequestVerificationToken: jq('input[name="__RequestVerificationToken"]').val()
+            },
+            success: function () {
+                jq('#editModal').modal('hide');
+                location.reload();
+            },
+            error: function () {
+                alert('Cập nhật thất bại.');
+            }
+        });
+    }
+</script>

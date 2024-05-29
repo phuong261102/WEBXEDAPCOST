@@ -206,7 +206,7 @@ namespace App.Areas.Home.Controllers
             }
             else
             {
-                if (cartItem.Quantity >= productVariant.Quantity)
+                if (cartItem.Quantity > productVariant.Quantity)
                 {
                     TempData["ErrorMessage"] = "Số lượng hiện có trong giỏ hàng đã tối đa.";
                     return BadRequest(new { message = "Cannot add more of this product. Maximum quantity reached." });

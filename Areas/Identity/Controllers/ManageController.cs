@@ -732,8 +732,7 @@ namespace App.Areas.Identity.Controllers
                 // Fetch the order from the database
                 var order = await _context.Orders
                     .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Variant)
-                    .ThenInclude(v => v.Product)
+                        .ThenInclude(od => od.Variant)
                     .FirstOrDefaultAsync(o => o.Id == orderId);
 
                 if (order == null)
@@ -748,8 +747,22 @@ namespace App.Areas.Identity.Controllers
                     return RedirectToAction(nameof(Index));
                 }
 
+                // Return items to inventory
+                foreach (var orderDetail in order.OrderDetails)
+                {
+                    var variant = await _context.productVariants.FindAsync(orderDetail.Variant.Id);
+
+                    if (variant != null)
+                    {
+                        variant.Quantity += orderDetail.Quantity;
+                        _context.Update(variant);
+                    }
+                }
+
                 // Perform the cancellation logic (e.g., update order status)
                 order.Status = "Canceled";
+                _context.Update(order);
+
                 await _context.SaveChangesAsync();
 
                 TempData["SuccessMessage"] = "Order canceled successfully.";
@@ -758,7 +771,7 @@ namespace App.Areas.Identity.Controllers
             catch (Exception ex)
             {
                 // Log the exception (assuming you have a logging framework in place)
-                //_logger.LogError(ex, "Error cancelling order with ID {OrderId}", id);
+                _logger.LogError(ex, "Error cancelling order with ID {OrderId}", orderId);
                 TempData["ErrorMessage"] = "An error occurred while canceling the order.";
                 return RedirectToAction(nameof(Index));
             }

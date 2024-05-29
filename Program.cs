@@ -146,6 +146,8 @@ builder.Services.AddSingleton<IVnPayService, VnPayService>();
 builder.Services.AddTransient<CartService>();
 builder.Services.AddTransient<OrderService>();
 
+
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -185,7 +187,6 @@ using (var scope = app.Services.CreateScope())
     // Seed data if necessary
     await SeedDataAsync(dbContext, userManager, roleManager);
 }
-
 app.Run();
 
 static async Task SeedDataAsync(AppDbContext dbContext, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)

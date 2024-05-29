@@ -1,8 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using App.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using XEDAPVIP.Areas.Home.Models.CheckOut;
 using XEDAPVIP.ExtendMethods;
@@ -30,11 +28,12 @@ namespace XEDAPVIP.Services
             var returnUrl = _vnPaySettings.ReturnUrl;
             var tmnCode = _vnPaySettings.TmnCode;
             var hashSecret = _vnPaySettings.HashSecret;
+
             if (!decimal.TryParse(order.TotalAmount, out var totalAmount))
             {
                 totalAmount = 0; // Fallback to 0 if conversion fails
-
             }
+
             var amountInCents = (long)(totalAmount * 100);
             var vnpay = new VnPayLibrary();
             vnpay.AddRequestData("vnp_Version", "2.1.0");
@@ -61,11 +60,18 @@ namespace XEDAPVIP.Services
             {
                 vnpay.AddResponseData(key, value);
             }
-
-            var hashSecret = _vnPaySettings.HashSecret;
+            long orderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
+            long vnpayTranId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
+            string vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
+            string vnp_TransactionStatus = vnpay.GetResponseData("vnp_TransactionStatus");
+            long vnp_Amount = Convert.ToInt64(vnpay.GetResponseData("vnp_Amount")) / 100;
             var vnp_SecureHash = query["vnp_SecureHash"];
-            return vnpay.ValidateSignature(vnp_SecureHash, hashSecret);
+            var hashSecret = _vnPaySettings.HashSecret;
+
+            bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, hashSecret);
+
+
+            return checkSignature;
         }
     }
-
 }

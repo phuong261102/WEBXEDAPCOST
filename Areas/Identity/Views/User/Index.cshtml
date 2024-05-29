@@ -2,7 +2,6 @@
 @{
     ViewData["Title"] = "Danh sách các thành viên";
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
-
 }
 <partial name="_StatusMessage"></partial>
 <p>Tổng số thành viên: @Model.totalUsers</p>
@@ -29,6 +28,8 @@
             </td>
             <td>
                 <a class="btn btn-success btn-sm" asp-action="SetPassword" asp-route-id="@user.Id">Đặt mật khẩu</a>
+                <a class="btn btn-info btn-sm" asp-action="UserDetail" asp-route-id="@user.Id">Xem chi tiết</a>
+                <!-- Nút Xem chi tiết -->
             </td>
         </tr>
     }
@@ -41,5 +42,4 @@
                 generateUrl = (int? p) => Url.Action("Index", new { p = p })
             };
 }
-
 <partial name="_PagingXTL" model="@pagingmodel" />

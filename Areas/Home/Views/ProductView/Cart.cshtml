@@ -23,10 +23,43 @@
 }
     <partial name="_StatusMessage" />
 
+
+<style>
+    .custom-alert{
+        display: none;
+        top: 0;
+        right: 0;
+        position: fixed;
+        padding: 10px;
+        color: #fff;
+        margin-bottom: 10px;
+        width: 400px;
+        border-radius: 5px;
+        --color: #0abf30;
+        background-image: linear-gradient(to top, #77cadf55, #061b8d 30%);
+        animation: show 0.3s ease 1 forwards;
+        z-index: 1000;
+    }
+
+    .cancel-btn ,
+    .confirm-btn{
+        width: 100px;
+        border: 1px solid;
+        padding: 5px;
+        border-radius: 10px;
+    }
+</style>
 @if (Model.Count > 0)
 {
     double? total = 0;
     <body>
+        <div id="customAlert" class="custom-alert">
+            <div class="popup-content">
+                <p>Bạn có chắc chắn muốn xóa mặt hàng này khỏi giỏ hàng?</p>
+                <button class="confirm-btn">Xác nhận</button>
+                <button button class="cancel-btn ">Hủy</button>
+            </div>
+        </div>
     <div style="padding-bottom: 200px;" class="cart_shop">
         <div class="grid">
             <div class="is-large">
@@ -36,8 +69,13 @@
                     <a asp-area="Home" asp-controller="CheckOut"
                                         asp-action="Check_out">CHECKOUT DETAILS</a>
                     <span style="font-weight: 50;" class="divider">></span>
-                    <a>ORDER COMPLETE</a>
+                    <a style="    color: rgba(102, 102, 102, .7);">ORDER COMPLETE</a>
                 </nav>
+            </div>
+             <div style="text-align: right; padding-bottom: 10px;">
+                <button style="background: transparent; border: none;" id="updateCartButton"><i style="padding: 5px;" class="fa-solid fa-rotate"></i>
+                    <Span>cập nhật</Span>
+                </button>
             </div>
             <div class="product_cart_shops">
                 <div class="cart_products">
@@ -94,32 +132,41 @@
                         </table>
                     }
                 </div>
-                <div class="cart_products_total">
-                    <table class="cart_product_buy total">
-                        <tbody>
-                            <tr class="product_cart_buys buy_products">
-                                <th id="totalAmount">@total?.ToString("N0") VND</th>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table class="cart_product_buy total check">
-                        <tbody>
-                            <tr class="product_cart_buys check" colspan="2">
-                                <td>
-                                    <button id="updateCartButton">Cập nhật giỏ hàng</button>
-                                </td>
-                                <td class="title_product">
-                                    <a style="text-decoration: none; color: #fff;" asp-area="Home" asp-controller="CheckOut"
-                                        asp-action="Check_out"><span>TIẾN HÀNH THANH TOÁN</span></a>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                
             </div>
+            <div class="cart_products_total">
+    <table class="cart_product_buy total check">
+        <tbody>
+            <tr class="product_cart_buys check">
+               
+            </tr>
+        </tbody>
+    </table>
+    <div style="width: 50%;">
+    <table class="cart_product_buy total">
+        <tbody style="border-bottom: 1px solid;">
+            <tr class="product_cart_buys buy_products">
+                <th>Tổng Tiền</th>
+                <th style="text-align: right;" id="totalAmount">@total?.ToString("N0") VND</th>
+            </tr>
+        </tbody>
+    </table>
+
+    <table style="margin-top: 20px;" class="cart_product_buy total">
+        <tbody style="padding-top: 20px;">
+            <tr>
+                <td colspan="2" class="title_product">
+                    <a style="text-decoration: none; color: #fff;" asp-area="Home" asp-controller="CheckOut" asp-action="Check_out">
+                        <span>TIẾN HÀNH THANH TOÁN</span>
+                    </a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
         </div>
     </div>
-    </body>
+</body>
 }
 else
 {
@@ -132,32 +179,45 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Handle delete button click
     document.querySelectorAll(".delete-button").forEach(button => {
-        button.addEventListener("click", function () {
-            var itemId = this.getAttribute("data-item-id");
+    button.addEventListener("click", function () {
+        var itemId = this.getAttribute("data-item-id");
 
-            if (confirm("Are you sure you want to remove this item from the cart?")) {
-                fetch('/removecart/' + itemId, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': antiForgeryToken
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        location.reload();
-                    } else {
-                        alert("Failed to remove item from cart.");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert("An error occurred while removing the item.");
-                });
-            }
-        });
+        var customAlert = document.getElementById("customAlert");
+        customAlert.style.display = "block";
+
+        var confirmBtn = customAlert.querySelector(".confirm-btn");
+        var cancelBtn = customAlert.querySelector(".cancel-btn");
+
+        confirmBtn.onclick = function() {
+            fetch('/removecart/' + itemId, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': antiForgeryToken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert("Failed to remove item from cart.");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred while removing the item.");
+            });
+
+            customAlert.style.display = "none";
+        };
+
+        cancelBtn.onclick = function() {
+            customAlert.style.display = "none";
+        };
     });
+});
+
 
     // Update total price for an item
     function updateTotalPrice(inputField) {

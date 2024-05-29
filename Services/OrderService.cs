@@ -1,4 +1,6 @@
+using System.Security.Policy;
 using App.Models;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using XEDAPVIP.Models;
 using XEDAPVIP.Services;
@@ -101,10 +103,10 @@ public class OrderService
             // Clear database cart items for logged-in user
             await RemoveCartItems(cartItems.Select(ci => ci.Id).ToList());
         }
-
-
         return order;
     }
+
+
     private async Task SaveOrderImage(List<OrderDetail> orderDetails)
     {
         foreach (var orderDetail in orderDetails)

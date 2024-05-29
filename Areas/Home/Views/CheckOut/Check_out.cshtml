@@ -25,7 +25,47 @@
     var cartItemIdsJson = Newtonsoft.Json.JsonConvert.SerializeObject(cartItemIds);
 }
 
+<style>
+    .error-messages {
+        width: 400px;
+        color: #ffffff;
+        position: absolute;
+        right: 1%;
+        top: 0;
+        list-style-type: none;
+    }
+
+    .error-messages ul {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+    }
+
+    .error-messages li {
+        margin: 5px 0;
+        background-image: linear-gradient(to right, #bfbf0ac2, #22242f 30%);
+        border-radius: 10px;
+        border: 2px solid #000000c2;
+        padding: 5px;
+
+    }
+
+    .kc-01 {
+        width: 20%;
+    }
+
+    .kc-02 {
+        width: 70%;
+    }
+
+    .kc-03 {
+        width: 10%;
+    }
+</style>
+
 <body>
+    <div id="errorMessages" class="error-messages"></div>
+
     <input type="hidden" id="antiForgeryToken" value="@antiForgeryToken" />
 
     <div style="padding-bottom: 200px;" class="cart_shop">
@@ -43,6 +83,7 @@
 
             <div class="product_cart_shops">
                 <div class="cart_products_address">
+
                     <div class="orn"></div>
 
                     <div class="text text-information">
@@ -223,6 +264,7 @@
             </div>
         </div>
     </div>
+
 </body>
 <partial name="_StatusMessage" />
 
@@ -361,7 +403,6 @@
                 if (isLoggedIn === "true") {
                     data.UserId = '@Model.UserId';
                 }
-
                 $.ajax({
                     type: 'POST',
                     url: '/PlaceOrder',
@@ -385,58 +426,84 @@
                 });
             });
 
+            function validateEmail(emailAddress) {
+                var regex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+                return regex.test(emailAddress);
+            }
+
+            function checkErrors(fullName, phoneNumber, emailAddress, streetNumber, selectedProvince, selectedDistrict, selectedWard, isOtherAddressChecked, isPickUpInStoreChecked) {
+                var errors = [];
+
+                if (!fullName) {
+                    errors.push("Họ Và Tên Đang Trống !!!");
+                }
+                if (!phoneNumber) {
+                    errors.push("Số Điện Thoại Đang Trống !!!");
+                } else if (!/^\d{10}$/.test(phoneNumber)) {
+                    errors.push("Số Điện Thoại phải gồm 10 chữ số.");
+                }
+                if (!emailAddress) {
+                    errors.push("Địa Chỉ Email Đang Trống !!!");
+                } else if (!validateEmail(emailAddress)) {
+                    errors.push("Vui lòng nhập địa chỉ email hợp lê.");
+                }
+                if (!isPickUpInStoreChecked) {
+                    if (!isOtherAddressChecked) {
+                        if (!streetNumber || streetNumber === "") {
+                            errors.push("Số nhà Đang Trống !!!");
+                        }
+                        if (!selectedProvince || selectedProvince === "Chọn Tỉnh/Thành phố") {
+                            errors.push("Tỉnh/Thành phố Đang Trống !!!");
+                        }
+                        if (!selectedDistrict || selectedDistrict === "Chọn Quận/Huyện") {
+                            errors.push("Quận/Huyện Đang Trống !!!");
+                        }
+                        if (!selectedWard || selectedWard === "Chọn Phường/Xã") {
+                            errors.push("Phường/Xã Đang Trống !!!");
+                        }
+                    }
+                }
+                return errors;
+            }
+
             function isvalidateForm() {
                 var fullName = $('#fullName').val().trim();
                 var phoneNumber = $('#phoneNumber').val().trim();
                 var emailAddress = $('#emailAddress').val().trim();
-                var isOtherAddressChecked = $('#toggle-address').is(':checked');
                 var streetNumber = $('#streetNumber').val().trim();
                 var selectedProvince = $('#SelectedProvince').val();
                 var selectedDistrict = $('#SelectedDistrict').val();
                 var selectedWard = $('#SelectedWard').val();
+                var isOtherAddressChecked = $('#toggle-address').is(':checked');
+                var isPickUpInStoreChecked = $('#pickupInStore').is(':checked');
 
-                function validateEmail(emailAddress) {
-                    var regex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-                    return regex.test(emailAddress);
-                }
-
-                var errors = [];
-
-                if (!fullName) {
-                    errors.push("Họ Và Tên is required.");
-                }
-                if (!phoneNumber) {
-                    errors.push("Số Điện Thoại is required.");
-                } else if (!/^\d{10}$/.test(phoneNumber)) {
-                    errors.push("Số Điện Thoại must be a 10-digit number.");
-                }
-                if (!emailAddress) {
-                    errors.push("Địa Chỉ Email is required.");
-                } else if (!validateEmail(emailAddress)) {
-                    errors.push("Địa Chỉ Email must be a valid email address.");
-                }
-                if (!isOtherAddressChecked) {
-                    if (!streetNumber || streetNumber == "") {
-                        errors.push("Số nhà is required.");
-                    }
-                    if (!selectedProvince || selectedProvince == "Chọn Tỉnh/Thành phố") {
-                        errors.push("Tỉnh/Thành phố is required.");
-                    }
-                    if (!selectedDistrict || selectedDistrict == "Chọn Quận/Huyện") {
-                        errors.push("Quận/Huyện is required.");
-                    }
-                    if (!selectedWard || selectedWard == "Chọn Phường/Xã") {
-                        errors.push("Phường/Xã is required.");
-                    }
-                }
+                var errors = checkErrors(fullName, phoneNumber, emailAddress, streetNumber, selectedProvince, selectedDistrict, selectedWard, isOtherAddressChecked, isPickUpInStoreChecked, true);
 
                 if (errors.length > 0) {
-                    alert("Please correct the following errors:\n" + errors.join("\n"));
+                    var errorMessagesElement = $('#errorMessages');
+                    errorMessagesElement.empty();
+
+                    var errorList = $('<ul></ul>');
+                    errors.forEach(function (error) {
+                        errorList.append('<li>' + '<div style ="display:flex;">' + '<div class="kc-01" style ="text-align:center">' + '<i style="padding:5px; font-size:2.5rem; color: #fff500;" class="start-icon fa fa-exclamation-triangle faa-flash animated"></i>' +
+                            '</div>' + '<div class="kc-02">' + '<strong style ="display:block;"  class="font__weight-semibold">Warning!!!</strong>' + error + '</div>' +
+                            '<button style ="width:10%; color:#fff"   type="button" class="close kc-03" data-dismiss="alert" aria-label="Close">' + '<span aria-hidden="true">&times;</span>' + '</button>' + '</div>'
+                            + '</li>'
+                        );
+                    });
+                    errorMessagesElement.append(errorList);
+
+                    $('.close').click(function () {
+                        $(this).closest('li').hide();
+                    });
+
                     return false;
                 }
 
                 return true;
             }
+
+
         });
     </script>
 }

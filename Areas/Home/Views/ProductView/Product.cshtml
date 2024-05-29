@@ -73,7 +73,7 @@
                 <div class="medium-text-center">
                     <form action="@Url.Action("Product", "ProductView")" class="woocommerce-ordering" method="get"
                         id="filterForm">
-                        <select name="orderby" id="orderby" aria-label="Shop order">
+                        <select name="orderby" id="orderby" aria-label="Shop order" onchange="this.form.submit()">
                             <option value="">Sắp Xếp</option>
                             <option value="date">Sản phẩm mới nhất</option>
                             <option value="priceT">Thứ tự theo giá: thấp đến cao</option>
@@ -260,6 +260,16 @@
                 $(this).next('.sub-menu').stop(true, true).slideToggle(300);
                 $(this).find('.dropdown').toggleClass('fa-bicycle fa-person-biking');
             });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var urlParams = new URLSearchParams(window.location.search);
+            var orderbyValue = urlParams.get('orderby');
+            if (orderbyValue) {
+                var orderbySelect = document.getElementById('orderby');
+                orderbySelect.value = orderbyValue;
+            }
         });
     </script>
     <script src="~/js/productsider.js" asp-append-version="true"></script>
