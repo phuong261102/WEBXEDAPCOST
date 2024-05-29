@@ -66,5 +66,6 @@ namespace App.Models
         [JsonIgnore]
         public Brand Brand { get; set; }
 
+
     }
 }

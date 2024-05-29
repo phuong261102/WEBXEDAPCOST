@@ -84,7 +84,7 @@ namespace XEDAPVIP.Migrations
 
                     b.Property<string>("HomeAddress")
                         .HasMaxLength(400)
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(400)");
 
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
@@ -108,6 +108,9 @@ namespace XEDAPVIP.Migrations
 
                     b.Property<bool>("PhoneNumberConfirmed")
                         .HasColumnType("bit");
+
+                    b.Property<DateTime>("RegistrationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
@@ -243,9 +246,8 @@ namespace XEDAPVIP.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
-                    b.Property<string>("TotalAmount")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("TotalAmount")
+                        .HasColumnType("int");
 
                     b.Property<string>("UserEmail")
                         .IsRequired()
@@ -298,7 +300,8 @@ namespace XEDAPVIP.Migrations
                     b.Property<double>("UnitPrice")
                         .HasColumnType("float");
 
-                    b.Property<int>("VariantId")
+                    b.Property<int?>("VariantId")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("Id");

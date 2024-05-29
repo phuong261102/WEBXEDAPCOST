@@ -19,14 +19,16 @@ namespace App.Areas.Home.Controllers
         private readonly AppDbContext _context;
         private readonly ILogger<ProductViewController> _logger;
         private readonly IVnPayService _vnPayService;
+
         private readonly UserManager<AppUser> _userManager;
         private readonly CacheService _cacheService;
         private readonly CartService _cartService;
+        private readonly IEmailSender _emailSender;
         private readonly HttpClient _httpClient;
         private readonly OrderService _orderService;
 
         public CheckOutController(AppDbContext context, ILogger<ProductViewController> logger, UserManager<AppUser> userManager, CacheService cacheService,
-            CartService cartService, OrderService orderService, IVnPayService vnPayService)
+            CartService cartService, OrderService orderService, IVnPayService vnPayService, IEmailSender emailSender)
         {
             _context = context;
             _logger = logger;
@@ -34,6 +36,7 @@ namespace App.Areas.Home.Controllers
             _cacheService = cacheService;
             _cartService = cartService;
             _orderService = orderService;
+            _emailSender = emailSender;
             _vnPayService = vnPayService;
             _httpClient = new HttpClient();
         }
@@ -68,6 +71,8 @@ namespace App.Areas.Home.Controllers
                 {
                     order.Status = "Paid";
                     _context.Update(order);
+                    await _emailSender.SendOrderConfirmationEmailAsync(order);
+
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Thanh toán thành công, vui lòng kiểm tra email để xem hoá đơn chi tiết";
                     return RedirectToAction(nameof(Check_out));
@@ -148,6 +153,19 @@ namespace App.Areas.Home.Controllers
                     ? _cartService.GetCartItems(userId)
                     : _cartService.GetCartItems();
 
+                foreach (var c in cartItems)
+                {
+                    if (c.VariantId == 0)
+                    {
+                        c.VariantId = c.Variant.Id;
+
+                    }
+                    if (c.Variant == null)
+                    {
+                        c.Variant = await _context.productVariants.Include(v => v.Product)
+                .FirstOrDefaultAsync(p => p.Id == c.VariantId);
+                    }
+                }
                 var model = new ProfileCheckoutModel
                 {
                     ProvinceOptions = provinceOptions,
@@ -201,6 +219,19 @@ namespace App.Areas.Home.Controllers
                 {
                     // Guest user - retrieve cart items from session
                     cartItems = _cartService.GetCartItems();
+                    foreach (var c in cartItems)
+                    {
+                        if (c.VariantId == 0)
+                        {
+                            c.VariantId = c.Variant.Id;
+
+                        }
+                        if (c.Variant == null)
+                        {
+                            c.Variant = await _context.productVariants.Include(v => v.Product)
+                    .FirstOrDefaultAsync(p => p.Id == c.VariantId);
+                        }
+                    }
                 }
                 else
                 {

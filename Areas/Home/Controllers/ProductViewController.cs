@@ -35,7 +35,19 @@ namespace App.Areas.Home.Controllers
 
 
         [Route("/product/{slug?}")]
-        public async Task<IActionResult> Product(string searchString, string categoryslug, string brandslug, [FromQuery(Name = "p")] int currentPage, int pagesize, string orderby = null)
+        public async Task<IActionResult> Product(
+     string searchString,
+     string categoryslug,
+     string brandslug,
+     [FromQuery(Name = "p")] int currentPage,
+     int pagesize,
+     string orderby = null,
+     [FromQuery(Name = "categories")] List<string> categoryFilters = null,
+     [FromQuery(Name = "brands")] List<string> brandFilters = null,
+     [FromQuery(Name = "sizes")] List<string> sizeFilters = null,
+     [FromQuery(Name = "promotions")] List<string> promotionFilters = null,
+     [FromQuery(Name = "prices")] List<string> priceFilters = null
+ )
         {
             var categories = await _cacheService.GetCategoriesAsync();
             var brands = await _cacheService.GetBrandsAsync();
@@ -48,11 +60,11 @@ namespace App.Areas.Home.Controllers
             Category category = null;
 
             var products = _context.Products
-                               .Include(p => p.Brand)
-                               .Include(p => p.Variants)
-                               .Include(p => p.ProductCategories)
-                               .ThenInclude(pc => pc.Category)
-                               .AsQueryable();
+                                   .Include(p => p.Brand)
+                                   .Include(p => p.Variants)
+                                   .Include(p => p.ProductCategories)
+                                   .ThenInclude(pc => pc.Category)
+                                   .AsQueryable();
 
             if (!string.IsNullOrEmpty(searchString))
             {
@@ -69,6 +81,17 @@ namespace App.Areas.Home.Controllers
                     return NotFound("Không tìm thấy");
                 }
             }
+            if (promotionFilters != null && promotionFilters.Any())
+            {
+                if (promotionFilters.Contains("golden-hour"))
+                {
+                    products = products.Where(p => p.DiscountPrice.HasValue);
+                }
+                if (promotionFilters.Contains("highest-discount"))
+                {
+                    products = products.Where(p => p.DiscountPrice < 10000000);
+                }
+            }
 
             if (!string.IsNullOrEmpty(brandslug))
             {
@@ -78,6 +101,50 @@ namespace App.Areas.Home.Controllers
             if (category != null)
             {
                 products = products.Where(p => p.ProductCategories.Any(pc => pc.CategoryId == category.Id));
+            }
+
+            // Apply additional filters
+            if (categoryFilters != null && categoryFilters.Any())
+            {
+                products = products.Where(p => p.ProductCategories.Any(pc => categoryFilters.Contains(pc.Category.Slug)));
+            }
+
+            if (brandFilters != null && brandFilters.Any())
+            {
+                products = products.Where(p => brandFilters.Contains(p.Brand.Slug));
+            }
+
+            if (sizeFilters != null && sizeFilters.Any())
+            {
+                products = products.Where(p => p.Variants.Any(v => sizeFilters.Contains(v.Size)));
+            }
+
+            if (priceFilters != null && priceFilters.Any())
+            {
+                foreach (var priceFilter in priceFilters)
+                {
+                    switch (priceFilter)
+                    {
+                        case "under100":
+                            products = products.Where(p => p.Price < 1000000);
+                            break;
+                        case "100to299":
+                            products = products.Where(p => p.Price >= 1000000 && p.Price <= 2999999);
+                            break;
+                        case "300to499":
+                            products = products.Where(p => p.Price >= 3000000 && p.Price <= 4999999);
+                            break;
+                        case "500to699":
+                            products = products.Where(p => p.Price >= 5000000 && p.Price <= 6999999);
+                            break;
+                        case "700to999":
+                            products = products.Where(p => p.Price >= 7000000 && p.Price <= 9999999);
+                            break;
+                        case "above1000":
+                            products = products.Where(p => p.Price > 10000000);
+                            break;
+                    }
+                }
             }
 
             switch (orderby)
@@ -123,8 +190,15 @@ namespace App.Areas.Home.Controllers
             ViewBag.pagingmodel = pagingmodel;
             ViewBag.totalProduc = totalProduc;
             ViewBag.category = category;
+
+            if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+            {
+                return PartialView("_ProductListPartial", productinPage);
+            }
+
             return View(productinPage);
         }
+
 
         [Route("/product/{categoryslug}/{productslug}.cshtml")]
         public async Task<IActionResult> DetailProduct(string categoryslug, string brandslug, string productslug)

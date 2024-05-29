@@ -52,10 +52,18 @@ public class HomeController : Controller
         ViewBag.brands = brands;
         ViewBag.brandslug = brandslug;
 
+        // Assuming category slug for "Baby" category is "xe-dap-tre-em-0"
+        var categoryBaby = "xe-dap-tre-em-0";
 
+        ViewBag.productsBaby = await _context.Products
+            .Where(p => p.ProductCategories.Any(pc => pc.Category.Slug == categoryBaby))
+            .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+            .ToListAsync();
 
         return View();
     }
+
 
 
     public async Task<IActionResult> Privacy(string categoryslug, string brandslug)

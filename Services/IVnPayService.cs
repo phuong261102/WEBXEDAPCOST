@@ -1,6 +1,7 @@
 using System;
 using App.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Options;
 using XEDAPVIP.Areas.Home.Models.CheckOut;
 using XEDAPVIP.ExtendMethods;
@@ -29,12 +30,9 @@ namespace XEDAPVIP.Services
             var tmnCode = _vnPaySettings.TmnCode;
             var hashSecret = _vnPaySettings.HashSecret;
 
-            if (!decimal.TryParse(order.TotalAmount, out var totalAmount))
-            {
-                totalAmount = 0; // Fallback to 0 if conversion fails
-            }
 
-            var amountInCents = (long)(totalAmount * 100);
+
+            var amountInCents = (long)(order.TotalAmount * 100);
             var vnpay = new VnPayLibrary();
             vnpay.AddRequestData("vnp_Version", "2.1.0");
             vnpay.AddRequestData("vnp_Command", "pay");

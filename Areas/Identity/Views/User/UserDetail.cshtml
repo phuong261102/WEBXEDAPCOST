@@ -62,22 +62,7 @@
                                     <td>@order.OrderId</td>
                                     <td>@order.OrderDetails.Sum(od => od.Quantity)</td>
                                     <td>
-                                        @{
-                                            if (decimal.TryParse(order.TotalAmount, out var totalAmount))
-                                            {
-                                                @totalAmount.ToString("N0")
-                                            }
-                                            else
-                                            {
-                                                @order.TotalAmount
-                                            }
-                                            if (order.Status == "Paid")
-                                            {
-                                                ordertotalBill += totalAmount;
-                                            }
-
-                                        } VND
-
+                                        @order.TotalAmount.ToString("N0")VND
                                     </td>
                                     <td>@order.Status</td>
                                     <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>

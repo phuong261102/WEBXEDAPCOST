@@ -4,6 +4,7 @@
     ViewData["Title"] = "KINGCYCLE";
     List<Category> categories = ViewBag.categories as List<Category>;
     List<Brand> brands = ViewBag.brands as List<Brand>;
+    List<Product> productsBaby = ViewBag.productsBaby as List<Product>;
 }
 
 @section Popup {
@@ -21,10 +22,11 @@
 }
 
 <style>
-    .mol-01{
+    .mol-01 {
         padding: 15px;
     }
-    .collect-more_product{
+
+    .collect-more_product {
         text-align: center;
         padding-top: 50px;
     }
@@ -153,6 +155,7 @@
                             </div>
 
                         </div>
+
                         <div class="tst-sale">
                             <div class="fom">
                                 <a style="text-decoration: none;" href="" class="text-center">
@@ -261,117 +264,28 @@
                         </div>
                         <div class="slider-product">
                             <div class="list">
-                                <div style=" " class="item" ">
-                        <div class=" mol-01">
-                                    <div class="product-top">
-                                        <a href="" class="BH">
-                                            <img src="/images/img/xedap/xedap1.jpg" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a class="product-name">
-                                            <span>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </span>
-                                        </a>
-                                        <div class="product-price"><strong>2.290.000 VND</strong></div>
+                                @foreach (var product in productsBaby)
+                                {
+                                    <div style=" " class="item">
+                                        <div class="mol-01">
+                                            <div class="product-top">
+                                                <a href="" class="BH">
+                                                    <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
+                                                        alt="@product.Name">
+                                                </a>
+                                            </div>
+                                            <div class="product-info">
+                                                <a class="product-name">
+                                                    <span>@product.Name </span>
+                                                </a>
+                                                <div class="product-price"><strong>@(product.DiscountPrice.HasValue ?
+                                                    product.DiscountPrice.Value.ToString("C") :
+                                                    product.Price.ToString("C"))</strong></div>
+                                            </div>
+                                        </div>
 
                                     </div>
-                                </div>
-                            </div>
-                            <div style=" " class="item">
-                                <div class="mol-01">
-                                    <div class="product-top">
-                                        <a href="" class="BH">
-                                            <img src="/images/img/xedap/xedap4.jpg" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a class="product-name">
-                                            <span>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </span>
-                                        </a>
-                                        <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div style=" " class="item">
-                                <div class="mol-01">
-                                    <div class="product-top">
-                                        <a href="" class="BH">
-                                            <img src="/images/img/xedap/xedap4.jpg" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a class="product-name">
-                                            <span>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </span>
-                                        </a>
-                                        <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div style=" " class="item">
-                                <div class="mol-01">
-                                    <div class="product-top">
-                                        <a href="" class="BH">
-                                            <img src="/images/img/xedap/xedap4.jpg" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a class="product-name">
-                                            <span>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </span>
-                                        </a>
-                                        <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div style=" " class="item">
-                                <div class="mol-01">
-                                    <div class="product-top">
-                                        <a href="" class="BH">
-                                            <img src="/images/img/xedap/xedap4.jpg" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a class="product-name">
-                                            <span>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </span>
-                                        </a>
-                                        <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div style=" " class="item">
-                                <div class="mol-01">
-                                    <div class="product-top">
-                                        <a href="" class="BH">
-                                            <img src="/images/img/xedap/xedap4.jpg" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a class="product-name">
-                                            <span>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </span>
-                                        </a>
-                                        <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div style=" " class="item">
-                                <div class="mol-01">
-                                    <div class="product-top">
-                                        <a href="" class="BH">
-                                            <img src="/images/img/xedap/xedap4.jpg" alt="">
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a class="product-name">
-                                            <span>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </span>
-                                        </a>
-                                        <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                    </div>
-                                </div>
-
+                                }
                             </div>
                         </div>
 
@@ -381,12 +295,13 @@
         </div>
         <!--xe dap dia hinh-->
         <div class="collect-more_product">
-            <a href="" class="button-more_product">
+            <a a asp-area="Home" asp-controller="ProductView" asp-action="Product"
+                asp-route-categoryslug="xe-dap-tre-em-0" class=" button-more_product">
                 <span>Xem Thêm</span>
                 <i class="fa-solid fa-caret-down"></i>
             </a>
         </div>
-        
+
         <div class="section-title-center" style="padding-top: 50px;">
             <h3 class="section-title">
                 <b></b>

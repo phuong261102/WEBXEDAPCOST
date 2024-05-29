@@ -281,25 +281,20 @@
                                                 <td style="border: 1px solid #ddd; padding: 8px;">@order.OrderDetails.Sum(od
                                                 => od.Quantity)</td>
                                                 <td style="border: 1px solid #ddd; padding: 8px;">
-                                                    @if (decimal.TryParse(order.TotalAmount, out var totalAmount))
-                                                    {
-                                                        @totalAmount.ToString("N0")
-                                                    }
-                                                    else
-                                                    {
-                                                        @order.TotalAmount
-                                                    } VND
+                                                    @order.TotalAmount.ToString("N0")VND
                                                 </td>
                                                 <td style="border: 1px solid #ddd; padding: 8px;">@order.Status</td>
                                                 <td style="border: 1px solid #ddd; padding: 8px;">
                                                     @order.OrderDate.ToString("dd/MM/yyyy")</td>
                                                 <td style="border: 1px solid #ddd; padding: 8px;">
-                                                    <button style="width: 100px;" type="button" onclick="toggleDetails(@order.OrderId)">Xem Chi
+                                                    <button style="width: 100px;" type="button"
+                                                        onclick="toggleDetails(@order.OrderId)">Xem Chi
                                                         Tiết</button>
                                                     @if (order.Status == "Pending")
                                                     {
-                                                        <form style="    padding-top: 5px;" asp-action="CancelOrder" asp-controller="Manage"
-                                                            asp-route-orderId="@order.OrderId" method="post">
+                                                        <form style="    padding-top: 5px;" asp-action="CancelOrder"
+                                                            asp-controller="Manage" asp-route-orderId="@order.OrderId"
+                                                            method="post">
                                                             <input type="hidden" name="__RequestVerificationToken"
                                                                 value="@Html.AntiForgeryToken()">
                                                             <button style="width: 100px;" type="submit">Huỷ đơn</button>

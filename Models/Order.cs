@@ -34,7 +34,7 @@ namespace App.Models
 
         [Required]
         [DataType(DataType.Currency)]
-        public string TotalAmount { get; set; }
+        public int TotalAmount { get; set; }
 
         [Required]
         [StringLength(50)]

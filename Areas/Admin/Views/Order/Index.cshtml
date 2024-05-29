@@ -58,14 +58,7 @@
                         <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
                         <td>@order.ShippedDate?.ToString("dd/MM/yyyy")</td>
                         <td>
-                            @if (decimal.TryParse(order.TotalAmount, out var totalAmount))
-                            {
-                                @totalAmount.ToString("N0")
-                            }
-                            else
-                            {
-                                @order.TotalAmount
-                            }
+                            @order.TotalAmount.ToString("N0")VND
                         </td>
                         <td>@order.Status</td>
                         <td>@order.ShippingAddress</td>

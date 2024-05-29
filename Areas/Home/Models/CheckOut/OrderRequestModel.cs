@@ -15,7 +15,7 @@ namespace XEDAPVIP.Areas.Home.Models.CheckOut
         public string OrderNote { get; set; }
         public string ShippingMethod { get; set; }
         public string PaymentMethod { get; set; }
-        public string TotalAmount { get; set; }
+        public int TotalAmount { get; set; }
         public string Status { get; set; }
         public string ShippingAddress { get; set; }
         public List<int>? CartItemIds { get; set; }

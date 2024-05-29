@@ -1,0 +1,41 @@
+@model List<App.Models.Product>
+
+<ul class="products">
+    @foreach (var product in Model)
+    {
+        var categoryOrBrandSlug = product.Brand?.Slug ?? product.ProductCategories.FirstOrDefault()?.Category.Slug;
+
+        <li class="product-item">
+            <div class="product-top">
+                <a asp-action="DetailProduct" asp-controller="ProductView" asp-route-categoryslug="@categoryOrBrandSlug"
+                    asp-route-productslug="@product.Slug" class="product-thumb">
+                    <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
+                        alt="@product.Name">
+                </a>
+            </div>
+            <div class="product-info">
+                <a asp-action="DetailProduct" asp-controller="ProductView" asp-route-categoryslug="@categoryOrBrandSlug"
+                    asp-route-productslug="@product.Slug" class="product-cat-name">
+                    @product.ProductCategories.FirstOrDefault()?.Category.Title
+                </a>
+                <a asp-action="DetailProduct" asp-controller="ProductView" asp-route-categoryslug="@categoryOrBrandSlug"
+                    asp-route-productslug="@product.Slug" class="product-name">
+                    @product.Name
+                </a>
+                <div class="product-price">
+                    @if (product.DiscountPrice.HasValue)
+                    {
+                        <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
+                    }
+                    else
+                    {
+                        <span>@product.Price.ToString("N0") VND</span>
+                    }
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+<div class="justify-content-center d-flex flex-wrap ps-3 pe-3 z-3 mb-5">
+    <partial name="_PagingXTL" model="@ViewBag.pagingmodel" />
+</div>

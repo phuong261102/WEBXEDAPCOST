@@ -102,10 +102,7 @@ public class SendMailService : IEmailSender
     private string BuildOrderConfirmationMessage(Order order)
     {
         // Convert TotalAmount to decimal if it's not already a numeric type
-        if (!decimal.TryParse(order.TotalAmount, out var totalAmount))
-        {
-            totalAmount = 0; // Fallback to 0 if conversion fails
-        }
+
 
         var message = $@"
         <div style='font-family: Arial, sans-serif; color: #333;'>
@@ -135,7 +132,7 @@ public class SendMailService : IEmailSender
                 </tr>
                 <tr>
                     <td style='padding: 8px; border: 1px solid #ddd;'>Total Amount:</td>
-                    <td style='padding: 8px; border: 1px solid #ddd;'>{totalAmount.ToString("N0")}VND</td>
+                    <td style='padding: 8px; border: 1px solid #ddd;'>{order.TotalAmount.ToString("N0")}VND</td>
                 </tr>
             </table>
             <h2 style='color: #4CAF50;'>Order Details</h2>

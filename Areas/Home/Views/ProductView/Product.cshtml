@@ -32,6 +32,10 @@
         text-decoration: none;
         color: rgba(102, 102, 102, .7);
     }
+
+    .sub-menu {
+        display: none;
+    }
 </style>
 
 <body style="padding-bottom: 50px;">
@@ -84,193 +88,244 @@
             </div>
             <div class="main_bicycle">
                 <div class="sidebar">
-                    <div class="side-bar">
-                        <div class="menu">
-                            <div class="item">
-                                <a class="sub-btn">
-                                    DANH MỤC SẢN PHẨM
-                                    <i class="fa-solid fa-bicycle dropdown"></i>
-                                </a>
-                                <div class="sub-menu">
-                                    <label><input type="checkbox" name="categories" value="Xe Đạp Trẻ Em"
-                                            class="sub-item"> Xe Đạp Trẻ Em</label>
-                                    <label><input type="checkbox" name="categories" value="Xe Đạp Địa Hình"
-                                            class="sub-item"> Xe Đạp Địa Hình</label>
-                                    <label><input type="checkbox" name="categories" value="Xe Đạp Đường Phố"
-                                            class="sub-item"> Xe Đạp Đường Phố</label>
-                                    <label><input type="checkbox" name="categories" value="Xe Đạp Phụ Nữ"
-                                            class="sub-item"> Xe Đạp Phụ Nữ</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="side-bar">
-                        <div class="menu">
-                            <div class="item">
-                                <a class="sub-btn">
-                                    KHUYẾN MÃI
-                                    <i class="fa-solid fa-bicycle dropdown"></i>
-                                </a>
-                                <div class="sub-menu">
-                                    <label><input type="checkbox" name="promotions" value="Giờ Vàng Giá Sốc"
-                                            class="sub-item"> Giờ Vàng Giá Sốc</label>
-                                    <label><input type="checkbox" name="promotions" value="Giảm Giá Cao Nhất"
-                                            class="sub-item"> Giảm Giá Cao Nhất</label>
-                                    <label><input type="checkbox" name="promotions" value="Xe Đạp Trẻ Em Sale"
-                                            class="sub-item"> Xe Đạp Trẻ Em Sale</label>
-                                    <label><input type="checkbox" name="promotions" value="Xe Đạp Địa Hình Sale"
-                                            class="sub-item"> Xe Đạp Địa Hình Sale</label>
-                                    <label><input type="checkbox" name="promotions" value="Xe Đạp Đường Phố Sale"
-                                            class="sub-item"> Xe Đạp Đường Phố Sale</label>
-                                    <label><input type="checkbox" name="promotions" value="Xe Đạp Phụ Nữ Sale"
-                                            class="sub-item"> Xe Đạp Phụ Nữ Sale</label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="side-bar">
-                        <div class="menu">
-                            <div class="item">
-                                <a class="sub-btn">
-                                    THƯƠNG HIỆU
-                                    <i class="fa-solid fa-bicycle dropdown"></i>
-                                </a>
-                                <div class="sub-menu">
-                                    <label><input type="checkbox" name="brands" value="shimano" class="sub-item">
-                                        SHIMANO</label>
-                                    <label><input type="checkbox" name="brands" value="royalbaby" class="sub-item">
-                                        ROYALBABY</label>
-                                    <label><input type="checkbox" name="brands" value="miamor" class="sub-item">
-                                        MIAMOR</label>
-                                    <label><input type="checkbox" name="brands" value="liv" class="sub-item">
-                                        LIV</label>
-                                    <label><input type="checkbox" name="brands" value="trinx" class="sub-item">
-                                        TRINX</label>
-                                    <label><input type="checkbox" name="brands" value="max" class="sub-item">
-                                        MAX</label>
-                                    <label><input type="checkbox" name="brands" value="momentum" class="sub-item">
-                                        MOMENTUM</label>
-                                    <label><input type="checkbox" name="brands" value="vinbike" class="sub-item">
-                                        VINBIKE</label>
-                                    <label><input type="checkbox" name="brands" value="giant" class="sub-item">
-                                        GIANT</label>
+                    <form id="filterForm" method="get" action="@Url.Action("Product", "ProductView")"
+                        onsubmit="event.preventDefault(); applyFilters();">
+                        <div class="side-bar">
+                            <div class="menu">
+                                <div class="item">
+                                    <a class="sub-btn">
+                                        DANH MỤC SẢN PHẨM
+                                        <i class="fa-solid fa-bicycle dropdown"></i>
+                                    </a>
+                                    <div class="sub-menu">
 
+                                        @foreach (var cat in categories)
+                                        {
+                                            <label>
+                                                <input type="checkbox" name="categories" value="@cat.Slug" class="sub-item"
+                                                    onchange="this.form.submit()">
+                                                @cat.Title
+                                            </label>
+                                            @if (cat.CategoryChildren != null && cat.CategoryChildren.Any())
+                                            {
+                                                @foreach (var subCat in cat.CategoryChildren)
+                                                {
+                                                    <label>
+                                                        <input type="checkbox" name="categories" value="@subCat.Slug"
+                                                            class="sub-item" onchange="this.form.submit()">
+                                                        @subCat.Title
+                                                    </label>
+                                                }
+                                            }
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="side-bar">
-                        <div class="menu">
-                            <div class="item">
-                                <a class="sub-btn">
-                                    SIZE XE
-                                    <i class="fa-solid fa-bicycle dropdown"></i>
-                                </a>
-                                <div class="sub-menu">
-                                    <label><input type="checkbox" name="sizes" value="M" class="sub-item"> M</label>
-                                    <label><input type="checkbox" name="sizes" value="XS" class="sub-item"> XS</label>
-                                    <label><input type="checkbox" name="sizes" value="XXS" class="sub-item"> XXS</label>
-                                    <label><input type="checkbox" name="sizes" value="M/L" class="sub-item"> M/L</label>
-                                    <label><input type="checkbox" name="sizes" value="L" class="sub-item"> L</label>
+                        <div class="side-bar">
+                            <div class="menu">
+                                <div class="item">
+                                    <a class="sub-btn">
+                                        KHUYẾN MÃI
+                                        <i class="fa-solid fa-bicycle dropdown"></i>
+                                    </a>
+                                    <div class="sub-menu">
+                                        <label><input type="checkbox" name="promotions" value="golden-hour"
+                                                class="sub-item" onchange="this.form.submit()"> Giờ Vàng Giá
+                                            Sốc</label>
+                                        <label><input type="checkbox" name="promotions" value="highest-discount"
+                                                class="sub-item" onchange="this.form.submit()"> Giảm Giá Cao
+                                            Nhất</label>
+                                        <!-- Add more promotion filters as needed -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="side-bar">
-                        <div class="menu">
-                            <div class="item">
-                                <a class="sub-btn">
-                                    GIÁ
-                                    <i class="fa-solid fa-bicycle dropdown"></i>
-                                </a>
-                                <div class="sub-menu">
-                                    <label><input type="checkbox" name="prices" value="under100" class="sub-item"> Dưới
-                                        1.000.000</label>
-                                    <label><input type="checkbox" name="prices" value="100to299" class="sub-item">
-                                        1.000.000 VND - 2.999.999 VND</label>
-                                    <label><input type="checkbox" name="prices" value="300to499" class="sub-item">
-                                        3.000.000 VND - 4.999.999 VND</label>
-                                    <label><input type="checkbox" name="prices" value="500to699" class="sub-item">
-                                        5.000.000 VND - 6.999.999 VND</label>
-                                    <label><input type="checkbox" name="prices" value="700to999" class="sub-item">
-                                        7.000.000 VND - 9.999.999 VND</label>
-                                    <label><input type="checkbox" name="prices" value="above1000" class="sub-item"> Trên
-                                        10.000.000 VND</label>
+                        <div class="side-bar">
+                            <div class="menu">
+                                <div class="item">
+                                    <a class="sub-btn">
+                                        THƯƠNG HIỆU
+                                        <i class="fa-solid fa-bicycle dropdown"></i>
+                                    </a>
+                                    <div class="sub-menu">
+                                        @foreach (var brand in brands)
+                                        {
+                                            <label>
+                                                <input type="checkbox" name="brands" value="@brand.Slug" class="sub-item"
+                                                    onchange="this.form.submit()">
+                                                @brand.Name
+                                            </label>
+                                        }
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <div class="side-bar">
+                            <div class="menu">
+                                <div class="item">
+                                    <a class="sub-btn">
+                                        SIZE XE
+                                        <i class="fa-solid fa-bicycle dropdown"></i>
+                                    </a>
+                                    <div class="sub-menu">
+                                        <label><input type="checkbox" name="sizes" value="M" class="sub-item"
+                                                onchange="this.form.submit()"> M</label>
+                                        <label><input type="checkbox" name="sizes" value="XS" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            XS</label>
+                                        <label><input type="checkbox" name="sizes" value="XXS" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            XXS</label>
+                                        <label><input type="checkbox" name="sizes" value="M/L" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            M/L</label>
+                                        <label><input type="checkbox" name="sizes" value="L" class="sub-item"
+                                                onchange="this.form.submit()"> L</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="side-bar">
+                            <div class="menu">
+                                <div class="item">
+                                    <a class="sub-btn">
+                                        GIÁ
+                                        <i class="fa-solid fa-bicycle dropdown"></i>
+                                    </a>
+                                    <div class="sub-menu">
+                                        <label><input type="checkbox" name="prices" value="under100" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            Dưới 1.000.000</label>
+                                        <label><input type="checkbox" name="prices" value="100to299" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            1.000.000 VND - 2.999.999 VND</label>
+                                        <label><input type="checkbox" name="prices" value="300to499" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            3.000.000 VND - 4.999.999 VND</label>
+                                        <label><input type="checkbox" name="prices" value="500to699" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            5.000.000 VND - 6.999.999 VND</label>
+                                        <label><input type="checkbox" name="prices" value="700to999" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            7.000.000 VND - 9.999.999 VND</label>
+                                        <label><input type="checkbox" name="prices" value="above1000" class="sub-item"
+                                                onchange="this.form.submit()">
+                                            Trên 10.000.000 VND</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" style="display: none;"></button>
+                    </form>
                 </div>
                 <div class="mainshop" id="wrapper_mainshop">
                     <div class="headline headline_mainshop" style="padding-top: 0; padding-left: 5%;">Shop</div>
                     <div class="content_shop">
-                        <ul class="products">
-                            @foreach (var product in Model)
-                            {
-                                var categoryOrBrandSlug = product.Brand?.Slug ??
-                                product.ProductCategories.FirstOrDefault()?.Category.Slug;
-
-                                <li class="product-item">
-                                    <div class="product-top">
-                                        <a asp-action="DetailProduct" asp-controller="ProductView"
-                                            asp-route-categoryslug="@categoryOrBrandSlug"
-                                            asp-route-productslug="@product.Slug" class="product-thumb">
-                                            <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
-                                                alt="@product.Name">
-                                        </a>
-                                    </div>
-                                    <div class="product-info">
-                                        <a asp-action="DetailProduct" asp-controller="ProductView"
-                                            asp-route-categoryslug="@categoryOrBrandSlug"
-                                            asp-route-productslug="@product.Slug" class="product-name">@product.Name</a>
-                                        <div class="product-price">
-                                            @if (product.DiscountPrice.HasValue)
-                                            {
-                                                <span style="text-decoration: line-through;">@product.Price.ToString("N0")
-                                                    VND</span>
-                                                <br />
-                                                <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
-                                            }
-                                            else
-                                            {
-                                                <span>@product.Price.ToString("N0") VND</span>
-                                            }
-                                        </div>
-                                    </div>
-                                </li>
-                            }
-                        </ul>
-                        <div class="justify-content-center d-flex flex-wrap ps-3 pe-3 z-3 mb-5">
-                            <partial name="_PagingXTL" model="@ViewBag.pagingmodel" />
-                        </div>
+                        <partial name="_ProductListPartial" />
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script>
-        document.getElementById("orderby").addEventListener("change", function () {
-            document.getElementById("filterForm").submit();
-        });
-    </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            $('.sidebar').on('click', '.sub-btn', function () {
-                $(this).next('.sub-menu').stop(true, true).slideToggle(300);
-                $(this).find('.dropdown').toggleClass('fa-bicycle fa-person-biking');
-            });
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var urlParams = new URLSearchParams(window.location.search);
-            var orderbyValue = urlParams.get('orderby');
-            if (orderbyValue) {
-                var orderbySelect = document.getElementById('orderby');
-                orderbySelect.value = orderbyValue;
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var urlParams = new URLSearchParams(window.location.search);
+        var orderbyValue = urlParams.get('orderby');
+        if (orderbyValue) {
+            var orderbySelect = document.getElementById('orderby');
+            orderbySelect.value = orderbyValue;
+        }
+
+        // Set checked state for filters based on URL parameters
+        var categories = urlParams.getAll('categories');
+        var promotions = urlParams.getAll('promotions');
+        var brands = urlParams.getAll('brands');
+        var sizes = urlParams.getAll('sizes');
+        var prices = urlParams.getAll('prices');
+
+        categories.forEach(function (value) {
+            var categoryCheckbox = document.querySelector(`input[name="categories"][value="${value}"]`);
+            if (categoryCheckbox) {
+                categoryCheckbox.checked = true;
             }
         });
-    </script>
-    <script src="~/js/productsider.js" asp-append-version="true"></script>
-</body>
+
+        promotions.forEach(function (value) {
+            var promotionCheckbox = document.querySelector(`input[name="promotions"][value="${value}"]`);
+            if (promotionCheckbox) {
+                promotionCheckbox.checked = true;
+            }
+        });
+
+        brands.forEach(function (value) {
+            var brandCheckbox = document.querySelector(`input[name="brands"][value="${value}"]`);
+            if (brandCheckbox) {
+                brandCheckbox.checked = true;
+            }
+        });
+
+        sizes.forEach(function (value) {
+            var sizeCheckbox = document.querySelector(`input[name="sizes"][value="${value}"]`);
+            if (sizeCheckbox) {
+                sizeCheckbox.checked = true;
+            }
+        });
+
+        prices.forEach(function (value) {
+            var priceCheckbox = document.querySelector(`input[name="prices"][value="${value}"]`);
+            if (priceCheckbox) {
+                priceCheckbox.checked = true;
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('.sidebar').on('click', '.sub-btn', function () {
+            var $next = $(this).next('.sub-menu');
+            if ($next.length) {
+                $next.slideToggle(300);
+                $(this).find('.dropdown').toggleClass('fa-bicycle fa-person-biking');
+            }
+        });
+    });
+</script>
+<script>
+    function applyFilters() {
+        var form = $('#filterForm');
+        var url = form.attr('action');
+        var formData = form.serialize();
+
+        $.ajax({
+            type: 'GET',
+            url: url,
+            data: formData,
+            success: function (data) {
+                // Update the product list with the response data
+                $('#wrapper_mainshop .content_shop').html($(data).find('#wrapper_mainshop .content_shop').html());
+
+                // Update the pagination with the response data
+                $('.justify-content-center').html($(data).find('.justify-content-center').html());
+            },
+            error: function (xhr, status, error) {
+                console.error('Error applying filters:', error);
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        var urlParams = new URLSearchParams(window.location.search);
+        var orderbyValue = urlParams.get('orderby');
+        if (orderbyValue) {
+            var orderbySelect = document.getElementById('orderby');
+            if (orderbySelect) {
+                orderbySelect.value = orderbyValue;
+            }
+        }
+    });
+</script>
+
+<script src="~/js/productsider.js" asp-append-version="true"></script>

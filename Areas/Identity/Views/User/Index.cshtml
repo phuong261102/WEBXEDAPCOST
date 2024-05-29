@@ -29,6 +29,12 @@
             <td>
                 <a class="btn btn-success btn-sm" asp-action="SetPassword" asp-route-id="@user.Id">Đặt mật khẩu</a>
                 <a class="btn btn-info btn-sm" asp-action="UserDetail" asp-route-id="@user.Id">Xem chi tiết</a>
+                <form asp-action="LockUser" asp-route-id="@user.Id" method="post">
+                    <button type="submit" class="btn btn-danger btn-sm">Khoá</button>
+                </form>
+                <form asp-action="UnlockUser" asp-route-id="@user.Id" method="post">
+                    <button type="submit" class="btn btn-success btn-sm">Mở khoá</button>
+                </form>
                 <!-- Nút Xem chi tiết -->
             </td>
         </tr>
