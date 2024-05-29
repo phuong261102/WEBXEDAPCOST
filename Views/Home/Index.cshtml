@@ -5,12 +5,21 @@
     List<Category> categories = ViewBag.categories as List<Category>;
     List<Brand> brands = ViewBag.brands as List<Brand>;
     List<Product> productsBaby = ViewBag.productsBaby as List<Product>;
+    List<Product> productsDua = ViewBag.productsDua as List<Product>;
+    List<Product> productsDuongpho = ViewBag.productsDuongpho as List<Product>;
+    List<Product> productsPhuNu = ViewBag.productsPhuNu as List<Product>;
+    List<Product> productsDiahinh = ViewBag.productsdiahinh as List<Product>;
+    List<Product> productsGap = ViewBag.productsgap as List<Product>;
+
+    List<Product> productsNew = ViewBag.productsNew as List<Product>;
+    
+    
 }
 
 @section Popup {
-    @{
-        @await Component.InvokeAsync(CategorySideBar.COMPONENTNAME,
-            new CategorySideBar.CategorySideBarData()
+
+    @await Component.InvokeAsync(CategorySideBar.COMPONENTNAME,
+        new CategorySideBar.CategorySideBarData()
 {
     level = 0,
     Categories = ViewBag.categories,
@@ -18,12 +27,12 @@
     brands = ViewBag.brands,
     slugBrand = ViewBag.brandslug
 })
-    }
+
 }
 
 <style>
     .mol-01 {
-        padding: 15px;
+        padding: 20px;
     }
 
     .collect-more_product {
@@ -55,9 +64,8 @@
                 </div>
             </div>
             <div class="buttons">
-                <button id="prev">
-                    < </button>
-                        <button id="next">></button>
+                <button id="prev"><</button>
+                <button id="next">></button>
             </div>
             <ul class="dots">
                 <li class="active"></li>
@@ -79,159 +87,48 @@
                         </span>
                     </h1>
                     <div class="pox-1">
-                        <div class="tst-sale">
+                        @foreach( var product in productsNew){
+                            <div class="tst-sale">
                             <div class="fom">
                                 <a style="text-decoration: none;" href="" class="text-center">
                                     <div class="product-top">
-                                        <img src="/images/img/mauxe01_blu.jpg" alt="" class="card-img-top">
-
+                                        <img class="card-img-top" src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)" alt="@product.Name">
                                     </div>
                                     <div class="product-info">
-                                        <h5>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </h5>
-                                        <h6>
-                                            <span style="text-decoration: line-through;">3.190.000VND</span>
-                                            <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                        </h6>
+                                        <a class="product-name">
+                                                <span>@product.Name </span>
+                                                </a>
+                                                <div class="product-price">
+                                                    @if (product.DiscountPrice.HasValue)
+                                                    {
+                                                         <span style="text-decoration: line-through;">@product.Price.ToString("N0")VND</span>
+                                                    <br />
+                                                    <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
+                                                    }
+                                                    else
+                                                    {
+                                                     <span>@product.Price.ToString("N0") VND</span>
+                                                    }
+                                                </div>
 
                                     </div>
                                     <div class="inside top-right">
-                                        <div class="icon">
-                                            50%
+                                            <div class="icon">
+                                                NEW
+                                            </div>
                                         </div>
-                                    </div>
                                     <div class="button-wrapper">
-                                        <button class="btn-fill">Mua Ngay</button>
-                                    </div>
-                                    <!--
-                        <div class="inside top-left">
-                            <div class="icon">
-                                <i class="material-icons">info_outline</i>
-                            </div>
-                        </div>
-                        <div class="inside bottom-right">
-                        </div>
-                        <div class="inside bottom-left">
-                        </div>
-                        -->
+                                        <a asp-area="Home" asp-action="DetailProduct" asp-controller="ProductView" 
+                                            asp-route-categoryslug="  "
+                                            asp-route-productslug="@product.Slug">
+                                            <button class="btn-fill">Chi Tiết</button>
+                                        </a>
+                                    </div>      
                                 </a>
                             </div>
 
                         </div>
-                        <div class="tst-sale">
-                            <div class="fom">
-                                <a style="text-decoration: none;" href="" class="text-center">
-                                    <div class="product-top">
-                                        <img src="../assets/img/mauxe01_blu.jpg" alt="" class="card-img-top">
-
-                                    </div>
-                                    <div class="product-info">
-                                        <h5>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </h5>
-                                        <h6>
-                                            <span style="text-decoration: line-through;">3.190.000VND</span>
-                                            <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                        </h6>
-
-                                    </div>
-                                    <div class="inside top-right">
-                                        <div class="icon">
-                                            HOT
-                                        </div>
-                                    </div>
-                                    <div class="button-wrapper">
-                                        <button class="btn-fill">Mua Ngay</button>
-                                    </div>
-                                    <!--
-                        <div class="inside top-left">
-                            <div class="icon">
-                                <i class="material-icons">info_outline</i>
-                            </div>
-                        </div>
-                        <div class="inside bottom-right">
-                        </div>
-                        <div class="inside bottom-left">
-                        </div>
-                        -->
-                                </a>
-                            </div>
-
-                        </div>
-
-                        <div class="tst-sale">
-                            <div class="fom">
-                                <a style="text-decoration: none;" href="" class="text-center">
-                                    <div class="product-top">
-                                        <img src="../assets/img/mauxe01_blu.jpg" alt="" class="card-img-top">
-
-                                    </div>
-                                    <div class="product-info">
-                                        <h5>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </h5>
-                                        <h6>
-                                            <span style="text-decoration: line-through;">3.190.000VND</span>
-                                            <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                        </h6>
-
-                                    </div>
-                                    <div class="inside top-right">
-                                        <div class="icon">
-                                            NEW
-                                        </div>
-                                    </div>
-                                    <div class="button-wrapper">
-                                        <button class="btn-fill">Mua Ngay</button>
-                                    </div>
-                                    <!--
-                        <div class="inside top-left">
-                            <div class="icon">
-                                <i class="material-icons">info_outline</i>
-                            </div>
-                        </div>
-                        <div class="inside bottom-right">
-                        </div>
-                        <div class="inside bottom-left">
-                        </div>
-                        -->
-                                </a>
-                            </div>
-
-                        </div>
-                        <div class="tst-sale">
-                            <div class="fom">
-                                <a style="text-decoration: none;" href="" class="text-center">
-                                    <div class="product-top">
-                                        <img src="../assets/img/mauxe01_blu.jpg" alt="" class="card-img-top">
-
-                                    </div>
-                                    <div class="product-info">
-                                        <h5>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </h5>
-                                        <h6>
-                                            <span style="text-decoration: line-through;">3.190.000VND</span>
-                                            <div class="product-price"><strong>2.290.000 VND</strong></div>
-                                        </h6>
-
-                                    </div>
-                                    <div class="inside top-right">
-                                        <div class="icon">
-                                            sale
-                                        </div>
-                                    </div>
-                                    <div class="button-wrapper">
-                                        <button class="btn-fill">Mua Ngay</button>
-                                    </div>
-                                    <!--
-                        <div class="inside top-left">
-                            <div class="icon">
-                                <i class="material-icons">info_outline</i>
-                            </div>
-                        </div>
-                        <div class="inside bottom-right">
-                        </div>
-                        <div class="inside bottom-left">
-                        </div>
-                        -->
-                                </a>
-                            </div>
-
-                        </div>
+                        }
                     </div>
 
                 </div>
@@ -250,26 +147,23 @@
                     <div class="prod-1">
                         <div class="prod-1_1">
                             <div class="product-top">
-                                <a href="" class="BH">
+                                <a href="#" class="BH">
                                     <img src="/images/img/mauxedap/xedaptreem.png" alt="">
                                 </a>
                             </div>
-                            <div class="product-info">
-                                <a class="product-name">
-                                    <span>Xe Đạp Trẻ Em Youth MAX BIKE Mikki 14 – Bánh 14 Inches </span>
-                                </a>
-                                <div class="product-price"><strong>2.290.000 VND</strong></div>
-
-                            </div>
+                             
                         </div>
                         <div class="slider-product">
                             <div class="list">
                                 @foreach (var product in productsBaby)
                                 {
+                                     
                                     <div style=" " class="item">
                                         <div class="mol-01">
                                             <div class="product-top">
-                                                <a href="" class="BH">
+                                                <a asp-area="Home" asp-action="DetailProduct" asp-controller="ProductView" 
+                                                asp-route-categoryslug="  "
+                                                asp-route-productslug="@product.Slug" class="BH">
                                                     <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
                                                         alt="@product.Name">
                                                 </a>
@@ -278,9 +172,80 @@
                                                 <a class="product-name">
                                                     <span>@product.Name </span>
                                                 </a>
-                                                <div class="product-price"><strong>@(product.DiscountPrice.HasValue ?
-                                                    product.DiscountPrice.Value.ToString("C") :
-                                                    product.Price.ToString("C"))</strong></div>
+                                                <div class="product-price">
+                                                    @if (product.DiscountPrice.HasValue)
+                                                    {
+                                                         <span style="text-decoration: line-through;">@product.Price.ToString("N0")VND</span>
+                                                    <br />
+                                                    <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
+                                                    }
+                                                    else
+                                                    {
+                                                     <span>@product.Price.ToString("N0") VND</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="collect-more_product">
+                    <a a asp-area="Home" asp-controller="ProductView" asp-action="Product"asp-route-categoryslug="xe-dap-tre-em-0" class=" button-more_product">
+                    <span>Xem Thêm</span>
+                        <i class="fa-solid fa-caret-down"></i>
+                    </a>
+                </div>
+
+                <!--xe dap dia hinh-->
+                <div class="onr"></div>
+                <div class="xedapdua">
+                    <div class="headline">
+                        <a href="">XE ĐẠP ĐỊA HÌNH</a>
+                    </div>
+                    <div class="prod-1">
+                        <div class="prod-1_1">
+                            <div class="product-top">
+                                <a href="" class="BH">
+                                    <img src="/images/img/mauxedap/xedapduongpho.png" alt="">
+                                </a>
+                            </div>
+                             
+                        </div>
+                        <div class="slider-product">
+                            <div class="list">
+                                @foreach (var product in productsDiahinh)
+                                {
+                                     
+                                    <div style=" " class="item">
+                                        <div class="mol-01">
+                                            <div class="product-top">
+                                                <a asp-area="Home" asp-action="DetailProduct" asp-controller="ProductView" 
+                                                asp-route-categoryslug="  "
+                                                asp-route-productslug="@product.Slug"  class="BH">
+                                                    <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
+                                                        alt="@product.Name">
+                                                </a>
+                                            </div>
+                                            <div class="product-info">
+                                                    <a class="product-name">
+                                                        <span>@product.Name </span>
+                                                    </a>
+                                                    <div class="product-price">
+                                                        @if (product.DiscountPrice.HasValue)
+                                                        {
+                                                             <span style="text-decoration: line-through;">@product.Price.ToString("N0")VND</span>
+                                                        <br />
+                                                        <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
+                                                        }
+                                                        else
+                                                        {
+                                                        <span>@product.Price.ToString("N0") VND</span>
+                                                        }
+                                                    </div>
                                             </div>
                                         </div>
 
@@ -290,13 +255,213 @@
                         </div>
 
                     </div>
+                    <div class="collect-more_product">
+                    <a a asp-area="Home" asp-controller="ProductView" asp-action="Product"asp-route-categoryslug="xe-dap-dia-hinh-0" class=" button-more_product">
+                    <span>Xem Thêm</span>
+                        <i class="fa-solid fa-caret-down"></i>
+                    </a>
+                    </div>
+                </div>
+
+                <!--xe dap dia hinh-->
+                <div class="onr"></div>
+                <div class="xedapduongpho">
+                    <div class="headline">
+                        <a href="">XE ĐẠP ĐƯỜNG PHỐ</a>
+                    </div>
+                    <div class="prod-1">
+                        <div class="prod-1_1">
+                            <div class="product-top">
+                                <a href="" class="BH">
+                                    <img src="/images/img/mauxedap/xedapduongpho1.png" alt="">
+                                </a>
+                            </div>
+                             
+                        </div>
+                        <div class="slider-product">
+                            <div class="list">
+                                @{
+                                     
+                                    foreach (var product in productsDuongpho)
+                                    {
+                                         
+                                        <div style="" class="item">
+                                            <div class="mol-01">
+                                                <div class="product-top">
+                                                    <a asp-area="Home" asp-action="DetailProduct" asp-controller="ProductView" 
+                                                asp-route-categoryslug="  "
+                                                asp-route-productslug="@product.Slug"  class="BH">
+                                                        <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
+                                                            alt="@product.Name">
+                                                    </a>
+                                                </div>
+                                                <div class="product-info">
+                                                    <a class="product-name">
+                                                        <span>@product.Name </span>
+                                                    </a>
+                                                    <div class="product-price">
+                                                        @if (product.DiscountPrice.HasValue)
+                                                        {
+                                                            <span style="text-decoration: line-through;">@product.Price.ToString("N0")VND</span>
+                                                            <br />
+                                                            <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@product.Price.ToString("N0") VND</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    }
+                                }
+                            </div>
+                        </div>
+                        
+
+                    </div>
+                    <div class="collect-more_product">
+                    <a a asp-area="Home" asp-controller="ProductView" asp-action="Product"asp-route-categoryslug="xe-dap-the-thao-duong-pho-0" class=" button-more_product">
+                    <span>Xem Thêm</span>
+                        <i class="fa-solid fa-caret-down"></i>
+                    </a>
+                </div>
+                </div>
+
+                <!--xe dap phu nu-->
+                <div class="onr"></div>
+                <div class="xedapphunu">
+                    <div class="headline">
+                        <a href="">XE ĐẠP PHỤ NỮ</a>
+                    </div>
+                    <div class="prod-1">
+                        <div class="prod-1_1">
+                            <div class="product-top">
+                                <a href="" class="BH">
+                                    <img src="/images/img/mauxedap/xedapnu.jpg" alt="">
+                                </a>
+                            </div>
+                            
+                        </div>
+                        <div class="slider-product">
+                            <div class="list">
+                                @{
+                                    
+                                    foreach (var product in productsPhuNu)
+                                    {
+                                       
+                                         
+                                        
+                                        <div style="" class="item">
+                                            <div class="mol-01">
+                                                <div class="product-top">
+                                                    <a asp-area="Home" asp-action="DetailProduct" asp-controller="ProductView" 
+                                                asp-route-categoryslug="  "
+                                                asp-route-productslug="@product.Slug"  class="BH">
+                                                        <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
+                                                            alt="@product.Name">
+                                                    </a>
+                                                </div>
+                                                <div class="product-info">
+                                                    <a class="product-name">
+                                                        <span>@product.Name </span>
+                                                    </a>
+                                                    <div class="product-price">
+                                                        @if (product.DiscountPrice.HasValue)
+                                                        {
+                                                            <span style="text-decoration: line-through;">@product.Price.ToString("N0")VND</span>
+                                                            <br />
+                                                            <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@product.Price.ToString("N0") VND</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="collect-more_product">
+                    <a a asp-area="Home" asp-controller="ProductView" asp-action="Product"asp-route-categoryslug="xe-dap-nu-0" class=" button-more_product">
+                    <span>Xem Thêm</span>
+                        <i class="fa-solid fa-caret-down"></i>
+                    </a>
+                </div>
+                </div>
+
+                <!--xedapdua-->
+                <div class="onr"></div>
+                <div class="xedapgap">
+                    <div class="headline">
+                        <a href="">XE ĐẠP ĐUA</a>
+                    </div>
+                    <div class="prod-1">
+                        <div class="prod-1_1">
+                            <div class="product-top">
+                                <a href="" class="BH">
+                                    <img src="/images/img/mauxedap/xedapdua.png" alt="">
+                                </a>
+                            </div>
+                            
+                        </div>
+                        <div class="slider-product">
+                            <div class="list">
+                                @{
+                                    foreach (var product in productsDua)
+                                    {
+                                     
+                                        
+                                        <div style="" class="item">
+                                            <div class="mol-01">
+                                                <div class="product-top">
+                                                    <a asp-area="Home" asp-action="DetailProduct" asp-controller="ProductView" 
+                                                asp-route-categoryslug="  "
+                                                asp-route-productslug="@product.Slug"  class="BH">
+                                                        <img src="@Url.Content("~/images/products/" + product.Slug + "/" + product.MainImage)"
+                                                            alt="@product.Name">
+                                                    </a>
+                                                </div>
+                                                <div class="product-info">
+                                                    <a class="product-name">
+                                                        <span>@product.Name </span>
+                                                    </a>
+                                                    <div class="product-price">
+                                                        @if (product.DiscountPrice.HasValue)
+                                                        {
+                                                            <span style="text-decoration: line-through;">@product.Price.ToString("N0")VND</span>
+                                                            <br />
+                                                            <span>@product.DiscountPrice.Value.ToString("N0") VND</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>@product.Price.ToString("N0") VND</span>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
             </div>
         </div>
-        <!--xe dap dia hinh-->
         <div class="collect-more_product">
             <a a asp-area="Home" asp-controller="ProductView" asp-action="Product"
-                asp-route-categoryslug="xe-dap-tre-em-0" class=" button-more_product">
+                asp-route-categoryslug="xe-dap-dua-0" class=" button-more_product">
                 <span>Xem Thêm</span>
                 <i class="fa-solid fa-caret-down"></i>
             </a>
@@ -315,14 +480,13 @@
             <ul class="products products-cty">
                 <li class="product-item product-item-Cty">
                     <div class="product-top">
-                        <a href="content_address.html" class="product-thumb">
-                            <img src="../assets/img/HTLO-01.jpg" alt="">
+                        <a href="#" class="product-thumb">
+                            <img src="/images/img/HTLO-01.jpg" alt="#">
                         </a>
                     </div>
                     <div class="product-info">
-                        <a style="color: black; font-weight: 700; font-size: 16px;" href="" class="product-name">Nguyễn
-                            Cơ Thạch</a>
-                        <span>Shop B1-00.05, 72 Nguyễn Cơ Thạch, P. An Lợi Đông, TP. Thủ Đức, TP. Hồ Chí
+                        <a style="color: black; font-weight: 700; font-size: 16px;" href="" class="product-name">An Lợi</a>
+                        <span>Shop B1-00.05, 7 An Lợi, P. An Lợi Đông, TP. Thủ Đức, TP. Hồ Chí
                             Minh</span>
                         <br>
                         <span>SĐT: 1800 9473</span>
@@ -334,14 +498,13 @@
                 </li>
                 <li class="product-item product-item-Cty">
                     <div class="product-top">
-                        <a href="content_address.html" class="product-thumb">
-                            <img src="../assets/img/HTLO-01.jpg" alt="">
+                        <a href="#" class="product-thumb">
+                            <img src="/images/img/mo-cua-hang-xe-dap-2.jpg" alt="">
                         </a>
                     </div>
                     <div class="product-info">
-                        <a style="color: black; font-weight: 700; font-size: 16px;" href="" class="product-name">Nguyễn
-                            Cơ Thạch</a>
-                        <span>Shop B1-00.05, 72 Nguyễn Cơ Thạch, P. An Lợi Đông, TP. Thủ Đức, TP. Hồ Chí
+                        <a style="color: black; font-weight: 700; font-size: 16px;" href="" class="product-name">Tân Phú</a>
+                        <span>Shop B1-00.05, 72 Tân Phú, P. An Lợi Đông, TP. Thủ Đức, TP. Hồ Chí
                             Minh</span>
                         <br>
                         <span>SĐT: 1800 9473</span>
@@ -353,8 +516,8 @@
                 </li>
                 <li class="product-item product-item-Cty">
                     <div class="product-top">
-                        <a href="content_address.html" class="product-thumb">
-                            <img src="../assets/img/HTLO-01.jpg" alt="">
+                        <a href="#" class="product-thumb">
+                            <img src="/images/img/HTLO-01.jpg" alt="lỗi ảnh">
                         </a>
                     </div>
                     <div class="product-info">
@@ -372,7 +535,7 @@
                 </li>
             </ul>
             <div style="padding-bottom: 20%;" class="collect-more_product">
-                <a href="" class="button-more_product">
+                <a asp-area="" asp-controller="Home" asp-action="Address_shop" class="button-more_product">
                     <span>Xem Thêm Hệ Thống Cửa Hàng</span>
                 </a>
             </div>

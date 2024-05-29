@@ -74,6 +74,22 @@
         text-align: right;
         padding-top: 60px;
     }
+
+    .container-flex {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .left {
+        flex: 1;
+        text-align: left;
+    }
+
+    .right {
+        flex: 1;
+        text-align: right;
+    }
 </style>
 <partial name="_StatusMessage" />
 
@@ -247,7 +263,19 @@
 
         <div style="padding-bottom: 100px;" class="grid">
             <div class="Information" style="margin-top: 50px;">
-                <h4>Sản Phẩm Đã Mua</h4>
+                <div class="container-flex">
+                    <div class="left">
+                        <h4>Sản Phẩm Đã Mua</h4>
+                    </div>
+                    <div class="right">
+                        @{
+                            var countOrder = ViewBag.countOrder;
+                            var countPaidOrder = ViewBag.countPaidOrder;
+                            <p>Tổng đơn hàng: @countOrder<br>Tổng tiền đã thanh toán: @countPaidOrder.ToString("N0") VNĐ</p>
+                        }
+                    </div>
+                </div>
+
                 <hr />
                 <dl style="display: block;">
                     <div style="display: flex;">
@@ -256,6 +284,7 @@
                                 style="border-radius: 5px; font-weight: 600; color: #fff; background: rgb(13 110 253) !important; text-align: center; border-bottom: 1px solid #000;">
                                 <span>Thông Tin Đơn Hàng</span>
                             </dt>
+
                             <div style="height: 500px; overflow-y: auto;">
                                 <table style="width: 100%; border-collapse: collapse;">
                                     <thead>

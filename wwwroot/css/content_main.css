@@ -161,7 +161,7 @@ ul.products-cty{
     display: inline-flex;
     width: 100%;
     padding-top: 30px;
-    height: 400px;
+    height: 450px;
     text-align: center;
 }
 
@@ -213,8 +213,8 @@ ul.products-cty{
     font-family: monospace;
 }
 
-.item{
-    width: 50%;
+.prod-1 .item{
+    width: 250px;
 }
 
 .product-info a {

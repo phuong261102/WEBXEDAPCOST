@@ -4,18 +4,24 @@
     ViewData["Title"] = "Chi tiết thành viên: " + Model.UserName;
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
 }
-
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-3">
-            <h3>Thông tin cơ bản</h3>
-            <p><strong>Tên tài khoản:</strong> @Model.UserName</p>
-            <p><strong>Email:</strong> @Model.UserEmail</p>
-            <p><strong>Số điện thoại:</strong> @Model.PhoneNumber</p>
-            <p><strong>Ngày sinh:</strong> @Model.BirthDate?.ToString("dd/MM/yyyy")</p>
-            <p><strong>Địa chỉ:</strong> @Model.HomeAddress</p>
+<style>
+    .text-00 {
+        font-size: 1rem;
+        padding-bottom: 10px;
+        padding-left: 5px;
+    }
+</style>
+<div class="mt-4">
+    <div class="">
+        <div class="col-md-10">
+            <h3 style="padding-bottom: 20px;">Thông tin cơ bản</h3>
+            <p class="text-00"><strong>Tên tài khoản :</strong> @Model.UserName</p>
+            <p class="text-00"><strong>Email:</strong> @Model.UserEmail</p>
+            <p class="text-00"><strong>Số điện thoại:</strong> @Model.PhoneNumber</p>
+            <p class="text-00"><strong>Ngày sinh:</strong> @Model.BirthDate?.ToString("dd/MM/yyyy")</p>
+            <p class="text-00"><strong>Địa chỉ:</strong> @Model.HomeAddress</p>
         </div>
-        <div class="col-md-9">
+        <div class="col-md-12">
             <h3>Đơn hàng</h3>
 
             <div class="form-group">
@@ -27,6 +33,7 @@
                     <option value="Delivering">Đang Giao</option>
                     <option value="Completed">Hoàn thành</option>
                     <option value="Canceled">Hủy bỏ</option>
+                    <option value="Failed">Thất bại</option>
                 </select>
             </div>
             <div class="form-group">
@@ -34,14 +41,13 @@
                 <input type="text" id="searchInput" class="form-control" onkeyup="searchOrders()"
                     placeholder="Tìm theo mã đơn hàng hoặc tên sản phẩm">
             </div>
-            @{
-                var ordercount = 0;
-                decimal ordertotalBill = 0;
-            }
+
             @if (Model.Orders != null && Model.Orders.Any())
             {
-
-                <div class="table-responsive" style="max-height: 400px; overflow: auto;">
+                var countOrder = ViewBag.countOrder;
+                var countPaidOrder = ViewBag.countPaidOrder;
+                <p>Tổng đơn hàng : @countOrder Tổng tiền đã thanh toán : @countPaidOrder.ToString("N0")VNĐ</p>
+                <div class="" style="height: auto; overflow: auto;">
                     <table class="table table-bordered table-striped">
                         <thead style="position: sticky; top: 0; background: white;">
                             <tr>
@@ -56,7 +62,6 @@
                         <tbody id="orderTable">
                             @foreach (var order in Model.Orders)
                             {
-                                ordercount++;
                                 <tr class="order-row" data-status="@order.Status" data-order-id="@order.OrderId"
                                     data-product-names="@string.Join(",", order.OrderDetails.Select(d => d.ProductName).ToArray())">
                                     <td>@order.OrderId</td>
@@ -113,7 +118,6 @@
                     </table>
 
                 </div>
-                <p>Tổng đơn hàng: @ordercount || Tổng Tiền Đã Thanh Toán: @ordertotalBill.ToString("N0") VND</p>
             }
             else
             {

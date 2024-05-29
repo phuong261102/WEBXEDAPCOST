@@ -27,6 +27,8 @@ namespace XEDAPVIP.Areas.Admin.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
+            ViewBag.orderCount = _context.Orders.Count();
+
             return View(await _context.Orders.ToListAsync());
         }
 
@@ -142,6 +144,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
             _context.Update(order);
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Đã thay đổi trạng thái đơn hàng thành công";
 
             return RedirectToAction(nameof(Index));
         }
@@ -159,6 +162,7 @@ namespace XEDAPVIP.Areas.Admin.Controllers
 
             _context.Orders.Remove(order);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = $"Xoá thành công đơn hàn {id}";
 
             return Ok(new { success = true });
         }

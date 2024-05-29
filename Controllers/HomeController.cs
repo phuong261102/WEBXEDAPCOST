@@ -42,6 +42,23 @@ public class HomeController : Controller
 
 
 
+    private async Task<List<Product>> GetProductsByCategorySlugAsync(string categorySlug, int maxProducts)
+    {
+        return await _context.Products
+            .Where(p => p.ProductCategories.Any(pc => pc.Category.Slug == categorySlug))
+            .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+            .Take(maxProducts) // Giới hạn số lượng sản phẩm
+            .ToListAsync();
+    }
+    private async Task<List<Product>> GetNewestProductsAsync(int maxProducts)
+    {
+        return await _context.Products
+            .OrderByDescending(p => p.DateCreated) // Sắp xếp theo ngày tạo để lấy sản phẩm mới nhất
+            .Take(maxProducts)
+            .ToListAsync();
+    }
+
     public async Task<IActionResult> Index(string categoryslug, string brandslug)
     {
         var categories = await _cacheService.GetCategoriesAsync();
@@ -52,15 +69,16 @@ public class HomeController : Controller
         ViewBag.brands = brands;
         ViewBag.brandslug = brandslug;
 
-        // Assuming category slug for "Baby" category is "xe-dap-tre-em-0"
-        var categoryBaby = "xe-dap-tre-em-0";
 
-        ViewBag.productsBaby = await _context.Products
-            .Where(p => p.ProductCategories.Any(pc => pc.Category.Slug == categoryBaby))
-            .Include(p => p.ProductCategories)
-                .ThenInclude(pc => pc.Category)
-            .ToListAsync();
+        ViewBag.productsBaBy = await GetProductsByCategorySlugAsync("xe-dap-tre-em-0", 8);
+        ViewBag.productsDua = await GetProductsByCategorySlugAsync("xe-dap-dua-0", 8);
+        ViewBag.productsDuongpho = await GetProductsByCategorySlugAsync("xe-dap-the-thao-duong-pho-0", 8);
+        ViewBag.productsPhuNu = await GetProductsByCategorySlugAsync("xe-dap-nu-0", 8);
+        ViewBag.productsdiahinh = await GetProductsByCategorySlugAsync("xe-dap-dia-hinh-0", 8);
+        ViewBag.productsgap = await GetProductsByCategorySlugAsync("xe-dap-gap-0", 8);
 
+
+        ViewBag.productsNew = await GetNewestProductsAsync(4);
         return View();
     }
 
@@ -77,6 +95,28 @@ public class HomeController : Controller
         ViewBag.brandslug = brandslug;
         return View();
     }
+
+    private async Task<List<Product>> GetSaleProductsByCategorySlugAsyncSale(string categorySlug, int maxProducts)
+    {
+        return await _context.Products
+            .Where(p => p.ProductCategories.Any(pc => pc.Category.Slug == categorySlug) && p.DiscountPrice.HasValue)
+            .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+            .Take(maxProducts)
+            .ToListAsync();
+    }
+
+    private async Task<List<Product>> GetTopSaleProductsAsync(int maxProducts)
+    {
+        return await _context.Products
+            .Where(p => p.DiscountPrice.HasValue)
+            .OrderByDescending(p => (p.Price - p.DiscountPrice.Value) / p.Price) // Tính phần trăm giảm giá và sắp xếp giảm dần
+            .Take(maxProducts)
+            .Include(p => p.ProductCategories)
+                .ThenInclude(pc => pc.Category)
+            .ToListAsync();
+    }
+
     public async Task<IActionResult> Sale(string categoryslug, string brandslug)
     {
         var categories = await _cacheService.GetCategoriesAsync();
@@ -85,8 +125,20 @@ public class HomeController : Controller
         ViewBag.categoryslug = categoryslug;
         ViewBag.brands = brands;
         ViewBag.brandslug = brandslug;
+
+        ViewBag.productsBaBysale = await GetSaleProductsByCategorySlugAsyncSale("xe-dap-tre-em-0", 8);
+        ViewBag.productsDuasale = await GetSaleProductsByCategorySlugAsyncSale("xe-dap-dua-0", 8);
+        ViewBag.productsDuongphosale = await GetSaleProductsByCategorySlugAsyncSale("xe-dap-the-thao-duong-pho-0", 8);
+        ViewBag.productsPhuNusale = await GetSaleProductsByCategorySlugAsyncSale("xe-dap-nu-0", 8);
+        ViewBag.productsdiahinhsale = await GetSaleProductsByCategorySlugAsyncSale("xe-dap-dia-hinh-0", 8);
+        ViewBag.productsgapsale = await GetSaleProductsByCategorySlugAsyncSale("xe-dap-gap-0", 8);
+
+        ViewBag.topSaleProducts = await GetTopSaleProductsAsync(8);
+        ViewBag.topSalehotProducts = await GetTopSaleProductsAsync(4);
         return View();
     }
+
+
 
     public async Task<IActionResult> Service(string categoryslug, string brandslug)
     {

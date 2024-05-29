@@ -96,7 +96,15 @@ namespace App.Areas.Identity.Controllers
 
                 })
                 .ToListAsync();
-
+            var countPaidOrder = 0;
+            var countOrder = 0;
+            foreach (var o in orders)
+            {
+                countOrder++;
+                if (o.Status == "Paid") countPaidOrder += o.TotalAmount;
+            }
+            ViewBag.countPaidOrder = countPaidOrder;
+            ViewBag.countOrder = countOrder;
             var model = new IndexViewModel
             {
                 HasPassword = await _userManager.HasPasswordAsync(user),
